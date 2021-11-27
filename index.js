@@ -22,7 +22,7 @@ fs.readdir("./events/", (err, files) => {
       client.on(eventName, event.bind(null, client));
     });
 });
-// test comment
+
 client.commands = new Enmap();
 
 fs.readdir("./commands/", (err, files) => {
