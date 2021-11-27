@@ -1,3 +1,9 @@
 # Mirror js
+Mirror utility Discord bot
+
+API Documentation:
+ - 
+
+
  
-Mirror Discord bot 
+

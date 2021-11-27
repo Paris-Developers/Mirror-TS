@@ -1,5 +1,7 @@
 //Initializes the discord client and requires the discord package.
 const { Client, Intents } = require('discord.js');
+const fs = require('fs');
+const Enmap = require('enmap');
 
 //Requires the config.json file, creates token as a constant
 const config = require('./config.json');
