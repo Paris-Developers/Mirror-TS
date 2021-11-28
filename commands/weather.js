@@ -8,8 +8,14 @@ const cardinalDir = {0:"N",1:"NNE",2:"NE",3:"ENE",4:"E",5:"ESE",6:"SE",7:"SSE",8
 exports.run = async (client, message, args) => {
     let res = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${args}&appid=${client.config.weather_token}`);
     let jsonData = await  res.json();
-    const embed = new MessageEmbed();
+
+    const embed = new MessageEmbed()
+        .setTitle('**__Embed title test__** :skull:')
+        .setAuthor('Fordle','https://i.imgur.com/pxkMn14.jpg?1');
     embed.color = 0xFFFFFF;
+    
+
+
     let weatherString = '';
     weatherString += `Current Conditions: ${jsonData.weather[0].main} ${weatherEmoji[jsonData.weather[0].main]}\n`; 
     let cTemp = Math.round(jsonData.main.temp - 273.15);
@@ -31,8 +37,6 @@ exports.run = async (client, message, args) => {
 
     embed.addField(`Current weather for: ${jsonData.name}`,weatherString);
     
-    
-
 
 
     message.channel.send({embeds:[embed]});
