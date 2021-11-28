@@ -37,8 +37,6 @@ exports.run = async (client, message, args) => {
 
     embed.addField(`Current weather for: ${jsonData.name}`,weatherString);
     
-    
-
 
 
     message.channel.send({embeds:[embed]});
