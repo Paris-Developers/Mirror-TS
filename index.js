@@ -23,7 +23,6 @@ fs.readdir("./events/", (err, files) => {
       const event = require(`./events/${file}`);
       let eventName = file.split(".")[0];
       // loading event name
-      //console.log(`loading event ${eventName}`);
       client.on(eventName, event.bind(null, client));
     });
 });
