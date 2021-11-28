@@ -7,38 +7,63 @@ const cardinalDir = {0:"N",1:"NNE",2:"NE",3:"ENE",4:"E",5:"ESE",6:"SE",7:"SSE",8
 
 exports.run = async (client, message, args) => {
     console.log('inside the weather fxn');
+
+    //Pulls data from the API
     let res = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${args}&appid=${client.config.weather_token}`);
     let jsonData = await  res.json();
 
-    const embed = new MessageEmbed()
-        .setTitle('**__Embed title test__** :skull:')
-        .setAuthor('Fordle','https://i.imgur.com/pxkMn14.jpg?1');
-    embed.color = 0xFFFFFF;
-    
-
-
+    //creates string that we pass through to our message embed
     let weatherString = '';
-    weatherString += `Current Conditions: ${jsonData.weather[0].main} ${weatherEmoji[jsonData.weather[0].main]}\n`; 
+    
+    //adds current weather conditions and weatherEmoji to the string
+    let condition = jsonData.weather[0].main;
+
+    weatherString += `Current Conditions: ${condition} ${weatherEmoji[condition]}\n`; 
+
+    //adds current temperature to string
     let cTemp = Math.round(jsonData.main.temp - 273.15);
     let fTemp = Math.round(cTemp * 9/5 + 32);
     weatherString += `Temperature: ${fTemp}°F (${cTemp}°C)\n`;
+
+    //adds daily high temperature to string
     let cHigh = Math.round(jsonData.main.temp_max - 273.15);
     let fHigh = Math.round(cHigh * 9/5 + 32);
     weatherString += `Daily high: ${fHigh}°F (${cHigh}°C)\n`;
+
+    //sets timezone and adds surise to string
     let timezone = find(jsonData.coord.lat,jsonData.coord.lon);
     let sunrise = new Date(jsonData.sys.sunrise*1000).toLocaleString("en-US", {timeZone:timezone[0]});
     sunrise = sunrise.split(', ')[1].slice(0,4);
     weatherString += `Sunrise :sun_with_face: ${sunrise}\n`;
+
+    //add sunset to string
     let sunset = new Date(jsonData.sys.sunset*1000).toLocaleString("en-US",{timeZone:timezone[0]});
     sunset = sunset.split(', ')[1].slice(0,4);
     weatherString += `Sunset :new_moon_with_face: ${sunset}\n`
 
+    //adds humidity and wind variables ## NOTE WIND COMES IN AT M/S
+    let humidity = `${jsonData.main.humidity} %`;
+    let kmhWind = Math.round(jsonData.wind.speed * 3.6);
+    let mphWind = Math.round(kmhWind * .621371);
+    let windDir = ''; //declare before the ifelse so that the variable values can be hoisted to the main fxn
+    if(mphWind == 0){ //sets wind direction to a placeholder string if there is no wind
+        windDir = '';
+    } else {
+        windDir = cardinalDir[Math.round(jsonData.wind.deg / 22.8)];
+    }
 
-
-
-    embed.addField(`Current weather for: ${jsonData.name}`,weatherString);
-    
-
-
+    //creates message embed and edits modifiers
+    const embed = new MessageEmbed()
+    .setColor('#FFFFFF')
+    .setTitle(`**Current Weather in ${args}**`)
+    .addFields( //adds multiple embed fields simultaneously 
+        {name: `Temp: ${fTemp}°F (${cTemp}°C) \nHigh: ${fHigh}°F (${cHigh}°C)`,value: `${condition} ${weatherEmoji[condition]}`,inline: false},
+        {name: 'Wind:', value: `${mphWind} mph (${kmhWind} kmh) \n${windDir}`,inline: true},
+        {name: 'Daylight:', value: `:sun_with_face: ${sunrise}\n:new_moon_with_face: ${sunset}`,inline: true},
+        {name: 'Humidity:', value: `${humidity}`,inline: true},
+    )
+    .setTimestamp()
+        
+    //sends embed to the channel
     message.channel.send({embeds:[embed]});
 }
