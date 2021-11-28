@@ -13,7 +13,8 @@ client.config = config; // we want config to be accessible anywhere client is
 
 //This line runs once the discord client is ready
 client.once('ready', () => {
-    console.log('Ready!');
+    console.log('Logged in as $
+    {client.user.tag}!');
 });
 
 fs.readdir("./events/", (err, files) => {
