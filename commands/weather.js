@@ -6,6 +6,7 @@ const weatherEmoji = {"Rain":":cloud_rain:","Thunderstorm":":thunder_cloud_rain:
 const cardinalDir = {0:"N",1:"NNE",2:"NE",3:"ENE",4:"E",5:"ESE",6:"SE",7:"SSE",8:"S",9:"SSW",10:"SW",11:"WSW",12:"W",13:"WNW",14:"NW",15:"NNW",16:"N"}
 
 exports.run = async (client, message, args) => {
+    console.log('inside the weather fxn');
     let res = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${args}&appid=${client.config.weather_token}`);
     let jsonData = await  res.json();
 
