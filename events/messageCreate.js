@@ -2,6 +2,10 @@ module.exports = async (client, message) => {
     //ignore all bots
     if (message.author.bot) return;
 
+    console.log(message);
+
+    var prefix = client.config.prefix;
+
     //ignore messages not starting with the prefix (in config.json)
     if (message.content.indexOf(prefix) !== 0) return;
 
