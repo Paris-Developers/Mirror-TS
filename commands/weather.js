@@ -8,7 +8,7 @@ const cardinalDir = {0:"N",1:"NNE",2:"NE",3:"ENE",4:"E",5:"ESE",6:"SE",7:"SSE",8
 exports.run = async (client, message, args) => {
     console.log('inside the weather fxn');
 
-    //Pulls data from the API
+    //Pulls data from the API and stores as a JSON object
     let res = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${args}&appid=${client.config.weather_token}`);
     let jsonData = await res.json();
 
@@ -53,7 +53,7 @@ exports.run = async (client, message, args) => {
         {name: 'Daylight:', value: `:sun_with_face: ${sunrise}\n:new_moon_with_face: ${sunset}`,inline: true},
         {name: 'Humidity:', value: `${humidity}`,inline: true},
     )
-    .setTimestamp()
+    .setTimestamp();
         
     //sends embed to the channel
     message.channel.send({embeds:[embed]});
