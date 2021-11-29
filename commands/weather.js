@@ -10,38 +10,30 @@ exports.run = async (client, message, args) => {
 
     //Pulls data from the API
     let res = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${args}&appid=${client.config.weather_token}`);
-    let jsonData = await  res.json();
+    let jsonData = await res.json();
 
-    //creates string that we pass through to our message embed
-    let weatherString = '';
     
-    //adds current weather conditions and weatherEmoji to the string
+    //define current weather coniditions
     let condition = jsonData.weather[0].main;
 
-    weatherString += `Current Conditions: ${condition} ${weatherEmoji[condition]}\n`; 
-
-    //adds current temperature to string
+    //define current temperatures
     let cTemp = Math.round(jsonData.main.temp - 273.15);
     let fTemp = Math.round(cTemp * 9/5 + 32);
-    weatherString += `Temperature: ${fTemp}°F (${cTemp}°C)\n`;
 
-    //adds daily high temperature to string
+    //define daily high temperatures
     let cHigh = Math.round(jsonData.main.temp_max - 273.15);
     let fHigh = Math.round(cHigh * 9/5 + 32);
-    weatherString += `Daily high: ${fHigh}°F (${cHigh}°C)\n`;
 
-    //sets timezone and adds surise to string
+    //define timezone and sunrise
     let timezone = find(jsonData.coord.lat,jsonData.coord.lon);
     let sunrise = new Date(jsonData.sys.sunrise*1000).toLocaleString("en-US", {timeZone:timezone[0]});
     sunrise = sunrise.split(', ')[1].slice(0,4);
-    weatherString += `Sunrise :sun_with_face: ${sunrise}\n`;
 
-    //add sunset to string
+    //define sunset
     let sunset = new Date(jsonData.sys.sunset*1000).toLocaleString("en-US",{timeZone:timezone[0]});
     sunset = sunset.split(', ')[1].slice(0,4);
-    weatherString += `Sunset :new_moon_with_face: ${sunset}\n`
 
-    //adds humidity and wind variables ## NOTE WIND COMES IN AT M/S
+    //define humidity and wind ## NOTE WIND COMES IN AT M/S
     let humidity = `${jsonData.main.humidity} %`;
     let kmhWind = Math.round(jsonData.wind.speed * 3.6);
     let mphWind = Math.round(kmhWind * .621371);
