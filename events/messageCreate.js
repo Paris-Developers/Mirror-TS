@@ -19,5 +19,4 @@ module.exports = async (client, message) => {
 
     //run command
     cmd.run(client, message, args);
-
 }
