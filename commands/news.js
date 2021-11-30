@@ -15,7 +15,7 @@ exports.run = async (client,message,args) => {
     }
     let jsonData = await res.json();
 
-    //figure out what we want to display in our message, do we want an embed?
+    //figure out what we want to display in our message, do we want an embe
 
     //add embed
 
