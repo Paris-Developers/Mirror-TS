@@ -14,4 +14,4 @@ exports.run = (client, message, args) => {
         client.commands.set(commandName, props);
         message.reply(`The command ${commandName} has been reloaded`);
     }
-};
+}
