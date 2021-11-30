@@ -6,8 +6,6 @@ exports.run = (client, message, args) => {
         console.log('Inside the daily command');
         const channel = '888079059249147984';
         channel.send("test timed message");
-
-
     });
 
 }
