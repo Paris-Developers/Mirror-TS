@@ -5,8 +5,14 @@ module.exports = async (client, message) => {
     var prefix = client.config.prefix;
 
     //ignore messages not starting with the prefix (in config.json)
-    if (message.content.indexOf(prefix) !== 0) return;
-
+    console.log(message.content);
+    if (message.content == '<:FortBush:816549663812485151>'){
+        message.react(':FortBush:816549663812485151');
+    }else if (message.content == '<:JamesChamp:791190997236842506>' || message.content == 'Pog' || message.content == 'pog'){
+        message.react(':JamesChamp:791190997236842506');
+    }else if (message.content.indexOf(prefix) !== 0) {
+        return;
+    }
     //parse out arguments and get the base command name
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
 	const command = args.shift().toLowerCase();
