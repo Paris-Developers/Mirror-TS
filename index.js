@@ -8,7 +8,7 @@ const Enmap = require('enmap');
 const config = require('./config.json');
 
 //Creates instance of client
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
 
 client.config = config; // we want config to be accessible anywhere client is
 
