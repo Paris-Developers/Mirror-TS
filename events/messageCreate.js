@@ -4,26 +4,20 @@ module.exports = async (client, message) => {
 
     var prefix = client.config.prefix;
 
-    //ignore messages not starting with the prefix (in config.json)
-    console.log(message.content);
-    if (message.content == '<:FortBush:816549663812485151>'){
-        message.react(':FortBush:816549663812485151');
-    }else if (message.content == '<:JamesChamp:791190997236842506>' || message.content == 'Pog' || message.content == 'pog'){
-        message.react(':JamesChamp:791190997236842506');
-    }else if (message.content.indexOf(prefix) !== 0) {
-        return;
-    }
+    //check for prefix to determine if command or not
+    let isCommand = message.content.indexOf(prefix) == 0;
+
     //parse out arguments and get the base command name
-    const args = message.content.slice(prefix.length).trim().split(/ +/g);
-	const command = args.shift().toLowerCase();
+    let args = message.content.trim().split(/ +/g);
+    
+    //ternary operator -> checks to see if expression before ? is true, if true, use expression left of colon, if false, use expression right of colon
+    const command = isCommand ? args[0].slice(prefix.length).toLowerCase() : args[0].toLowerCase(); //if it's a command we need to slice out the prefix
+    args.shift(); //remove the first argument because we won't need to pass the command/keyword name to the triggered function
+    const cmd = isCommand ? client.commands.get(command) : client.keywords.get(command); //if it's a command, get it from command enmap, otherwise check keyword enmap
 
-    //grab the command data from the client.commands Enmap
-    const cmd = client.commands.get(command);
-
-    //if the command doesn't exist, just exit
+    //if the command/keyword doesn't exist, just exit
     if (!cmd) return;
 
-    //run command
+    //run command/keyword
     cmd.run(client, message, args);
-
 }
