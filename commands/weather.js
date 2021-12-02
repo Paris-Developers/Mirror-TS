@@ -12,8 +12,7 @@ exports.run = async (client, message, args) => {
         .setColor('#FFFFFF')
         .setDescription('Empty message, please provide a city');
         message.channel.send({embeds:[embed]});
-    //runs the code as normally    
-    } else{ 
+    } else {  //runs the code as normally  
         //if it encounters an error it will run the code under the catch function
         try{
             //Adjusts args[] to create a cleaner output string

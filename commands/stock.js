@@ -8,13 +8,22 @@ exports.run = async (client, message, args) => {
             .setColor('#FFFFFF')
             .setDescription('Empty message, please provide a valid ticker');
         message.channel.send({embeds:[embed]});
-    } else{ 
+    }else if(args.length > 10){
+        const embed = new MessageEmbed()
+        .setColor('#FFFFFF')
+        .setDescription('Please provide 10 or fewer stocks to call') ;
+        message.channel.send({embeds:[embed]});
+    }else{ 
         //trys the code as normal but if it encounters an error it will run the code under the catch function
         try {
             for (let ticker of args) {
                 //Pulls ticker data from the API and stores it as a JSON object
                 let res = await fetch(`https://cloud.iexapis.com/stable/stock/${ticker}/quote?token=${client.config.stock_token}`);
+                let res2 = await fetch(`https://cloud.iexapis.com/stable/tops?token=${client.config.stock_token}&symbols=${ticker}`)
                 let jsonData = await res.json();
+                let jsonData2 = await res2.json();
+                console.log(jsonData);
+                console.log(jsonData2);
                     
                 //define company name and ticker symbol
                 ticker = ticker.toUpperCase();
@@ -28,7 +37,7 @@ exports.run = async (client, message, args) => {
                 if (change > 0){
                     sign = [':arrow_up_small:','+'];
                 } else if (change == 0){
-                    sign = [':left_righ_arrow:',''];
+                    sign = [':left_right_arrow:',''];
                 } 
 
                 //defines previous day close
