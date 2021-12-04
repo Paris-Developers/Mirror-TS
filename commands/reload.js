@@ -16,9 +16,9 @@ exports.run = (client, message, args) => {
         }
 
         if (client.keywords.has(commandName)) { //exact same as above with different folder and enmap
-            delete require.cache[require.resolve(`./keywords/${commandName}.js`)];
+            delete require.cache[require.resolve(`../keywords/${commandName}.js`)];
             client.keywords.delete(commandName);
-            const props = require(`./${commandName}.js`);
+            const props = require(`../keywords/${commandName}.js`);
             client.keywords.set(commandName, props);
             message.channel.send(`Reloaded keyword ${commandName}`);
         }
