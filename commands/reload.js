@@ -3,8 +3,8 @@ exports.run = (client, message, args) => {
         if(!args || args.size < 1) return message.reply("Must provide a command/keyword name to reload.");
         const commandName = args[0];
 
-        if (!client.commands.has(commandName) && !client.keywords.has(commandName)) {
-            return messsage.reply(`Could not find command or keyword ${commandName}`);
+        if (!client.commands.has(commandName) && !client.keywords.has(commandName)) { //neither enmap has it so just exit
+            return message.reply(`Could not find command or keyword ${commandName}`);
         }
 
         if (client.commands.has(commandName)){
