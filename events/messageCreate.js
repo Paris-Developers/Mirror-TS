@@ -29,5 +29,5 @@ module.exports = async (client, message) => {
     if (!cmd) return;
 
     //run command/keyword
-    cmd.run(client, message, args, parsedArgs);
+    cmd.run(client, message, args, identifiedArgs);
 }
