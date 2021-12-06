@@ -9,10 +9,11 @@ exports.run = (client,message,args,identifiedArgs) => {
     const results = chrono.parse(identifiedArgs.t); // chrono parses natural language into datetime
     if (!results[0]) return message.channel.send(`Couldn't parse '${identifiedArgs.t}' into a valid time.\nTry something like: 9:35pm ET`);
     let datedResult = results[0].start.date(); //get a javascript date object (not really needed I guess? could just pull from results directly)
-    //set the cronjob for every day using specified hours/minutes
-    let job = new CronJob(`${datedResult.getMinutes()} ${datedResult.getHours()} * * *`, () => {
-        //we need to split the data in 'a' to an array. If they didn't specify any args pass an empty array 
-        let argsToPass = !identifiedArgs.a ? [] : identifiedArgs.a.trim().split(/ +/g); 
+    //we need to split the data in 'a' to an array. If they didn't specify any args pass an empty array 
+    let argsToPass = !identifiedArgs.a ? [] : identifiedArgs.a.trim().split(/ +/g); 
+    //construct the cronjob time
+    let cronTime = `${datedResult.getMinutes()} ${datedResult.getHours()} * * *`
+    let job = new CronJob(cronTime, () => {       
         //get the command from the enmap and pass it what it needs
         try {
             client.commands.get(commandName).run(client,message,argsToPass);
@@ -22,6 +23,18 @@ exports.run = (client,message,args,identifiedArgs) => {
         }
     });
     job.start();
-    //TODO save needed data to creat cronjob in a persitent enmap
+    //make sure that we have a triggers array to push to
+    if (!client.triggers.ensure(message.guild.id).triggers) client.triggers.set(message.guild.id, {triggers: []});
+    //get the current triggers
+    let currentTriggers = client.triggers.ensure(message.guild.id).triggers;
+    //push a new object to the array
+    currentTriggers.push({
+        channel: message.channel.id,
+        commandName: commandName,
+        args: argsToPass,
+        cronTime: cronTime
+    });
+    //set the new array to the enmap
+    client.triggers.set(message.guild.id, {triggers: currentTriggers});
     message.channel.send(`Trigger created. Will run at ${job.nextDate()} next.`);
 }

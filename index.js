@@ -6,6 +6,7 @@ const Enmap = require('enmap');
 
 //Requires the config.json file, creates token as a constant
 const config = require('./config.json');
+const { CronJob } = require('cron');
 
 //Creates instance of client
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
@@ -15,6 +16,8 @@ client.config = config; // we want config to be accessible anywhere client is
 //This line runs once the discord client is ready
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    //now that we're ready, we can set all the triggers
+    setTriggers();
 });
 
 fs.readdir("./events/", (err, files) => {
@@ -35,7 +38,7 @@ fs.readdir("./commands/", (err, files) => {
         if (!file.endsWith(".js")) return;
         let props = require(`./commands/${file}`);
         let commandName = file.split(".")[0];
-        //console.log(`Attempting to load command ${commandName}`);
+        console.log(`Attempting to load command ${commandName}`);
         client.commands.set(commandName, props);
     });
 });
@@ -52,6 +55,36 @@ fs.readdir("./keywords/", (err, files) => {
         client.keywords.set(keywordName, props);
     });
 });
+
+client.triggers = new Enmap({name: 'triggers'}); //named enmaps are persistent to the disk
+client.cronJobs = [];
+//make a function to run once the discord bot is ready
+const setTriggers = () => {
+    client.triggers.fetchEverything(); //make sure all the triggers are loaded in memory
+    client.guilds.fetch(); //make sure all the guilds are accessible
+    for (let [server, data] of client.triggers) {
+        let guild = client.guilds.cache.get(server); //get the guild using the guild's ID
+        for(let trigger of data.triggers) { //for each trigger in that guild
+            let channel = guild.channels.cache.get(trigger.channel); //get the channel to send the message to
+            let message = {channel: channel}; // construct a crude message object to send to the command.run()
+            let job = new CronJob(trigger.cronTime, () => {
+                try {
+                    //run the command with specified args
+                    client.commands.get(trigger.commandName).run(client, message, trigger.args);
+                } catch(err) {
+                    message.channel.send(`Error with trigger ${trigger.commandName}: ${err}`);
+                    job.stop();
+                }
+            });
+            //add cronjob to array so we can access all the cronjobs from any command
+            client.cronJobs.push(job);
+            job.start();
+            console.log(`Set trigged command ${trigger.commandName} at ${trigger.cronTime} for ${server}`);
+        }
+    }
+}
+
+
 
 
 //Uses Token to login to the client
