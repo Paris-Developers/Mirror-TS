@@ -1,3 +1,7 @@
+//Call: $news or $n
+//Unfinished
+//Returns top news story in the US or returns the top story(ies?) from a specified topic
+
 const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 
@@ -11,11 +15,6 @@ exports.run = async (client,message,args) => {
     //console.log(args);
 
     let res = '';
-    /*if(args.length == 0) {
-        res = await fetch(`https://newsapi.org/v2/top-headlines?&from=${today}&sortBy=publishedAt&apiKey=${client.config.news_token}`);
-    } else {
-        res = await fetch(`https://newsapi.org/v2/top-headlines?q=${query}&from=${today}&sortBy=publishedAt&apiKey=${client.config.news_token}`);
-    }*/
     if(args.length == 0) {//sample code documentation for testing purposes
         res = await fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${client.config.news_token}`);
     } else {

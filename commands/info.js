@@ -1,7 +1,8 @@
+//Call: $info
+//Returns prewritten information about mirror and the owners
 const {MessageEmbed} = require('discord.js');
 
 exports.run = (client, message, args) => {
-    //Embed editing
     const embed = new MessageEmbed()
         .setColor('#d4af37')
         .setTitle(':mirror: __Mirror__ :mirror:')
