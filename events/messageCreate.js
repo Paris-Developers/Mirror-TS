@@ -9,6 +9,16 @@ module.exports = async (client, message) => {
 
     //parse out arguments and get the base command name
     let args = message.content.trim().split(/ +/g);
+
+    let identifiedArgs = {};
+    if (message.content.trim().match(/\s-[A-z]\s/)) { //if we have identifiers in our message 
+        let regexSplit = message.content.trim().split(/(?=\s-[A-z]\s)/); // split based on identifiers (ex -t, -z)
+        regexSplit.shift(); // we don't want to include anything before the first match. Usually the command name.
+        for(let arg of regexSplit) {
+            let identifier = arg[2]; //identifier should be third in line: whitespace, -, identifier;
+            identifiedArgs[identifier] = arg.slice(4); //set the value to the rest of the match after the identifier
+        }
+    }
     
     //ternary operator -> checks to see if expression before ? is true, if true, use expression left of colon, if false, use expression right of colon
     const command = isCommand ? args[0].slice(prefix.length).toLowerCase() : args[0].toLowerCase(); //if it's a command we need to slice out the prefix
@@ -19,5 +29,5 @@ module.exports = async (client, message) => {
     if (!cmd) return;
 
     //run command/keyword
-    cmd.run(client, message, args);
+    cmd.run(client, message, args, identifiedArgs);
 }
