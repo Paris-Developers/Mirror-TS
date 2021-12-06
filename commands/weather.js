@@ -1,3 +1,5 @@
+//Call: $weather or $w
+//Returns weather from a single specified city
 const fetch = require('node-fetch');
 const {MessageEmbed} = require('discord.js');
 const { find } = require('geo-tz');

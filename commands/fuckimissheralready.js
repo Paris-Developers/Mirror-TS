@@ -2,6 +2,9 @@
 //today got me like....
 //god really made me fall in love overnight
 //sheesh....
+//god damn im so scared
+//actually rent free
+//got me so depressed im actually doing school work, thats a new low
 const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 

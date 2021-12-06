@@ -1,3 +1,5 @@
+//$daily?
+//Not currently working, goal is to use a data structure to store time values, server information, and command calls
 const Discord = require('discord.js');
 const cron = require('cron');
 

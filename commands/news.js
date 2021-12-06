@@ -1,3 +1,7 @@
+//Call: $news or $n
+//Unfinished
+//Returns top news story in the US or returns the top story(ies?) from a specified topic
+
 const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 

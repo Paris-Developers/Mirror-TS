@@ -1,3 +1,5 @@
+//Call: $stock or $s
+//Returns 1-10 specified stocks
 const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 
