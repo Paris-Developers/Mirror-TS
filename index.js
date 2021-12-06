@@ -79,7 +79,7 @@ const setTriggers = () => {
             //add cronjob to array so we can access all the cronjobs from any command
             client.cronJobs.push(job);
             job.start();
-            console.log(`Set trigged command ${trigger.commandName} at ${trigger.cronTime} for ${server}`);
+            console.log(`Set triggered command ${trigger.commandName} at ${trigger.cronTime} for ${server}`);
         }
     }
 }

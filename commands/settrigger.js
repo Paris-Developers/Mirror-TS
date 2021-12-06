@@ -12,7 +12,7 @@ exports.run = (client,message,args,identifiedArgs) => {
     //we need to split the data in 'a' to an array. If they didn't specify any args pass an empty array 
     let argsToPass = !identifiedArgs.a ? [] : identifiedArgs.a.trim().split(/ +/g); 
     //construct the cronjob time
-    let cronTime = `${datedResult.getMinutes()} ${datedResult.getHours()} * * *`
+    let cronTime = `${datedResult.getMinutes()} ${datedResult.getHours()} * * *`;
     let job = new CronJob(cronTime, () => {       
         //get the command from the enmap and pass it what it needs
         try {
