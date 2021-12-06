@@ -13,6 +13,7 @@
     "enmap": "latest",
     "node-fetch": "latest",
     "geo-tz": "latest",
-    "cron": "latest"
+    "cron": "latest",
+    "chrono-node": "latest"
   }
 }
