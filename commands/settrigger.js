@@ -23,10 +23,8 @@ exports.run = (client,message,args,identifiedArgs) => {
         }
     });
     job.start();
-    //make sure that we have a triggers array to push to
-    if (!client.triggers.ensure(message.guild.id).triggers) client.triggers.set(message.guild.id, {triggers: []});
     //get the current triggers
-    let currentTriggers = client.triggers.ensure(message.guild.id).triggers;
+    let currentTriggers = client.triggers.ensure(message.guild.id, {triggers: []}).triggers;
     //push a new object to the array
     currentTriggers.push({
         channel: message.channel.id,
