@@ -62,9 +62,10 @@ client.cronJobs = [];
 const setTriggers = () => {
     client.triggers.fetchEverything(); //make sure all the triggers are loaded in memory
     client.guilds.fetch(); //make sure all the guilds are accessible
-    for (let [server, data] of client.triggers) {
+    for (let [server, triggers] of client.triggers) {
         let guild = client.guilds.cache.get(server); //get the guild using the guild's ID
-        for(let trigger of data.triggers) { //for each trigger in that guild
+        let updatedTriggers = []; //we'll need to set the new job property for all of the triggers
+        for(let trigger of triggers) { //for each trigger in that guild
             let channel = guild.channels.cache.get(trigger.channel); //get the channel to send the message to
             let message = {channel: channel}; // construct a crude message object to send to the command.run()
             let job = new CronJob(trigger.cronTime, () => {
@@ -80,7 +81,12 @@ const setTriggers = () => {
             client.cronJobs.push(job);
             job.start();
             console.log(`Set triggered command ${trigger.commandName} at ${trigger.cronTime} for ${server}`);
+            // pass start and stop functions
+            trigger.stopJob = job.stop;
+            trigger.startJob = job.start;
+            updatedTriggers.push(trigger); //add modified trigger to new array
         }
+        client.triggers.set(server, updatedTriggers); //set the trigger array to the new one (with updated job property)
     }
 }
 
