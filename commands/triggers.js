@@ -7,7 +7,7 @@ exports.run = (client, message, args) => {
     for(let trigger of triggers) {
         let times = trigger.cronTime.split(" "); //split the times up because we just want hours and minutes
         let time = `${times[1]}:${times[0]} CST`; // ex 5:30 CST , index 1 is hours, 0 is minutes
-        triggerString += `[**${index}**] ${trigger.commandName}(${trigger.args.join(" ")}) at ${time}\n`; //construct string to display
+        triggerString += `[**${index}**] ${trigger.commandName}(${trigger.args.join(" ")}) at ${time}\n`; //construct string to display, .join string modifier on arrays
         index++;
     }
     const embed = new MessageEmbed()

@@ -18,7 +18,7 @@ exports.run = (client,message,args,identifiedArgs) => {
     //get a javascript date object (not really needed I guess? could just pull from results directly)
     let datedResult = results[0].start.date(); 
     //we need to split the data in 'a' to an array. If they didn't specify any args pass an empty array 
-    let argsToPass = !identifiedArgs.a ? [] : identifiedArgs.a.trim().split(/ +/g); 
+    let argsToPass = !identifiedArgs.a ? [] : identifiedArgs.a.trim().split(/ +/g); //ternary operator
     //construct the cronjob time
     let cronTime = `${datedResult.getMinutes()} ${datedResult.getHours()} * * *`;
     let job = new CronJob(cronTime, () => {       
@@ -37,7 +37,7 @@ exports.run = (client,message,args,identifiedArgs) => {
     let newTriggers = currentTriggers.slice();
     //push a new object to the array
     //CronJob is circular, which is really annoying to deal with, so just pass the stop and start functions
-    newTriggers.push({
+    newTriggers.push({ //array fxn push
         channel: message.channel.id,
         commandName: commandName,
         args: argsToPass,
