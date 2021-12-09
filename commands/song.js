@@ -1,3 +1,6 @@
+//Call: $song
+//Unfinished
+//Implement try{}catch{}finish{} for error handling
 const {MessageEmbed, Message} = require("discord.js");
 
 exports.run = async (client,message,args) => {
