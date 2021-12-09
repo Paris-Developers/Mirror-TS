@@ -8,7 +8,7 @@ exports.run = async (client,message,args) => {
     try{
         
     } catch (err){
-        embed.setDescription('Error in spotify fxn: returning');
+        embed.setDescription(`Error: ${err}`);
         return;
     }
 }
