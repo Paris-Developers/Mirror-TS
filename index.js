@@ -88,10 +88,10 @@ const setTriggers = () => {
         }
         client.triggers.set(server, updatedTriggers); //set the trigger array to the new one (with updated job property)
     }
-    client.songRecs = new Enmap({name:'songs'});//create new enmap for song recommendations
-    console.log("past songrecs!");
-    client.songRecs.fetchEverything();
 }
+//add new Enmap to store song recommendations
+client.songRecs = new Enmap({name:'songs'});//create new enmap for song recommendations
+client.songRecs.fetchEverything();
 
 
 
