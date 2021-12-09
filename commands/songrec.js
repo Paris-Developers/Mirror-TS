@@ -1,3 +1,6 @@
+//Call $songrec
+//Recommends a song and sets the user and songlink into the Enmap songRecs
+//Unfinished
 const { Message } = require("discord.js");
 const { MessageEmbed} = require("discord.js");
 
