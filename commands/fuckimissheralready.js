@@ -8,7 +8,7 @@
 const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 
-exports.commandName = 'fuckimessheralready';
+exports.commandName = 'fuckimissheralready';
 
 exports.run = async (client,message,args) => {
     let res = await fetch(`https://nekos.best/api/v1/cry`);
