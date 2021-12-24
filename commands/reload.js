@@ -1,3 +1,5 @@
+exports.commandName = 'reload';
+
 exports.run = (client, message, args) => {
     if (message.author.id == client.config.owner) {
         if(!args || args.size < 1) return message.reply("Must provide a command/keyword name to reload.");

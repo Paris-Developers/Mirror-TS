@@ -1,6 +1,9 @@
 //$react
 //Currently broken, will need to be fixed in upcoming bug fixing. Currently attempting to respond to the addition of an emoji on their first call to $react
 const { Message } = require("discord.js");
+
+exports.commandName = 'react';
+
 exports.run = async (client, message, args) => {
     //message.channel.send('Hey lol');
     //const reactionEmoji = client.emojis.cache.get();

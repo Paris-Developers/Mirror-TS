@@ -5,6 +5,8 @@
 const {MessageEmbed, Message} = require('discord.js');
 const fetch = require('node-fetch');
 
+exports.commandName = 'news';
+
 exports.run = async (client,message,args) => {
     try{//Runs code as normal, sends  catch if an error is recieved
         const embed = new MessageEmbed() //creates embed

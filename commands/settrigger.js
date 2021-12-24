@@ -7,6 +7,8 @@ const { Permissions } = require('discord.js');
     Handle your errors in their respective files or you will break everything
 */
 
+exports.commandName = 'settrigger';
+
 exports.run = (client,message,args,identifiedArgs) => {
     if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return;
     if (!identifiedArgs.t) return message.channel.send('Please specify a time with -t time');

@@ -1,5 +1,7 @@
 const { Permissions } = require('discord.js');
 
+exports.commandName = 'removetrigger';
+
 exports.run = (client, message, args) => {
     if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return;
     if (!args[0]) return message.channel.send(`Please specify a trigger index (use $triggers to view their numbers)`);
