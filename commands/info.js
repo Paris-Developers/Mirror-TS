@@ -2,6 +2,8 @@
 //Returns prewritten information about mirror and the owners
 const {MessageEmbed} = require('discord.js');
 
+exports.commandName = 'info';
+
 exports.run = (client, message, args) => {
     const embed = new MessageEmbed()
         .setColor('#d4af37')

@@ -4,6 +4,8 @@
 const { Message } = require("discord.js");
 const { MessageEmbed} = require("discord.js");
 
+exports.commandName = 'songrec';
+
 exports.run = (client, message, args, identifiedArgs) => {
     const embed = new MessageEmbed()
     try{

@@ -1,5 +1,7 @@
 const {MessageEmbed} = require('discord.js');
 
+exports.commandName = 'triggers';
+
 exports.run = (client, message, args) => {
     let triggerString = '';
     let triggers = client.triggers.ensure(message.guild.id, []);

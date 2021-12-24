@@ -3,6 +3,8 @@
 //Implement try{}catch{}finish{} for error handling
 const {MessageEmbed, Message} = require("discord.js");
 
+exports.commandName = 'song';
+
 exports.run = async (client,message,args) => {
     const embed = new MessageEmbed();
     try{

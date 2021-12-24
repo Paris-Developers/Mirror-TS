@@ -37,7 +37,7 @@ fs.readdir("./commands/", (err, files) => {
     files.forEach(file => {
         if (!file.endsWith(".js")) return;
         let props = require(`./commands/${file}`);
-        let commandName = file.split(".")[0];
+        let commandName = props.commandName;
         console.log(`Attempting to load command ${commandName}`);
         client.commands.set(commandName, props);
     });
@@ -50,7 +50,7 @@ fs.readdir("./keywords/", (err, files) => {
     files.forEach(file => {
         if (!file.endsWith(".js")) return;
         let props = require(`./keywords/${file}`);
-        let keywordName = file.split(".")[0];
+        let keywordName = props.keywordName;
         console.log(`Attempting to load keyword ${keywordName}`);
         client.keywords.set(keywordName, props);
     });

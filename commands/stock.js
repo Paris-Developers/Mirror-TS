@@ -3,6 +3,8 @@
 const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 
+exports.commandName = 'stock';
+
 exports.run = async (client, message, args) => {
     //tests to see if the command was passed in with arguements
     if(args.length == 0){ 
