@@ -2,3 +2,4 @@ config.json
 node_modules/
 package-lock.json
 data/
+local_files/

@@ -2,8 +2,6 @@
 //not working for some reason smile
 exports.keywordName = '<:fortbush:816549663812485151>'
 
-
-
 exports.run = (client, message, args) => {
     message.react(':FortBush:816549663812485151');
 }
