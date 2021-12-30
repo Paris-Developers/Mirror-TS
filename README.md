@@ -1,4 +1,4 @@
-# Mirror js
+# Mirror Js
 Mirror is an utility and informational Discord bot created by Fordle#0001 and Phantasm#0001
 
 List of Commands and their correstponding parameters:
