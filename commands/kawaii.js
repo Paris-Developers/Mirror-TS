@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'kawaii';
 
-exports.run = async (client,message,args) => {
+exports.run = async (client,interaction) => {
     let res = await fetch(`https://nekos.best/api/v1/wink`);
     let jsonData = await res.json();
     let embed = new MessageEmbed()
@@ -11,3 +11,8 @@ exports.run = async (client,message,args) => {
     .setImage(`${jsonData.url}`)
     message.channel.send({embeds: [embed]});
 }
+
+exports.registerData = {
+    name: this.commandName,
+    description: 'Get a cute catgirl',
+};
