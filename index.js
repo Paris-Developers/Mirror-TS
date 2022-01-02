@@ -94,13 +94,13 @@ client.songRecs = new Enmap({name:'songs'});//create new enmap for song recommen
 client.songRecs.fetchEverything();
 
 
-configArray = ["token","prefix","weather_token","stock_token","news_token","d","owner","nasa_token","crypto_token"];
+const configArray = ["token","prefix","weather_token","stock_token","news_token","d","owner","nasa_token","crypto_token"];
 const jsonConfig = require('./config.json');
 for(let i = 0; i < configArray.length;i++){
     console.log(`Attempting to load config key for ${configArray[i]}`);
     if(jsonConfig.hasOwnProperty(configArray[i])==false){
-        console.log((`Missing Config Files, ending launch. Missing: ${configArray[i]}`));
-        return;
+        console.log((`Missing Config Tokens, ending launch. Missing: ${configArray[i]}`));
+        process.exitCode = 1;
     }
 }
 console.log("Config tokens loaded succesfully");
