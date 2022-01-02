@@ -13,7 +13,7 @@ exports.run = async (client, message, args) => {
         "qs" : [],
         "headers": {
             "Content-Type" : "application/json",
-            "X-API-Key" : "8d8ce8fb1c296142dd800a8fa9cc642b23aa219b"
+            "X-API-Key" : client.config.crypto_token
         }
     }
     var req = https.request(options, function (res) {
@@ -26,5 +26,5 @@ exports.run = async (client, message, args) => {
             console.log(body.toString());
         });
     });
-    req.end()
+    req.end();
 }
