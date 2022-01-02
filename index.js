@@ -99,7 +99,7 @@ const jsonConfig = require('./config.json');
 for(let i = 0; i < configArray.length;i++){
     console.log(`Attempting to load config key for ${configArray[i]}`);
     if(jsonConfig.hasOwnProperty(configArray[i])==false){
-        console.log((`Missing Config Tokens, ending launch. Missing: ${configArray[i]}`));
+        console.log((`Missing config tokens, ending launch. Missing key: ${configArray[i]}`));
         process.exitCode = 1;
     }
 }
