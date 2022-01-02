@@ -1,7 +1,12 @@
 //Call: $w
+
+const { registerData } = require("./weather");
+
 //This command simply runs the weather command
 exports.commandName = 'w';
 
-exports.run = (client,message,args) => {
-    client.commands.get("weather").run(client, message, args);
+exports.run = (client, interaction) => {
+    client.commands.get("weather").run(client, interaction);
 }
+
+exports.registerData = registerData;

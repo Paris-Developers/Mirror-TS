@@ -81,7 +81,7 @@ exports.run = async (client, interaction) => {
                 interaction.reply({embeds: [embed]});
                 replied = true;
             } else {
-                interaction.channel.send({embeds:[embed]});
+                interaction.followUp({embeds:[embed]});
             }
             
         }
