@@ -2,6 +2,7 @@
 const { Client, Intents } = require('discord.js');
 const fs = require('fs');
 const Enmap = require('enmap');
+const { permissionCheck, permissionsCheck } = require('./resources/permissionChecks');
 
 
 //Requires the config.json file, creates token as a constant
@@ -12,6 +13,9 @@ const { CronJob } = require('cron');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
 
 client.config = config; // we want config to be accessible anywhere client is
+
+client.permissionCheck = permissionCheck; //we want permissionCheck to be accessible wherever client is present.
+client.permissionsCheck = permissionsCheck;
 
 //This line runs once the discord client is ready
 client.once('ready', () => {
