@@ -1,7 +1,7 @@
 //Call: $weather or $w
 //Returns weather from a single specified city
 const fetch = require('node-fetch');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed,Permissions} = require('discord.js');
 const { find } = require('geo-tz');
 
 const weatherEmoji = {"Rain":":cloud_rain:","Thunderstorm":":thunder_cloud_rain:","Drizzle":":cloud_rain:","Snow":":cloud_snow:", "Clear":":sunny:", "Clouds":":cloud:", "Mist":":fog:"}
@@ -10,6 +10,13 @@ const cardinalDir = {0:"N",1:"NNE",2:"NE",3:"ENE",4:"E",5:"ESE",6:"SE",7:"SSE",8
 exports.commandName = 'weather';
 
 exports.run = async (client, message, args) => {
+
+    //check to see if Mirror has permissions to send a message in the relevant channel
+    if(!(await client.permissionCheck(client,message,Permissions.FLAGS.SEND_MESSAGES))){
+        console.log(`Missing permissions in channel: ${message.channel.name}`);
+        return;
+    }
+    
     //sends an error message to the channel if no arguement is provided
     if (args.length == 0){ 
         const embed = new MessageEmbed()
