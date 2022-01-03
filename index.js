@@ -93,8 +93,14 @@ const setTriggers = () => {
 client.songRecs = new Enmap({name:'songs'});//create new enmap for song recommendations
 client.songRecs.fetchEverything();
 
-
-
+//checks the config file to see if all the listed keys are provided.
+const configArray = ["token","prefix","weather_token","stock_token","news_token","owner","nasa_token","crypto_token"];
+configArray.forEach((token) => {
+    if(config.hasOwnProperty(token)==false){
+        process.exitCode = 1;
+        throw `Missing config tokens, ending launch. Missing key: ${token}`;
+    }
+});
 
 //Uses Token to login to the client
 client.login(config.token);
