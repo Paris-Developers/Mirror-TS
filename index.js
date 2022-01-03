@@ -93,17 +93,14 @@ const setTriggers = () => {
 client.songRecs = new Enmap({name:'songs'});//create new enmap for song recommendations
 client.songRecs.fetchEverything();
 
-
-const configArray = ["token","prefix","weather_token","stock_token","news_token","d","owner","nasa_token","crypto_token"];
-const jsonConfig = require('./config.json');
-for(let i = 0; i < configArray.length;i++){
-    console.log(`Attempting to load config key for ${configArray[i]}`);
-    if(jsonConfig.hasOwnProperty(configArray[i])==false){
-        console.log((`Missing config tokens, ending launch. Missing key: ${configArray[i]}`));
+//checks the config file to see if all the listed keys are provided.
+const configArray = ["token","prefix","weather_token","stock_token","news_token","owner","nasa_token","crypto_token"];
+configArray.forEach((token) => {
+    if(config.hasOwnProperty(token)==false){
         process.exitCode = 1;
+        throw `Missing config tokens, ending launch. Missing key: ${token}`;
     }
-}
-console.log("Config tokens loaded succesfully");
+});
 
 //Uses Token to login to the client
 client.login(config.token);
