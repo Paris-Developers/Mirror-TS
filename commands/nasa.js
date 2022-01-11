@@ -7,7 +7,7 @@ const fetch = require("node-fetch");
 
 exports.commandName = 'nasa';
 
-exports.run = async (client,message,args) => {
+exports.run = async (client,interaction) => {
     let res = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${client.config.nasa_token}`);
     let jsonData = await res.json();
     console.log(jsonData);
@@ -19,5 +19,10 @@ exports.run = async (client,message,args) => {
         .setImage(jsonData.url)
         .setTitle(`**${jsonData.title}**`)
         .setURL("https://apod.nasa.gov/apod/astropix.html");
-    message.channel.send({embeds:[embed]});
+    interaction.reply({embeds:[embed]});
 }
+
+exports.registerData = {
+    name: this.commandName,
+    description: 'Get daily astronomy pictures',
+};

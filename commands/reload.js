@@ -27,3 +27,18 @@ exports.run = (client, message, args) => {
        
     }
 }
+exports.registerData = {
+    name: this.commandName,
+    description: 'Reloads a command',
+    options: [{
+        name: 'command',
+        type: 'STRING',
+        description: 'command to reload',
+        required: true
+    }],
+    permissions: [{
+        id: client.config.owner,
+        type: 'USER',
+        permission: true
+    }],
+};

@@ -5,16 +5,21 @@ const {MessageEmbed, Message} = require("discord.js");
 
 exports.commandName = 'song';
 
-exports.run = async (client,message,args) => {
+exports.run = async (client, interaction) => {
     const embed = new MessageEmbed();
     try{
         console.log("Test1");
-        let mes = client.songRecs.get(message.author.id);
-        embed.setTitle(`${message.author.id}'s Song Recommendation`);
+        let mes = client.songRecs.get(interaction.user.id);
+        embed.setTitle(`${interaction.user.id}'s Song Recommendation`);
         embed.setDescription(mes);
-        message.channel.send({embeds:[embed]});
+        interaction.reply({embeds:[embed]});
     }catch(err){
         embed.setDescription('Error in the song fxn');
-        message.channel.send({embeds:[embed]});
+        interaction.reply({embeds:[embed]});
     }
 }
+
+exports.registerData = {
+    name: this.commandName,
+    description: 'Get your song recommendation',
+};

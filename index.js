@@ -70,7 +70,7 @@ const registerSlashCommands = async () => {
                 const command = await client.guilds.cache.get(client.config.test_server)?.commands.create(props.registerData);
             } else {
                 const command = await client.application?.commands.create(props.registerData); //create it globally if we aren't debugging
-            }
+            }           
         }
     })
 }

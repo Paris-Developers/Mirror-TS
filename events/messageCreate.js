@@ -28,6 +28,9 @@ module.exports = async (client, message) => {
     //if the command/keyword doesn't exist, just exit
     if (!cmd) return;
 
+    //dont run slash commands using this method
+    if (cmd.registerData) return;
+
     //run command/keyword
     cmd.run(client, message, args, identifiedArgs);
 }
