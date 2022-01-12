@@ -36,7 +36,7 @@ exports.run = async (client, interaction) => {
     }
     if(options.getSubcommand() == 'setlift'){ // we're setting data now
         let type = options.getString('lifttype') // key to set to
-        let lift = options.getString('lift'); // the data to set
+        let lift = options.getNumber('lift'); // the data to set
         if (type == 'bench') gav_records.set('bench', lift);
         if (type == 'squat') gav_records.set('squat', lift);
         if (type == 'deadlift') gav_records.set('deadlift', lift);
@@ -102,8 +102,8 @@ exports.registerData = (client) => {
                 choices: liftChoices,
             }, {
                 name: 'lift',
-                type: 'STRING', // I debated having this as just a number, but I stuck with string because I think it might be simpler for the enmap to handle.
-                description: 'the lift record (number)', 
+                type: 'INTEGER', 
+                description: 'the lift record', 
                 required: true
             }]
         }]
