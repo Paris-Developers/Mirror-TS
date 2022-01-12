@@ -8,7 +8,7 @@ exports.commandName = 'asmus';
 let gav_records = new Enmap({name: 'gav_records'}); //named enmaps are persistent to the disk
 exports.run = async (client, interaction) => {
     options = interaction.options;
-    if(options.getSubcommand() == 'all'){ // no subcommand selected, just print them all
+    if(options.getSubcommand() == 'all'){ // subcommand for printing all the data
         let bench = gav_records.ensure('bench',365);
         let squat = gav_records.ensure('squat',445);
         let deadlift = gav_records.ensure('deadlift',605);
