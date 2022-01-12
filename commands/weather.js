@@ -61,10 +61,15 @@ exports.run = async (client, interaction) => {
         let mphWind = Math.round(kmhWind * .621371);
         let windDir = mphWind == 0 ? '' : cardinalDir[Math.round(jsonData.wind.deg / 22.8)]; // if there's no wind, set it to blank
 
+        let str = '';
+        let cityArray = interaction.options.getString('city').split(' ');
+        for(let step = 0; step<cityArray.length;step++){
+            str += cityArray[step][0].toUpperCase() + cityArray[step].slice(1).toLowerCase() + ' ';
+        }
         //creates message embed and edits modifiers
         const embed = new MessageEmbed()
         .setColor('#FFFFFF')
-        .setTitle(`**Current Weather in ${interaction.options.getString("city")}**`)
+        .setTitle(`**Current Weather in ${str}**`)
         .addFields( //adds multiple embed fields simultaneously 
             {name: `Temp: ${fTemp}°F (${cTemp}°C) \nHigh: ${fHigh}°F (${cHigh}°C)`,value: `${condition} ${weatherEmoji[condition]}`,inline: false},
             {name: 'Wind:', value: `${mphWind} mph (${kmhWind} kmh) \n${windDir}`,inline: true},
@@ -78,7 +83,7 @@ exports.run = async (client, interaction) => {
     }  catch(err){ //error message, invalid city
         const embed = new MessageEmbed()
         .setColor('#FFFFFF')
-        .setDescription('Could not find the specified city');
+        .setDescription(`Error: ${err}`);
         interaction.reply({embeds:[embed]});
     }
 }
