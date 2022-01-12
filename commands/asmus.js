@@ -30,7 +30,7 @@ exports.run = async (client, interaction) => {
         }
         const embed = new MessageEmbed()
             .setColor('#FFFFFF')
-            .setDescription(`GAVIN'S ${type} PR: ${toprint}`);
+            .setDescription(`GAVIN'S ${type.toUpperCase()} PR: ${toprint}`);
         interaction.reply({embeds:[embed]});
         return;
     }
@@ -43,13 +43,16 @@ exports.run = async (client, interaction) => {
 
         const embed = new MessageEmbed()
         .setColor('#FFFFFF')
-        .setDescription(`UPDATED GAVIN'S ${type} PR TO: ${lift}\nGOOD JOB SOLDIER`);
+        .setDescription(`UPDATED GAVIN'S ${type.toUpperCase()} PR TO: ${lift}\nGOOD JOB SOLDIER`);
         interaction.reply({embeds:[embed]});
         return;
     }
     interaction.reply('Something screwed up. This should never happen.'); //slash command make it pretty easy to validate user input before the command is actually run, so theoretically this shouldn't ever run either.
 }
 
+
+//If you add choices to a slash command's options, they will be the only thing a user can select/input. 
+//This is perfect for validating input before we even have the command run on our side.
 const liftChoices = [
     {
         name: 'Deadlift',
@@ -99,8 +102,8 @@ exports.registerData = (client) => {
                 choices: liftChoices,
             }, {
                 name: 'lift',
-                type: 'STRING',
-                description: 'the lift record (number)',
+                type: 'STRING', // I debated having this as just a number, but I stuck with string because I think it might be simpler for the enmap to handle.
+                description: 'the lift record (number)', 
                 required: true
             }]
         }]
