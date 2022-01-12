@@ -9,7 +9,7 @@ exports.run = async (client,interaction) => {
     let embed = new MessageEmbed()
     .setColor('#0071b6')
     .setImage(`${jsonData.url}`)
-    message.channel.send({embeds: [embed]});
+    interaction.reply({embeds: [embed]});
 }
 
 exports.registerData = (client) => {

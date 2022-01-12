@@ -10,14 +10,15 @@ exports.run = (client, interaction) => {
     try{
         console.log("Hey")
         console.log(`${interaction.user.id}`);
-        client.songRecs.set(interaction.member.displayName, interaction.options.getString("song"));
+        client.songRecs.set(interaction.user.id, interaction.options.getString("song"));
         console.log("past songRecs.set");
         let mes = client.songRecs.get(interaction.user.id);
         console.log("past the songRecs.get");
         embed.setDescription(mes);
         interaction.reply({embeds:[embed]});
     } catch (err){
-        embed.setDescription('Error in songrec fxn: returning');
+        embed.setDescription(`Error: ${err}`);
+        interaction.reply({embeds:[embed]});
         return;
     }
 }

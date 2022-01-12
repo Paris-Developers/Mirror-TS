@@ -10,11 +10,11 @@ exports.run = async (client, interaction) => {
     try{
         console.log("Test1");
         let mes = client.songRecs.get(interaction.user.id);
-        embed.setTitle(`${interaction.user.id}'s Song Recommendation`);
+        embed.setTitle(`${interaction.member.displayName}'s Song Recommendation`);
         embed.setDescription(mes);
         interaction.reply({embeds:[embed]});
     }catch(err){
-        embed.setDescription('Error in the song fxn');
+        embed.setDescription(`Error: ${err}`);
         interaction.reply({embeds:[embed]});
     }
 }

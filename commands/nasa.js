@@ -8,6 +8,7 @@ const fetch = require("node-fetch");
 exports.commandName = 'nasa';
 
 exports.run = async (client,interaction) => {
+    interaction.deferReply(); // this command can take a while to respond, so we need to defer the reply.
     let res = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${client.config.nasa_token}`);
     let jsonData = await res.json();
     console.log(jsonData);
@@ -19,7 +20,7 @@ exports.run = async (client,interaction) => {
         .setImage(jsonData.url)
         .setTitle(`**${jsonData.title}**`)
         .setURL("https://apod.nasa.gov/apod/astropix.html");
-    interaction.reply({embeds:[embed]});
+    interaction.editReply({embeds:[embed]}); //technically deferReply() creates the reply, so we need to edit that.
 }
 
 exports.registerData = (client) => {

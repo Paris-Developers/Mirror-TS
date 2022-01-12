@@ -64,14 +64,25 @@ client.songRecs.fetchEverything();
 const registerSlashCommands = async () => {
     if (!client.application?.owner) await client.application?.fetch(); // make sure the bot is fully fetched
 
-    //todo -- delete all commands from the cache before re-registering them
-
+    if (client.config.mode == 'debug') {
+        let guildCommands = await client.guilds.cache.get(client.config.test_server)?.commands.cache;
+        for (let command of guildCommands) {
+            await command.delete();
+            console.log(`Deleted ${command.name} from the guild command cache`)
+        }
+    } else {
+        for (let command of client.application?.commands.cache) {
+            await command.delete();
+            console.log(`Deleted ${command.name} from the application command cache`);
+        }
+    }
+    
     client.commands.forEach(async (props, commandName) => {
         if (props.registerData) { //check the command has slash command data
             let registerData = props.registerData(client);
             console.log(`Registering slash command ${commandName}`);
             //guild scope commands update instantly -- globally set ones are cached for an hour. If we are debugging, use guild scope
-            if (client.config.mode == "debug") {
+            if (client.config.mode == 'debug') {
                 const command = await client.guilds.cache.get(client.config.test_server)?.commands.create(registerData);
             } else {
                 const command = await client.application?.commands.create(registerData); //create it globally if we aren't debugging
