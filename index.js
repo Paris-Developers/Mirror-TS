@@ -9,7 +9,7 @@ const { permissionCheck, permissionsCheck } = require('./resources/permissionChe
 const config = require('./config.json');
 
 //Creates instance of client
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_VOICE_STATES]});
 
 client.config = config; // we want config to be accessible anywhere client is
 

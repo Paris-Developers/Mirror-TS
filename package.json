@@ -9,11 +9,14 @@
   "author": "Ford Friedel",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/voice": "latest",
+    "chrono-node": "latest",
+    "cron": "latest",
     "discord.js": "^13.3.1",
     "enmap": "latest",
-    "node-fetch": "^2.6.1",
+    "ffmpeg-static": "^4.4.1",
     "geo-tz": "latest",
-    "cron": "latest",
-    "chrono-node": "latest"
+    "node-fetch": "^2.6.1",
+    "tweetnacl": "^1.0.3"
   }
 }
