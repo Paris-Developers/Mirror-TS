@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'crypto';
 	
-exports.run = async (client, message, args) => {
+exports.run = async (client, interaction) => {
     //plan does not support this endpoint.
     headers = {
         "Content-Type" : "application/json",
@@ -13,5 +13,13 @@ exports.run = async (client, message, args) => {
     let res = await fetch(`https://rest.cryptoapis.io/v2/market-data/assets/BTC`, { headers });
     let jsonData = await res.json();
     console.log(jsonData);
-
+    interaction.reply('Crypto finished');
 }
+
+
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Get crypto data',
+    }
+};

@@ -5,7 +5,7 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'kanye';
 
-exports.run = async (client,message,args) => {
+exports.run = async (client,interaction) => {
     let res = await fetch(`https://api.kanye.rest/`)
     let jsonData = await res.json();
     const embed = new MessageEmbed()
@@ -13,6 +13,13 @@ exports.run = async (client,message,args) => {
         .setDescription(`**${jsonData.quote}**`)
         .setFooter('Kanye West','https://imgur.com/olrP4cN.jpeg');
         
-    message.channel.send({embeds:[embed]});
+    interaction.reply({embeds:[embed]});
 
 }
+
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Kanye',
+    }
+};
