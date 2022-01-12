@@ -13,6 +13,7 @@ exports.run = async (client, interaction) => {
     let res = await fetch(`https://rest.cryptoapis.io/v2/market-data/assets/BTC`, { headers });
     let jsonData = await res.json();
     console.log(jsonData);
+    interaction.reply('Crypto finished');
 }
 
 
