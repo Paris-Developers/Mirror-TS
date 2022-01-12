@@ -102,7 +102,7 @@ exports.registerData = (client) => {
                 choices: liftChoices,
             }, {
                 name: 'lift',
-                type: 'INTEGER', 
+                type: 'NUMBER', 
                 description: 'the lift record', 
                 required: true
             }]
