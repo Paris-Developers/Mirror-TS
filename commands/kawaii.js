@@ -12,7 +12,9 @@ exports.run = async (client,interaction) => {
     message.channel.send({embeds: [embed]});
 }
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Get a cute catgirl',
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Get a cute catgirl',
+    }
 };

@@ -17,7 +17,9 @@ exports.run = (client, interaction) => {
     interaction.reply({embeds:[embed]});
 }
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Info about the bot',
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Info about the bot',
+    }
 };

@@ -45,13 +45,15 @@ exports.run = async (client,interaction) => {
     }
 }
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Current news',
-    options: [{
-        name: 'query',
-        type: 'STRING',
-        description: 'headlines to query, space separated',
-        required: false
-    }],
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Current news',
+        options: [{
+            name: 'query',
+            type: 'STRING',
+            description: 'headlines to query, space separated',
+            required: false
+        }],
+    }
 };

@@ -97,13 +97,15 @@ exports.run = async (client, interaction) => {
 
 
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Stock ticker data',
-    options: [{
-        name: 'tickers',
-        type: 'STRING',
-        description: 'tickers to query, space separated',
-        required: true
-    }],
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Stock ticker data',
+        options: [{
+            name: 'tickers',
+            type: 'STRING',
+            description: 'tickers to query, space separated',
+            required: true
+        }],
+    }
 };

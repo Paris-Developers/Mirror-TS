@@ -1,6 +1,6 @@
 exports.commandName = 'reload';
 
-exports.run = (client, message, args) => {
+exports.run = (client, interaction) => {
     if (message.author.id == client.config.owner) {
         if(!args || args.size < 1) return message.reply("Must provide a command/keyword name to reload.");
         const commandName = args[0];
@@ -27,18 +27,20 @@ exports.run = (client, message, args) => {
        
     }
 }
-exports.registerData = {
-    name: this.commandName,
-    description: 'Reloads a command',
-    options: [{
-        name: 'command',
-        type: 'STRING',
-        description: 'command to reload',
-        required: true
-    }],
-    permissions: [{
-        id: client.config.owner,
-        type: 'USER',
-        permission: true
-    }],
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Reloads a command',
+        options: [{
+            name: 'command',
+            type: 'STRING',
+            description: 'command to reload',
+            required: true
+        }],
+        permissions: [{
+            id: client.config.owner,
+            type: 'USER',
+            permission: true
+        }],
+    }
 };

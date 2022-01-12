@@ -13,5 +13,4 @@ exports.run = async (client, message, args) => {
     let res = await fetch(`https://rest.cryptoapis.io/v2/market-data/assets/BTC`, { headers });
     let jsonData = await res.json();
     console.log(jsonData);
-
 }

@@ -22,7 +22,9 @@ exports.run = async (client,interaction) => {
     interaction.reply({embeds:[embed]});
 }
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Get daily astronomy pictures',
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Get daily astronomy pictures',
+    }
 };

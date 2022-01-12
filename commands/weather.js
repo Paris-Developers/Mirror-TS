@@ -83,18 +83,20 @@ exports.run = async (client, interaction) => {
     }
 }
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Weather data',
-    options: [{
-        name: 'city',
-        type: 'STRING',
-        description: 'City to query',
-        required: true
-    }, {
-        name: 'state',
-        type: 'STRING',
-        description: 'Two letter state code',
-        required: false
-    }],
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Weather data',
+        options: [{
+            name: 'city',
+            type: 'STRING',
+            description: 'City to query',
+            required: true
+        }, {
+            name: 'state',
+            type: 'STRING',
+            description: 'Two letter state code',
+            required: false
+        }],
+    }
 };

@@ -4,7 +4,9 @@ exports.run = (client, interaction) => {
     interaction.reply(`Hello ${interaction.user.username}`);
 }
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Replies with your name!',
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Replies with your name!',
+    }
 };

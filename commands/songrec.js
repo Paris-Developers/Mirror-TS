@@ -22,13 +22,15 @@ exports.run = (client, interaction) => {
     }
 }
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Set your song recommendation',
-    options: [{
-        name: 'song',
-        type: 'STRING',
-        description: 'Song to recommend',
-        required: true
-    }],
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Set your song recommendation',
+        options: [{
+            name: 'song',
+            type: 'STRING',
+            description: 'Song to recommend',
+            required: true
+        }]
+    }
 };

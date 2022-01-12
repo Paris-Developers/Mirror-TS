@@ -68,12 +68,13 @@ const registerSlashCommands = async () => {
 
     client.commands.forEach(async (props, commandName) => {
         if (props.registerData) { //check the command has slash command data
+            let registerData = props.registerData(client);
             console.log(`Registering slash command ${commandName}`);
             //guild scope commands update instantly -- globally set ones are cached for an hour. If we are debugging, use guild scope
             if (client.config.mode == "debug") {
-                const command = await client.guilds.cache.get(client.config.test_server)?.commands.create(props.registerData);
+                const command = await client.guilds.cache.get(client.config.test_server)?.commands.create(registerData);
             } else {
-                const command = await client.application?.commands.create(props.registerData); //create it globally if we aren't debugging
+                const command = await client.application?.commands.create(registerData); //create it globally if we aren't debugging
             }           
         }
     })

@@ -19,7 +19,9 @@ exports.run = async (client, interaction) => {
     }
 }
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Get your song recommendation',
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Get your song recommendation',
+    }
 };

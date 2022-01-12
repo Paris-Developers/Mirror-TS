@@ -17,7 +17,9 @@ exports.run = async (client,interaction) => {
 
 }
 
-exports.registerData = {
-    name: this.commandName,
-    description: 'Kanye',
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Kanye',
+    }
 };
