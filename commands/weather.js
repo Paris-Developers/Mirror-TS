@@ -1,4 +1,4 @@
-//Call: $weather or $w
+//Call: Slash command weather or w
 //Returns weather from a single specified city
 const fetch = require('node-fetch');
 const {MessageEmbed,Permissions} = require('discord.js');
@@ -61,6 +61,7 @@ exports.run = async (client, interaction) => {
         let mphWind = Math.round(kmhWind * .621371);
         let windDir = mphWind == 0 ? '' : cardinalDir[Math.round(jsonData.wind.deg / 22.8)]; // if there's no wind, set it to blank
 
+        //capitalizes the first letter of each word in the string called
         let str = '';
         let cityArray = interaction.options.getString('city').split(' ');
         for(let step = 0; step<cityArray.length;step++){
@@ -80,7 +81,7 @@ exports.run = async (client, interaction) => {
             
         //sends embed to the channel
         interaction.reply({embeds:[embed]});
-    }  catch(err){ //error message, invalid city
+    }  catch(err){ //prints the error message
         const embed = new MessageEmbed()
         .setColor('#FFFFFF')
         .setDescription(`Error: ${err}`);

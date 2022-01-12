@@ -1,7 +1,9 @@
-const voice = require('@discordjs/voice');
-exports.commandName = 'superidol105';
-
+//Call: $superidol105
+//Joins the voice channel and plays the superidol.mp3 file in the chat
 //SuperIdol的笑容都没你的甜八月正午的阳光都没你耀眼热爱105°c的你滴滴清纯的蒸馏水 :D
+const voice = require('@discordjs/voice');
+
+exports.commandName = 'superidol105';
 
 exports.run = async (client,message,args) => {
     let state = message.member.voice;

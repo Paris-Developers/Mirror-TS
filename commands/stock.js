@@ -1,5 +1,5 @@
-//Call: $stock or $s
-//Returns 1-10 specified stocks
+//Call: Slash command stock or s
+//Returns 1-10 specified stocks in embed form
 const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 
@@ -22,17 +22,17 @@ exports.run = async (client, interaction) => {
         interaction.reply({embeds:[embed]});
         return;
     }
+    let embedList = [];
     //trys the code as normal but if it encounters an error it will run the code under the catch function
     try {
         let replied = false;
+        const embedList = [];
+        let ctr = 0;
         for (let ticker of args) {
+            console.log(ticker);
             //Pulls ticker data from the API and stores it as a JSON object
             let res = await fetch(`https://cloud.iexapis.com/stable/stock/${ticker}/quote?token=${client.config.stock_token}`);
-            //let res2 = await fetch(`https://cloud.iexapis.com/stable/tops?token=${client.config.stock_token}&symbols=${ticker}`) <-- where is this used?
             let jsonData = await res.json();
-            //let jsonData2 = await res2.json();
-            //console.log(jsonData);
-            //console.log(jsonData2);
                 
             //define company name and ticker symbol
             ticker = ticker.toUpperCase();
@@ -65,37 +65,40 @@ exports.run = async (client, interaction) => {
             let low52  = jsonData.week52Low;
 
             //creates discord message embed and edits the modifiers with the attained variables above
-            const embed = new MessageEmbed()
+            embedList[ctr] = new MessageEmbed()
             .setColor('#FFFFFF')
             .setTitle(`__Summary for ${company}:__`)
+            .setDescription(' ')
             .addFields(
                 {name: `${ticker}`,value: `${sign[0]} $${curPrice}(${sign[1]}${change})\n**Previous Close:** $${yesterday}`},
                 {name: `:bar_chart: Daily Range:    `, value: `:chart_with_upwards_trend: ${high24}\n:chart_with_downwards_trend: ${low24}`,inline: true},
                 {name: `:bar_chart: 52 Week Range:    `,value: `:chart_with_upwards_trend: $${high52}\n:chart_with_downwards_trend: $${low52}`,inline: true},
                 {name: `:notepad_spiral: Info:`,value: `Currency: ${jsonData.currency}\nPrimary Exchange: ${jsonData.primaryExchange}`,inline: true}
             )
-            .setTimestamp()
+            .setTimestamp();
 
-            
-            if (!replied) { // we need to reply to the interaction at least once, or it will fail
-                interaction.reply({embeds: [embed]});
-                replied = true;
-            } else {
-                interaction.followUp({embeds:[embed]});
-            }
-            
+            // console.log(`Through ${ticker}`)
+            // embedList.push(embed); 
+            // console.log('Pushed');
+            console.log(embedList);
+            ctr += 1;
         }
+        interaction.reply({embeds:[embedList]});
 
     } catch(err) { //sends an error message if the json is invalid
+        console.log('hi');
         const embed = new MessageEmbed()
         .setColor('#FFFFFF')
-        .setDescription('Please enter a valid ticker symbol');
+        .setDescription(`Error: ${err}`);
         interaction.reply({embeds:[embed]});
-
     }    
-}
-
-
+}          
+// if (!replied) { // we need to reply to the interaction at least once, or it will fail
+//     interaction.reply({embeds: [embed]});
+//     replied = true;
+// } else {
+//     interaction.followUp({embeds:[embed]});
+// }
 
 exports.registerData = (client) => {
     return {
