@@ -2,14 +2,6 @@ const {MessageEmbed, ReactionCollector, Message} = require('discord.js');
 
 exports.commandName = 'poll';
 
-// let emoteVal = {
-//     '1️⃣': 0,
-//     '2️⃣': 0,
-//     '3️⃣': 0,
-//     '4️⃣': 0,
-//     '5️⃣': 0,
-//     '6️⃣': 0
-// };
 const emoteIndex = {
     '1️⃣': 0,
     '2️⃣': 1,
@@ -19,10 +11,7 @@ const emoteIndex = {
     '6️⃣': 5
 };
 
-
-
-exports.run = async (client, message, args) => {
-    
+exports.run = async (client, message, args) => {  
     if(args.length > 6){
         message.reply('Too many arguements');
         return;
@@ -72,13 +61,4 @@ exports.run = async (client, message, args) => {
         console.log(`Ending collection, Collected ${total} items.`);
         console.log(emoteVal)
     }) 
-
-
 }
-// const reprint(args,embed) => {
-//     console.log(args);
-//     for(arg in args){
-//         embed.fields[arg] = {name: `${emoteKeys[arg]} ${args[index]}`, Value: `${emoteVal[arg]/total}`};
-//     }
-//     return embed;
-// }
