@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'crypto';
 	
-exports.run = async (client, message, args) => {
+exports.run = async (client, interaction) => {
     //plan does not support this endpoint.
     headers = {
         "Content-Type" : "application/json",
@@ -14,3 +14,11 @@ exports.run = async (client, message, args) => {
     let jsonData = await res.json();
     console.log(jsonData);
 }
+
+
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Get crypto data',
+    }
+};
