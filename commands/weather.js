@@ -6,11 +6,11 @@ const { find } = require('geo-tz');
 
 const weatherEmoji = {"Rain":":cloud_rain:","Thunderstorm":":thunder_cloud_rain:","Drizzle":":cloud_rain:","Snow":":cloud_snow:", "Clear":":sunny:", "Clouds":":cloud:", "Mist":":fog:"}
 const cardinalDir = {0:"N",1:"NNE",2:"NE",3:"ENE",4:"E",5:"ESE",6:"SE",7:"SSE",8:"S",9:"SSW",10:"SW",11:"WSW",12:"W",13:"WNW",14:"NW",15:"NNW",16:"N"}
+let jsonData = {}
 
 exports.commandName = 'weather';
 
 exports.run = async (client, interaction) => {
-
     //check to see if Mirror has permissions to send a message in the relevant channel
     if(!(await client.permissionCheck(client,interaction,Permissions.FLAGS.SEND_MESSAGES))){
         console.log(`Missing permissions in channel: ${interaction.channel.name}`);
@@ -32,8 +32,7 @@ exports.run = async (client, interaction) => {
         `${interaction.options.getString('city')}`
         //Pulls data from the API and stores as a JSON object
         let res = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${client.config.weather_token}`);
-        let jsonData = await res.json();
-        console.log(jsonData);
+        jsonData = await res.json();
 
         //define current weather coniditions
         let condition = jsonData.weather[0].main;
@@ -82,6 +81,13 @@ exports.run = async (client, interaction) => {
         //sends embed to the channel
         interaction.reply({embeds:[embed]});
     }  catch(err){ //prints the error message
+        if(jsonData.cod == '404'){
+            const embed = new MessageEmbed()
+            .setColor('#FFFFFF')
+            .setDescription(`Error: City not found try again`);
+            interaction.reply({embeds:[embed]});
+            return;
+        }
         const embed = new MessageEmbed()
         .setColor('#FFFFFF')
         .setDescription(`Error: ${err}`);

@@ -28,7 +28,6 @@ exports.run = async (client, interaction) => {
         const embedList = [];
         let ctr = 0;
         for (let ticker of args) {
-            console.log(ticker);
             //Pulls ticker data from the API and stores it as a JSON object
             let res = await fetch(`https://cloud.iexapis.com/stable/stock/${ticker}/quote?token=${client.config.stock_token}`);
             let jsonData = await res.json();
@@ -82,7 +81,6 @@ exports.run = async (client, interaction) => {
         return;
 
     } catch(err) { //sends an error message if the json is invalid
-        console.log('hi');
         const embed = new MessageEmbed()
         .setColor('#FFFFFF')
         .setDescription(`Error: ${err}`);
