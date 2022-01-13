@@ -1,4 +1,4 @@
-//Call: $info
+//Call: Slash command info
 //Returns prewritten information about mirror and the owners
 const {MessageEmbed} = require('discord.js');
 

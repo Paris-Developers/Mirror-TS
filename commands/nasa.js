@@ -1,7 +1,5 @@
-// /https://api.nasa.gov/planetary/apod?(KEY)
-//this function returns the nasa image of the day and a corresponding description and stuff like that smile
-
-
+//Call: Slash command nasa
+//Returns the Nasa Image of the Day and corresponding description
 const {MessageEmbed} = require('discord.js');
 const fetch = require("node-fetch");
 

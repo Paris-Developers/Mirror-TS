@@ -1,3 +1,5 @@
+//Keyword: pogchamp
+//Reacts to the keyword with JamesChamp
 exports.keywordName = 'pogchamp';
 
 exports.run = (client, message, args) => {

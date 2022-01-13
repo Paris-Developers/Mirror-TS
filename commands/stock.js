@@ -14,6 +14,7 @@ exports.run = async (client, interaction) => {
         interaction.reply({embeds:[embed]});
         return;
     }
+    //splits the entry text into separate arguements
     let args = interaction.options.getString("tickers").split(" ");
     if(args.length > 10){
         const embed = new MessageEmbed()
@@ -22,10 +23,8 @@ exports.run = async (client, interaction) => {
         interaction.reply({embeds:[embed]});
         return;
     }
-    let embedList = [];
     //trys the code as normal but if it encounters an error it will run the code under the catch function
     try {
-        let replied = false;
         const embedList = [];
         let ctr = 0;
         for (let ticker of args) {
@@ -76,14 +75,11 @@ exports.run = async (client, interaction) => {
                 {name: `:notepad_spiral: Info:`,value: `Currency: ${jsonData.currency}\nPrimary Exchange: ${jsonData.primaryExchange}`,inline: true}
             )
             .setTimestamp();
-
-            // console.log(`Through ${ticker}`)
-            // embedList.push(embed); 
-            // console.log('Pushed');
-            console.log(embedList);
             ctr += 1;
         }
-        interaction.reply({embeds:[embedList]});
+        //sends embed array to the channel
+        interaction.reply({embeds:embedList});
+        return;
 
     } catch(err) { //sends an error message if the json is invalid
         console.log('hi');
@@ -93,12 +89,6 @@ exports.run = async (client, interaction) => {
         interaction.reply({embeds:[embed]});
     }    
 }          
-// if (!replied) { // we need to reply to the interaction at least once, or it will fail
-//     interaction.reply({embeds: [embed]});
-//     replied = true;
-// } else {
-//     interaction.followUp({embeds:[embed]});
-// }
 
 exports.registerData = (client) => {
     return {

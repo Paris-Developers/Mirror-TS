@@ -1,5 +1,5 @@
-//test reaction to a custom emoji which we cannot make a file name for
-//not working for some reason smile
+//keyword: fortbush emoji;
+//Reacts to the fortbush with a fortbush :D
 exports.keywordName = '<:fortbush:816549663812485151>'
 
 exports.run = (client, message, args) => {

@@ -1,7 +1,5 @@
-//Call: $news or $n
-//Unfinished
-//Returns top news story in the US or returns the top story(ies?) from a specified topic
-
+//Call: Slash command news or n
+//Returns news story from specified topic or just returns the top news story in the US.
 const {MessageEmbed, Message} = require('discord.js');
 const fetch = require('node-fetch');
 

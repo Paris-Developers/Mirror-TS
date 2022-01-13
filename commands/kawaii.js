@@ -1,9 +1,12 @@
+//Call: Slash command Kawaii
+//Returns a random anime winking gif
 const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 
 exports.commandName = 'kawaii';
 
 exports.run = async (client,interaction) => {
+    //fetches the nekos.best api
     let res = await fetch(`https://nekos.best/api/v1/wink`);
     let jsonData = await res.json();
     let embed = new MessageEmbed()

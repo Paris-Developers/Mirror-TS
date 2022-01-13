@@ -1,5 +1,5 @@
-//Supposed to react to a mirror emoji with a mirror emoji
-
+//Keyword: Mirror emoji
+//Reacts to the Mirror Emoji with the Mirror Emoji
 exports.keywordName = '🪞';
 
 exports.run = (client, message, args) => {

@@ -1,3 +1,6 @@
+//Call: Slash command reload
+//Reloads the file for a specified command
+//Only the config.owner can use this command
 exports.commandName = 'reload';
 
 exports.run = (client, interaction) => {

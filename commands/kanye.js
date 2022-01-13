@@ -1,5 +1,5 @@
-//send kanye quote randomly
-
+//Call: Slash command kanye
+//Returns a random kanye quote
 const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 
@@ -12,9 +12,7 @@ exports.run = async (client,interaction) => {
         .setColor('#FFFFFF')
         .setDescription(`**${jsonData.quote}**`)
         .setFooter('Kanye West','https://imgur.com/olrP4cN.jpeg');
-        
     interaction.reply({embeds:[embed]});
-
 }
 
 exports.registerData = (client) => {

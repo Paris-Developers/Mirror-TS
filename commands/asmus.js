@@ -1,7 +1,8 @@
 //this is blatant bait to get gavin to work on mirror
+//Call: Slash command asmus
+//Returns Gavins gym PR's, options to allow you to set new PRs from the text channel.
 const Enmap = require('enmap');
 const {MessageEmbed} = require('discord.js');
-
 
 exports.commandName = 'asmus';
 
