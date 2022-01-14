@@ -1,7 +1,4 @@
 //penis pie makes the chicken cry
-//
-//
-
 exports.commandName = 'cum';
 exports.run = async (client,message,args) => {
     let rand = Math.round(100*Math.random());
