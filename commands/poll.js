@@ -36,7 +36,7 @@ exports.run = async (client, message, args) => {
 
     let msg = await message.channel.send({embeds:[embed]})
     for(arg in args){
-        msg.react(emoteKeys[arg]);
+        await msg.react(emoteKeys[arg]);
     } 
     const filter = (reaction, user) => {
         return !user.bot;
