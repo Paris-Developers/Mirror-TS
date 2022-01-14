@@ -12,7 +12,7 @@ const fetch = require('node-fetch');
 exports.commandName = 'fuckimissheralready';
 
 exports.run = async (client,message,args) => {
-    if(!(await client.msgPermsCheck(client,message,[Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.SEND_MESSAGES]))){
+    if(!(await client.msgPermsCheck(client,message,[Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
         console.log(`Missing permissions in channel: ${message.channel.name}`);
         return;
     }

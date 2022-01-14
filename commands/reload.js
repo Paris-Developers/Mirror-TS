@@ -1,9 +1,15 @@
 //Call: Slash command reload
 //Reloads the file for a specified command
 //Only the config.owner can use this command
+const { Permissions } = require('discord.js');
+
 exports.commandName = 'reload';
 
-exports.run = (client, interaction) => {
+exports.run = async (client, interaction) => {
+    if(!(await client.permissionCheck(client,interaction,Permissions.FLAGS.SEND_MESSAGES))){
+        console.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
+        return;
+    }
     const commandName = interaction.options.getString('command');
 
     if (!client.commands.has(commandName) && !client.keywords.has(commandName)) { //neither enmap has it so just exit

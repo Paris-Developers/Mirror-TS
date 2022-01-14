@@ -1,7 +1,7 @@
 //Call: Slash command weather or w
 //Returns weather from a single specified city
 const fetch = require('node-fetch');
-const {MessageEmbed,Permissions} = require('discord.js');
+const { MessageEmbed, Permissions } = require('discord.js');
 const { find } = require('geo-tz');
 
 const weatherEmoji = {"Rain":":cloud_rain:","Thunderstorm":":thunder_cloud_rain:","Drizzle":":cloud_rain:","Snow":":cloud_snow:", "Clear":":sunny:", "Clouds":":cloud:", "Mist":":fog:"}
@@ -12,11 +12,10 @@ exports.commandName = 'weather';
 
 exports.run = async (client, interaction) => {
     //check to see if Mirror has permissions to send a message in the relevant channel
-    if(!(await client.permissionCheck(client,interaction,Permissions.FLAGS.SEND_MESSAGES))){
-        console.log(`Missing permissions in channel: ${interaction.channel.name}`);
+    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
+        console.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
         return;
     }
-    
     //sends an error message to the channel if no arguement is provided
     if (!interaction.options.getString('city')){ 
         const embed = new MessageEmbed()

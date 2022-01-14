@@ -1,4 +1,6 @@
-const {MessageEmbed, ReactionCollector, Message} = require('discord.js');
+//Call: Slash command poll
+
+const {MessageEmbed, ReactionCollector, Message, Permissions} = require('discord.js');
 
 exports.commandName = 'poll';
 
@@ -12,8 +14,12 @@ const emoteIndex = {
 };
 
 exports.run = async (client, interaction) => { 
-    //TODO: Insert permission checks, send message, react, manage reactions 
-    //TODO: error test for emptey arguements
+    //Checks discord permissions for the guild
+    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS,Permissions.FLAGS.EMBED_LINKS]))){
+        console.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
+        return;
+    }
+    //TODO: error test for empty arguements
 
     const embed = new MessageEmbed()
     .setColor('#FFFFFF')

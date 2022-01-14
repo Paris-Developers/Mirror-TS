@@ -8,6 +8,10 @@ exports.commandName = 'asmus';
 
 let gav_records = new Enmap({name: 'gav_records'}); //named enmaps are persistent to the disk
 exports.run = async (client, interaction) => {
+    if(!(await client.permissionsCheck(client,message,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
+        console.log(`Missing permissions in channel: ${message.channel.name}`);
+        return;
+    }
     options = interaction.options;
     if(options.getSubcommand() == 'all'){ // subcommand for printing all the data
         let bench = gav_records.ensure('bench',365);

@@ -1,11 +1,16 @@
 //Call: Slash command stock or s
 //Returns 1-10 specified stocks in embed form
-const {MessageEmbed} = require('discord.js');
+const { MessageEmbed, Permissions } = require('discord.js');
 const fetch = require('node-fetch');
 
 exports.commandName = 'stock';
 
 exports.run = async (client, interaction) => {
+    //checks to see if the bot can send a message in this guild
+    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
+        console.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
+        return;
+    }
     //tests to see if the command was passed in with arguements
     if(!interaction.options.getString("tickers")){ 
         const embed = new MessageEmbed()
@@ -99,4 +104,4 @@ exports.registerData = (client) => {
             required: true
         }],
     }
-};
+}
