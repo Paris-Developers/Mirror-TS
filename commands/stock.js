@@ -1,11 +1,16 @@
-//Call: $stock or $s
-//Returns 1-10 specified stocks
-const {MessageEmbed} = require('discord.js');
+//Call: Slash command stock or s
+//Returns 1-10 specified stocks in embed form
+const { MessageEmbed, Permissions } = require('discord.js');
 const fetch = require('node-fetch');
 
 exports.commandName = 'stock';
 
 exports.run = async (client, interaction) => {
+    //checks to see if the bot can send a message in this guild
+    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
+        console.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
+        return;
+    }
     //tests to see if the command was passed in with arguements
     if(!interaction.options.getString("tickers")){ 
         const embed = new MessageEmbed()
@@ -14,6 +19,7 @@ exports.run = async (client, interaction) => {
         interaction.reply({embeds:[embed]});
         return;
     }
+    //splits the entry text into separate arguements
     let args = interaction.options.getString("tickers").split(" ");
     if(args.length > 10){
         const embed = new MessageEmbed()
@@ -24,15 +30,12 @@ exports.run = async (client, interaction) => {
     }
     //trys the code as normal but if it encounters an error it will run the code under the catch function
     try {
-        let replied = false;
+        const embedList = [];
+        let ctr = 0;
         for (let ticker of args) {
             //Pulls ticker data from the API and stores it as a JSON object
             let res = await fetch(`https://cloud.iexapis.com/stable/stock/${ticker}/quote?token=${client.config.stock_token}`);
-            //let res2 = await fetch(`https://cloud.iexapis.com/stable/tops?token=${client.config.stock_token}&symbols=${ticker}`) <-- where is this used?
             let jsonData = await res.json();
-            //let jsonData2 = await res2.json();
-            //console.log(jsonData);
-            //console.log(jsonData2);
                 
             //define company name and ticker symbol
             ticker = ticker.toUpperCase();
@@ -65,37 +68,30 @@ exports.run = async (client, interaction) => {
             let low52  = jsonData.week52Low;
 
             //creates discord message embed and edits the modifiers with the attained variables above
-            const embed = new MessageEmbed()
+            embedList[ctr] = new MessageEmbed()
             .setColor('#FFFFFF')
             .setTitle(`__Summary for ${company}:__`)
+            .setDescription(' ')
             .addFields(
                 {name: `${ticker}`,value: `${sign[0]} $${curPrice}(${sign[1]}${change})\n**Previous Close:** $${yesterday}`},
                 {name: `:bar_chart: Daily Range:    `, value: `:chart_with_upwards_trend: ${high24}\n:chart_with_downwards_trend: ${low24}`,inline: true},
                 {name: `:bar_chart: 52 Week Range:    `,value: `:chart_with_upwards_trend: $${high52}\n:chart_with_downwards_trend: $${low52}`,inline: true},
                 {name: `:notepad_spiral: Info:`,value: `Currency: ${jsonData.currency}\nPrimary Exchange: ${jsonData.primaryExchange}`,inline: true}
             )
-            .setTimestamp()
-
-            
-            if (!replied) { // we need to reply to the interaction at least once, or it will fail
-                interaction.reply({embeds: [embed]});
-                replied = true;
-            } else {
-                interaction.followUp({embeds:[embed]});
-            }
-            
+            .setTimestamp();
+            ctr += 1;
         }
+        //sends embed array to the channel
+        interaction.reply({embeds:embedList});
+        return;
 
     } catch(err) { //sends an error message if the json is invalid
         const embed = new MessageEmbed()
         .setColor('#FFFFFF')
-        .setDescription('Please enter a valid ticker symbol');
+        .setDescription(`Error: ${err}`);
         interaction.reply({embeds:[embed]});
-
     }    
-}
-
-
+}          
 
 exports.registerData = (client) => {
     return {
@@ -108,4 +104,4 @@ exports.registerData = (client) => {
             required: true
         }],
     }
-};
+}

@@ -1,9 +1,16 @@
-const { MessageEmbed } = require('discord.js');
+//Call: Slash command rockcrafts
+//Returns player data from rockcrafts' fluxcup api
+//Temporary fxn will be removed later
+const { MessageEmbed, Permissions } = require('discord.js');
 const fetch = require('node-fetch');
 
 exports.commandName = 'rock';
 
 exports.run = async (client,interaction) => {
+    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS]))){
+        console.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
+        return;
+    }
     let res = await fetch(`https://api.fluxcup.org/members`);
     let jsonData = await res.json();
     let lines = [] //create an array we can iterate through

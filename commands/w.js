@@ -1,8 +1,7 @@
-//Call: $w
-
+//Call: Slash command w
+//Returns the weather command
 const { registerData } = require("./weather");
 
-//This command simply runs the weather command
 exports.commandName = 'w';
 
 exports.run = (client, interaction) => {

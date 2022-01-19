@@ -1,7 +1,7 @@
-//Call: $n
-//This command simply runs the news command
-
+//Call: Slash command n
+//Returns the news command
 const { registerData } = require("./news.js");
+
 exports.commandName = 'n';
 
 exports.run = (client,interaction) => {

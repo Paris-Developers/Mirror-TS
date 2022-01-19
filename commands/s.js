@@ -1,8 +1,7 @@
-//Call: $s
-
+//Call: Slash command s
+//Returns the stock command
 const { registerData } = require("./stock");
 
-//This command simply runs the stock command
 exports.commandName = 's';
 
 exports.run = (client, interaction) => {

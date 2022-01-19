@@ -3,6 +3,7 @@ const { Client, Intents } = require('discord.js');
 const fs = require('fs');
 const Enmap = require('enmap');
 const { permissionCheck, permissionsCheck } = require('./resources/permissionChecks');
+const { msgPermsCheck, msgPermCheck } = require('./resources/msgPermCheck');
 
 
 //Requires the config.json file, creates token as a constant
@@ -15,10 +16,15 @@ client.config = config; // we want config to be accessible anywhere client is
 
 client.permissionCheck = permissionCheck; //we want permissionCheck to be accessible wherever client is present.
 client.permissionsCheck = permissionsCheck;
+client.msgPermCheck = msgPermCheck;
+client.msgPermsCheck = msgPermsCheck;
 
 //This line runs once the discord client is ready
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    client.user.setActivity("to lofi | /help", {
+        type: "LISTENING"
+      });
     registerSlashCommands();
 });
 

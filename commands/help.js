@@ -1,5 +1,5 @@
-//Call: $help
-//forwards the Info command
+//Call: Slash command help
+//Returns the info command
 const { registerData } = require('./info.js')
 exports.commandName = 'help';
 

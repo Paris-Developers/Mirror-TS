@@ -1,4 +1,5 @@
 /events/messageCreate.js @CPhantasm
 /events/interactionCreate.js @CPhantasm
 /commands/reload.js @CPhantasm
-index.js @CPhantasm
+index.js @CPhantasm @FordFriedel
+poll.js @FordFriedel
