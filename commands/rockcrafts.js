@@ -1,4 +1,4 @@
-//Call: $rock
+//Call: Slash command rockcrafts
 //Returns player data from rockcrafts' fluxcup api
 //Temporary fxn will be removed later
 const { MessageEmbed, Permissions } = require('discord.js');
