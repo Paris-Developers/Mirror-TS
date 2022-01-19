@@ -42,7 +42,7 @@ exports.run = async (client, interaction) => {
 
     const embed = new MessageEmbed()
     .setColor('#FFFFFF')
-    .setTitle(interaction.options.data[0].value); 
+    .setTitle(interaction.options.getString('title')); 
     let emoteVal = {
         '1️⃣': 0,
         '2️⃣': 0,
