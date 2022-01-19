@@ -42,7 +42,7 @@ exports.run = async (client, interaction) => {
 
     const embed = new MessageEmbed()
     .setColor('#FFFFFF')
-    .setTitle(interaction.options.data[0].value); 
+    .setTitle(interaction.options.getString('title')); 
     let emoteVal = {
         '1️⃣': 0,
         '2️⃣': 0,
@@ -81,7 +81,7 @@ exports.run = async (client, interaction) => {
 
     //creates collector to measure reactions and change the embed as needed
     let total = 0;  
-    const collector = message.createReactionCollector({ filter, time: interaction.options.data[1].value * 60000, dispose: true });
+    const collector = message.createReactionCollector({ filter, time: interaction.options.getInteger('time') * 60000, dispose: true });
     collector.on('collect', (reaction, user) => {
         console.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
         total += 1;
