@@ -16,7 +16,7 @@ exports.run = async (client,message,args) => {
         console.log(`Missing permissions in channel: ${message.channel.name}`);
         return;
     }
-    message.delete();
+    await message.delete();
     let res = await fetch(`https://nekos.best/api/v1/cry`);
     let jsonData = await res.json();
     let embed = new MessageEmbed()
