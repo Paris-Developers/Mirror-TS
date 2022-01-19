@@ -22,7 +22,7 @@ client.msgPermsCheck = msgPermsCheck;
 //This line runs once the discord client is ready
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    client.user.setActivity("to lofi | /help", {
+    client.user.setActivity(" lofi | /help", {
         type: "LISTENING"
       });
     registerSlashCommands();
