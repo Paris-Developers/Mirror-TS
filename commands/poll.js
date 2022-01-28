@@ -36,13 +36,14 @@ exports.run = async (client, interaction) => {
         console.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
         return;
     }
-    let options = interaction.options.data.slice(2);
+    let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
     console.log(options);
     //TODO: error test for empty arguements
 
     const embed = new MessageEmbed()
     .setColor('#FFFFFF')
-    .setTitle(interaction.options.getString('title')); 
+    .setTitle(`__${interaction.options.getString('title')}__`)
+    .setFooter(`Poll created by ${interaction.user.tag}`); 
     let emoteVal = {
         '1️⃣': 0,
         '2️⃣': 0,
@@ -63,7 +64,7 @@ exports.run = async (client, interaction) => {
     //fill and send embed with fields for each poll option selected
     let ctr = 0;
     for(let arg of options){
-        embed.addField(`${emoteKeys[ctr]} ${arg.value}`,`${progBar[0]} 0%`,false);
+        embed.addField(`${emoteKeys[ctr]} ${arg.value}`,`${progBar[0]} **0%**`,false);
         console.log(`Sucessful addition of ${arg.value}`);
         ctr += 1;
     }
@@ -88,7 +89,7 @@ exports.run = async (client, interaction) => {
         emoteVal[reaction.emoji.name] += 1; //saves number of votes for each emoji
         ctr = 0;
         for(let arg of options){ //rewrite the embed and send the edits
-            embed.fields[ctr] = {name: `${emoteKeys[ctr]} ${arg.value}`, value: `${progBar[Math.round((emoteVal[emoteKeys[ctr]]/total)*10)]} ${Math.round((emoteVal[emoteKeys[ctr]]/total)*100)}%`};
+            embed.fields[ctr] = {name: `${emoteKeys[ctr]} ${arg.value}`, value: `${progBar[Math.round((emoteVal[emoteKeys[ctr]]/total)*10)]} **${Math.round((emoteVal[emoteKeys[ctr]]/total)*100)}%**`};
             ctr += 1;
         }
         message.edit({embeds:[embed]});

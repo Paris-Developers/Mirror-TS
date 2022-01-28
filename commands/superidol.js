@@ -13,6 +13,7 @@ exports.run = async (client,message,args) => {
         guildId: message.channel.guild.id,
         adapterCreator: message.channel.guild.voiceAdapterCreator,
     });
+    await message.delete();
     let player = voice.createAudioPlayer();
     connection.subscribe(player);
     const superidolmp3 = voice.createAudioResource('./resources/music/superidol.mp3');
