@@ -6,6 +6,8 @@ const ytdl = require('ytdl-core');
 
 exports.commandName = 'intro';
 
+//testing here
+
 exports.run = async (client, interaction) => {
     const url = interaction.options.getString('video');
     //TODO: validate the correct videos. 

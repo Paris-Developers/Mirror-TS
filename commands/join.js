@@ -25,7 +25,7 @@ exports.run = async (client,interaction) => {
     const mirrormp3 = voice.createAudioResource('./resources/music/mirror.mp3');
     player.play(mirrormp3);
     setTimeout(() => connection.destroy(), 5000);
-    interaction.reply('reply lol');
+    interaction.reply({content:'success', ephemeral: true }); //hides the reply to anyone but the user
     return;
 }
 
