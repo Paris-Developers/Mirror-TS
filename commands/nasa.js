@@ -13,26 +13,15 @@ exports.run = async (client,interaction) => {
     interaction.deferReply(); // this command can take a while to respond, so we need to defer the reply.
     let res = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${client.config.nasa_token}`);
     let jsonData = await res.json();
-    console.log(jsonData);
-    if(jsonData.media_type == 'video') {
-        var embed = new MessageEmbed()
-        .setColor('#FFFFFF')
-        .setDescription(`${jsonData.explanation.substr(0,300)}...`)
-        .setFooter(`${jsonData.date} NASA Astronomy Picture of the day`)
-        .setImage(jsonData.url)
-        .setTitle(`**${jsonData.title}**`)
-        .setURL("https://apod.nasa.gov/apod/astropix.html");
-    }
-    if(jsonData.media_type == 'image'){
-        var embed = new MessageEmbed()
-        .setColor('#FFFFFF')
-        .setAuthor(jsonData.copyright)
-        .setDescription(`${jsonData.explanation.substr(0,200)}...`)
-        .setFooter(`${jsonData.date} NASA Astronomy Picture of the day`)
-        .setImage(jsonData.url)
-        .setTitle(`**${jsonData.title}**`)
-        .setURL("https://apod.nasa.gov/apod/astropix.html");
-    }
+    console.log(jsonData); // <- remove eventually;
+    var embed = new MessageEmbed()
+    .setColor('#FFFFFF')
+    .setDescription(`${jsonData.explanation.substr(0,200)}...`)
+    .setFooter(`${jsonData.date} NASA Astronomy Picture of the day`)
+    .setImage(jsonData.url)
+    .setTitle(`**${jsonData.title}**`)
+    .setURL("https://apod.nasa.gov/apod/astropix.html");
+    if(jsonData.copyright) embed.setAuthor(jsonData.copyright); //checks to see if the copyright item exists, then it will include it in the author slot.
     interaction.editReply({embeds:[embed]}); //technically deferReply() creates the reply, so we need to edit that.
 }
 
