@@ -3,6 +3,7 @@
 const { Interaction } = require('discord.js');
 const fs = require('fs');
 const ytdl = require('ytdl-core');
+const mkdirp = require('mkdirp');
 
 exports.commandName = 'intro';
 
@@ -19,7 +20,7 @@ exports.run = async (client, interaction) => {
             interaction.editReply({content:'Video is too long, select something 10 seconds or shorter', ephemeral: true});
             return;
         };
-        //TODO: add the event for the download finishing!
+        await mkdirp('./data/intros/');
         let writeStream = fs.createWriteStream(`./data/intros/${interaction.user.id}.mp4`);
         let downloadStream = ytdl(url, { filter: format => format.itag === 140 });
         downloadStream.pipe(writeStream);
