@@ -1,10 +1,10 @@
 //this is blatant bait to get gavin to work on mirror
-//Call: Slash command asmus
+//Call: Slash command gavin
 //Returns Gavins gym PR's, options to allow you to set new PRs from the text channel.
 const Enmap = require('enmap');
 const {MessageEmbed, Permissions } = require('discord.js');
 
-exports.commandName = 'asmus';
+exports.commandName = 'gavin';
 
 let gav_records = new Enmap({name: 'gav_records'}); //named enmaps are persistent to the disk
 exports.run = async (client, interaction) => {
