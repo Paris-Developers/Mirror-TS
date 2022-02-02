@@ -43,7 +43,7 @@ exports.run = async (client, interaction) => {
     const embed = new MessageEmbed()
     .setColor('#FFFFFF')
     .setTitle(`__${interaction.options.getString('title')}__`)
-    .setFooter(`Poll created by ${interaction.user.tag}`); 
+    .setFooter(`Poll created by ${interaction.user.tag}, open for ${interaction.options.getInteger('time')} minutes.`); 
     let emoteVal = {
         '1️⃣': 0,
         '2️⃣': 0,
@@ -107,6 +107,7 @@ exports.run = async (client, interaction) => {
     })
     //when the collectors end send a message to the console.
     collector.on('end',collected => {
+        embed.footer = `Poll created by ${interaction.user.tag}, poll closed.`
         console.log(`Ending collection, Collected ${total} items. ${emoteVal}`);
     }) 
 }

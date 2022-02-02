@@ -17,6 +17,9 @@
     "ffmpeg-static": "^4.4.1",
     "geo-tz": "latest",
     "node-fetch": "^2.6.1",
-    "tweetnacl": "^1.0.3"
+    "tweetnacl": "^1.0.3",
+    "ytdl": "latest",
+    "ffmpeg": "latest",
+    "youtube-mp3-downloader": "latest"
   }
 }
