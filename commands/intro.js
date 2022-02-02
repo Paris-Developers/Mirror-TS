@@ -1,30 +1,19 @@
 //Call: Slash command intro
 //Sets an intro theme for a user. Youtube link
 const { Interaction } = require('discord.js');
-//const ffmpegPath = require('ffmpeg-static');
-//const fs = require('fs');
-//const ytdl = require('ytdl-core');
-//var ffmpeg = require('ffmpeg');
-const yt = require('youtube-mp3-downloader');
+const fs = require('fs');
+const ytdl = require('ytdl-core');
 
 exports.commandName = 'intro';
 
 exports.run = async (client, interaction) => {
-    const link = interaction.options.getString('video')
-    const id = link.substr(-11,11);
-    var video = new yt({
-        "ffmpegPath": ,
-        "outputPath": './data/intros/'
-    })
-    
-    // console.log(interaction.options.getString('video'));
-    // let info = await ytdl.getInfo(interaction.options.getString('video'), { quality: 'highestaudio' });
-    // let stream = ytdl.downloadFromInfo(info, {quality: 'highestaudio'});
-    // ffmpeg(stream)
-    // //let audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
-    // //console.log(audioFormats[0] + ' ' + audioFormats.length);``
-    // //interaction.editReply('hey there! xD');
-
+    const url = interaction.options.getString('video');
+    //TODO: validate the correct videos. 
+    const info = await ytdl.getInfo(url);
+    //console.log(info);
+    console.log(info.player_response.streamingData.formats[0].approxDurationMs);
+    fs.writeFileSync('./log.txt', JSON.stringify(info,null,2)); //TODO: add the event for the download finishing!
+    ytdl(url, { filter: format => format.itag === 140 }).pipe(fs.createWriteStream(`./data/intros/${interaction.user.id}.mp4`));
 }
 exports.registerData = (client) => {
     return {
@@ -36,5 +25,6 @@ exports.registerData = (client) => {
             description: 'Youtube link to  ',
             required: true
         }]
+
     }
 };
