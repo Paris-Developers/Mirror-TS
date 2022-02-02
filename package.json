@@ -19,7 +19,6 @@
     "node-fetch": "^2.6.1",
     "tweetnacl": "^1.0.3",
     "ytdl": "latest",
-    "ffmpeg": "latest",
-    "youtube-mp3-downloader": "latest"
+    "ffmpeg": "latest"
   }
 }
