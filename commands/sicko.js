@@ -3,7 +3,7 @@
 const voice = require('@discordjs/voice');
 const { Permissions } = require('discord.js');
 
-exports.commandName = 'join';
+exports.commandName = 'sicko';
 
 exports.run = async (client,interaction) => {
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES]))){
@@ -22,15 +22,16 @@ exports.run = async (client,interaction) => {
     });
     let player = voice.createAudioPlayer();
     connection.subscribe(player);
-    const mirrormp3 = voice.createAudioResource('./resources/music/mirror.mp3');
+    const mirrormp3 = voice.createAudioResource('./resources/music/sicko.mp3');
     player.play(mirrormp3);
-    interaction.reply({content:'success', ephemeral: true }); //hides the reply to anyone but the user
+    setTimeout(() => connection.destroy(), 5000);
+    interaction.reply('reply lol');
     return;
 }
 
 exports.registerData = (client) => {
     return {
         name: this.commandName,
-        description: 'Have Mirror join your voice channel',
+        description: 'Have Mirror join your voice channel/but sicko mode',
     }
 }

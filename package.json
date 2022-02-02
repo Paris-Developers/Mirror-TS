@@ -18,6 +18,7 @@
     "geo-tz": "latest",
     "node-fetch": "^2.6.1",
     "tweetnacl": "^1.0.3",
-    "ytdl-core": "latest"
+    "ytdl": "latest",
+    "ffmpeg": "latest"
   }
 }
