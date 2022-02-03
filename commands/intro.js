@@ -7,7 +7,6 @@ const mkdirp = require('mkdirp');
 
 exports.commandName = 'intro';
 
-//testing here
 
 exports.run = async (client, interaction) => {
     try{
@@ -15,13 +14,12 @@ exports.run = async (client, interaction) => {
         const url = interaction.options.getString('video');
         //TODO: validate the correct videos. 
         const info = await ytdl.getInfo(url);
-        //console.log(info);
         if(info.player_response.streamingData.formats[0].approxDurationMs > 12 * 1000){
             interaction.editReply({content:'Video is too long, select something 10 seconds or shorter', ephemeral: true});
             return;
         };
-        await mkdirp('./data/intros/');
-        let writeStream = fs.createWriteStream(`./data/intros/${interaction.user.id}.mp4`);
+        await mkdirp(`./data/intros/${interaction.guild.id}`);
+        let writeStream = fs.createWriteStream(`./data/intros/${interaction.guild.id}/${interaction.user.id}.mp4`);
         let downloadStream = ytdl(url, { filter: format => format.itag === 140 });
         downloadStream.pipe(writeStream);
         writeStream.on('finish', () => {
