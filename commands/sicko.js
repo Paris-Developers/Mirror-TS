@@ -24,7 +24,6 @@ exports.run = async (client,interaction) => {
     connection.subscribe(player);
     const mirrormp3 = voice.createAudioResource('./resources/music/sicko.mp3');
     player.play(mirrormp3);
-    setTimeout(() => connection.destroy(), 5000);
     interaction.reply('reply lol');
     return;
 }
