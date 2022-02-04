@@ -1,6 +1,6 @@
 //Call: Slash command intro
 //Sets an intro theme for a user. Youtube link
-const { Interaction } = require('discord.js');
+const { Interaction, IntegrationApplication } = require('discord.js');
 const fs = require('fs');
 const ytdl = require('ytdl-core');
 const mkdirp = require('mkdirp');
@@ -24,11 +24,16 @@ exports.run = async (client, interaction) => {
         downloadStream.pipe(writeStream);
         writeStream.on('finish', () => {
             interaction.editReply({content:'Sucessfully updated your intro theme!', ephemeral: true});
+            return;
         })
         return;
     } catch(err){
-        console.log(err);
-        interaction.reply('Error detected');
+        console.log(err.message);
+        if(err.message == 'Status code: 410'){
+            interaction.editReply('Your video is private or age restricted, please choose another');
+            return;
+        }
+        interaction.editReply('Error detected, contact an admin to investigate.');
         return;
     }
 }
