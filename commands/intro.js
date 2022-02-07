@@ -1,6 +1,6 @@
 //Call: Slash command intro
 //Sets an intro theme for a user. Youtube link
-const { Interaction, IntegrationApplication } = require('discord.js');
+const { Interaction } = require('discord.js');
 const fs = require('fs');
 const ytdl = require('ytdl-core');
 const mkdirp = require('mkdirp');
