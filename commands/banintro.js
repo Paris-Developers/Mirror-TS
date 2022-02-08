@@ -12,9 +12,18 @@ exports.run = async (client, interaction) => {
     }
     let badUser = interaction.options.getUser('user');
     try{
-        fs.unlinkSync(`./data/intros/${interaction.guild.id}/${badUser.id}.mp4`);
-        interaction.reply({content: 'Intro successfully deleted', ephemeral: true});
-        return;
+        fs.unlink(`./data/intros/${interaction.guild.id}/${badUser.id}.mp4`, (err => {
+            if(err) {
+                if(err.code == 'ENOENT') {
+                    interaction.reply({content: `${badUser} does not have an intro.`, ephemeral:true});
+                    return;
+                }
+            } 
+            else{
+                interaction.reply({content: 'Intro successfully deleted', ephemeral: true});
+                return;
+            }
+        }));
     } catch(err){
         if(err.code == 'ENOENT'){
             interaction.reply({content: `${badUser} does not have an intro.`, ephemeral:true});
