@@ -17,6 +17,9 @@ exports.run = async (client, interaction) => {
                 if(err.code == 'ENOENT') {
                     interaction.reply({content: `${badUser} does not have an intro.`, ephemeral:true});
                     return;
+                } else {
+                    interaction.reply({content: 'Error detected, contact an admin for further details.', ephemeral: true});
+                    return;
                 }
             } 
             else{
@@ -25,13 +28,9 @@ exports.run = async (client, interaction) => {
             }
         }));
     } catch(err){
-        if(err.code == 'ENOENT'){
-            interaction.reply({content: `${badUser} does not have an intro.`, ephemeral:true});
-            return;
-        }
-    console.log(err);
-    interaction.reply({content: 'Error', ephemeral:true});
-    return;
+        console.log(err);
+        interaction.reply({content: 'Error', ephemeral:true});
+        return;
     }
 }
 
