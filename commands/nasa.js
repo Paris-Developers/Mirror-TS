@@ -13,11 +13,12 @@ exports.run = async (client,interaction) => {
     await interaction.deferReply(); // this command can take a while to respond, so we need to defer the reply.
     let res = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${client.config.nasa_token}`);
     let jsonData = await res.json();
+    let footer = `${jsonData.date} NASA Astronomy Picture of the day`; //we need this for the deprecation error we are getting with .setFooter()
     console.log(jsonData); // <- remove eventually;
     var embed = new MessageEmbed()
     .setColor('#FFFFFF')
     .setDescription(`${jsonData.explanation.substr(0,200)}...`)
-    .setFooter(`${jsonData.date} NASA Astronomy Picture of the day`)
+    .setFooter(footer)
     .setImage(jsonData.url)
     .setTitle(`**${jsonData.title}**`)
     .setURL("https://apod.nasa.gov/apod/astropix.html");

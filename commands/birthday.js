@@ -1,9 +1,21 @@
 exports.commandName = 'birthday';
 
+
 exports.run = async (client, interaction) => {
-    //test
+    //No global permission check because different functions are doing different things
     interaction.reply('placeholder');
     return;
+    if(options.getSubcommand() == 'set'){
+        //TODO: Permission Check
+    }
+    if(options.getSubcommand() == 'channel'){
+        //TODO: Permission Check
+        //TODO: verify user is an admin
+    }
+    if(options.getSubcommand() == 'message'){
+        //TODO: Permission Check
+    }
+    //TODO, handle errors, this may have to be done in every sub command
 }
 
 const months = [{
