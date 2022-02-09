@@ -83,7 +83,7 @@ exports.run = async (client, interaction) => {
         if(jsonData.cod == '404'){
             const embed = new MessageEmbed()
             .setColor('#FFFFFF')
-            .setDescription(`Error: City not found try again`);
+            .setDescription(`Error: City not found, try again`);
             interaction.reply({embeds:[embed]});
             return;
         }

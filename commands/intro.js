@@ -24,11 +24,16 @@ exports.run = async (client, interaction) => {
         downloadStream.pipe(writeStream);
         writeStream.on('finish', () => {
             interaction.editReply({content:'Sucessfully updated your intro theme!', ephemeral: true});
+            return;
         })
         return;
     } catch(err){
-        console.log(err);
-        interaction.reply('Error detected');
+        console.log(err.message);
+        if(err.message == 'Status code: 410'){
+            interaction.editReply('Your video is private or age restricted, please choose another');
+            return;
+        }
+        interaction.editReply('Error detected, contact an admin to investigate.');
         return;
     }
 }

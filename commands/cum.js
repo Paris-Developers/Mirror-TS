@@ -1,4 +1,6 @@
 //penis pie makes the chicken cry
+const { Permissions } = require('discord.js');
+
 exports.commandName = 'cum';
 exports.run = async (client,message,args) => {
     if(!(await client.msgPermsCheck(client,message,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
