@@ -1,18 +1,35 @@
+const Enmap = require('enmap');
+
 exports.commandName = 'birthday';
 
+const monthCode = {"january":1, "february":2, "march":3, "april":4, "may":5, "june":6, "july":7, "august":8,"september":9, "october":10, "november":11, "december":12}
 
+let birthdayServers = new Enmap({name: 'birthdayServers'});
 exports.run = async (client, interaction) => {
     //No global permission check because different functions are doing different things
     interaction.reply('placeholder');
-    return;
-    if(options.getSubcommand() == 'set'){
+    
+    if(interaction.options.getSubcommand() == 'set'){
         //TODO: Permission Check
+
+        //ensure that the enmap has stored the guild and brings in the JSON. If not create it and give it an empty JSON. 
+        let guildJson = birthdayServers.ensure(`${interaction.guild.id}`,{}); 
+        //store the users discordID
+        let userString = interaction.user.id; 
+        //store the date of birth in numerical form
+        let birthdayString = `${interaction.options.getInteger('day')}-${monthCode[interaction.options.getString('month')]}`;
+        //initialize or update the birthday JSON
+        guildJson[userString] = birthdayString;
+        //place the updated guild JSON in the enmap
+        birthdayServers.set(`${interaction.guild.id}`,guildJson);
+        return;
     }
-    if(options.getSubcommand() == 'channel'){
+    return;
+    if(interaction.options.getSubcommand() == 'channel'){
         //TODO: Permission Check
         //TODO: verify user is an admin
     }
-    if(options.getSubcommand() == 'message'){
+    if(interacion.options.getSubcommand() == 'message'){
         //TODO: Permission Check
     }
     //TODO, handle errors, this may have to be done in every sub command
