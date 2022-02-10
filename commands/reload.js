@@ -21,6 +21,7 @@ exports.run = async (client, interaction) => {
         client.commands.delete(commandName); //delete the function from the enmap
         const props = require(`./${commandName}.js`); //get the new version of the function
         client.commands.set(commandName, props); //assign the new version to the enmap
+        client.logger.info(`Reloaded command ${commandName}`);
         interaction.reply(`Reloaded command ${commandName}`);
     }
 
@@ -29,6 +30,7 @@ exports.run = async (client, interaction) => {
         client.keywords.delete(commandName);
         const props = require(`../keywords/${commandName}.js`);
         client.keywords.set(commandName, props);
+        client.logger.info(`Reloaded keyword ${commandName}`);
         interaction.reply(`Reloaded keyword ${commandName}`);
     }
 }
