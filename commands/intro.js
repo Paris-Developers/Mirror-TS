@@ -28,7 +28,7 @@ exports.run = async (client, interaction) => {
         })
         return;
     } catch(err){
-        client.logger.log(err.message);
+        client.logger.warn(err.message);
         if(err.message == 'Status code: 410'){
             interaction.editReply('Your video is private or age restricted, please choose another');
             return;

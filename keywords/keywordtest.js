@@ -6,7 +6,7 @@ exports.keywordName = 'keywordtest';
 
 exports.run = async (client, message, args) => {
     if(!(await client.msgPermsCheck(client,message,[Permissions.FLAGS.SEND_MESSAGES]))){
-        client.logger.log(`Missing permissions to use ${this.keywordName} in channel: ${message.channel.name}, in guild: ${message.guild.name}`);
+        client.logger.warn(`Missing permissions to use ${this.keywordName} in channel: ${message.channel.name}, in guild: ${message.guild.name}`);
         return;
     }
     message.reply(`Hello keyword user: ${message.author.username}`);

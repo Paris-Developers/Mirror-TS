@@ -28,7 +28,7 @@ exports.run = async (client, interaction) => {
             }
         }));
     } catch(err){
-        client.logger.log(err);
+        client.logger.error(err);
         interaction.reply({content: 'Error', ephemeral:true});
         return;
     }

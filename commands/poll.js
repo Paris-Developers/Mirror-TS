@@ -33,11 +33,11 @@ const emoteIndex = {
 exports.run = async (client, interaction) => { 
     //Checks discord permissions for the guild
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS,Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
+        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
         return;
     }
     let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
-    client.logger.log(options);
+    client.logger.debug(options);
     //TODO: error test for empty arguements
 
     const embed = new MessageEmbed()
@@ -65,7 +65,7 @@ exports.run = async (client, interaction) => {
     let ctr = 0;
     for(let arg of options){
         embed.addField(`${emoteKeys[ctr]} ${arg.value}`,`${progBar[0]} **0%**`,false);
-        client.logger.log(`Sucessful addition of ${arg.value}`);
+        client.logger.debug(`Sucessful addition of ${arg.value}`);
         ctr += 1;
     }
     let message = await interaction.reply({embeds:[embed], fetchReply: true});
@@ -84,7 +84,7 @@ exports.run = async (client, interaction) => {
     let total = 0;  
     const collector = message.createReactionCollector({ filter, time: interaction.options.getInteger('time') * 60000, dispose: true });
     collector.on('collect', (reaction, user) => {
-        client.logger.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
+        client.logger.debug(`Collected ${reaction.emoji.name} from ${user.tag}`);
         total += 1;
         emoteVal[reaction.emoji.name] += 1; //saves number of votes for each emoji
         ctr = 0;
@@ -95,7 +95,7 @@ exports.run = async (client, interaction) => {
         message.edit({embeds:[embed]});
     })
     collector.on('remove', (reaction , user) => {
-        client.logger.log(`Removed ${reaction.emoji.name} from ${user.tag}`);
+        client.logger.debug(`Removed ${reaction.emoji.name} from ${user.tag}`);
         total = total - 1;
         emoteVal[reaction.emoji.name] -= 1; //saves number of votes for each emoji
         ctr = 0;
@@ -108,7 +108,7 @@ exports.run = async (client, interaction) => {
     //when the collectors end send a message to the console.
     collector.on('end',collected => {
         embed.footer = `Poll created by ${interaction.user.tag}, poll closed.`
-        client.logger.log(`Ending collection, Collected ${total} items. ${emoteVal}`);
+        client.logger.debug(`Ending collection, Collected ${total} items. ${emoteVal}`);
     }) 
 }
 exports.registerData = (client) => {

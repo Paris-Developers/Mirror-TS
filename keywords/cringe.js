@@ -16,7 +16,7 @@ cringeDict = ["https://tenor.com/view/dies-of-cringe-cringe-gif-20747133", //
 
 exports.run = async (client, message, args) => {
     if(!(await client.msgPermsCheck(client,message,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.log(`Missing permissions to use ${this.keywordName} in channel: ${message.channel.name}, in guild: ${message.guild.name}`);
+        client.logger.warn(`Missing permissions to use ${this.keywordName} in channel: ${message.channel.name}, in guild: ${message.guild.name}`);
         return;
     }
     let num = Math.floor(Math.random()*cringeDict.length);
