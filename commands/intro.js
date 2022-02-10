@@ -33,6 +33,7 @@ exports.run = async (client, interaction) => {
             interaction.editReply('Your video is private or age restricted, please choose another');
             return;
         }
+        client.logger.error(err);
         interaction.editReply('Error detected, contact an admin to investigate.');
         return;
     }
