@@ -132,8 +132,9 @@ let startup = async () => {
     let now = new Date();
     let logfileName = `${now.getMonth()+1}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
     const logger = require('simple-node-logger').createSimpleLogger(`./logs/${logfileName}`);
-    if (client.config.mode == 'debug') logger.setLevel('debug');
     client.logger = logger;
+    if (client.config.mode == 'debug') client.logger.setLevel('debug');
+    client.logger.debug('Debug logging enabled');
 
     //perform config checks
     checkConfig();
