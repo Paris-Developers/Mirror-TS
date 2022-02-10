@@ -30,6 +30,7 @@ exports.run = async (client, interaction) => {
         if (type == 'squat') toprint = gav_records.ensure('squat',445);
         if (type == 'deadlift') toprint = gav_records.ensure('deadlift',605);
         if(!toprint){ //theoretically, this will never run because we are using slash command choices
+            client.logger.warn(`${this.commandName} ran without a valid Choice selected`);
             interaction.reply('INVALID LOOKUP');
             return;
         }
@@ -52,6 +53,7 @@ exports.run = async (client, interaction) => {
         interaction.reply({embeds:[embed]});
         return;
     }
+    client.logger.warn(`${this.commandName} finished without hiting a subcommand`);
     interaction.reply('Something screwed up. This should never happen.'); //slash command make it pretty easy to validate user input before the command is actually run, so theoretically this shouldn't ever run either.
 }
 
