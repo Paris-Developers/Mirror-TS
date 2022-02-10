@@ -8,7 +8,7 @@ exports.commandName = 'song';
 exports.run = async (client, interaction) => {
     const embed = new MessageEmbed();
     try{
-        client.log("Test1");
+        client.logger.log("Test1");
         let mes = client.songRecs.get(interaction.user.id);
         embed.setTitle(`${interaction.member.displayName}'s Song Recommendation`);
         embed.setDescription(mes);

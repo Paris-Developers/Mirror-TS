@@ -13,7 +13,7 @@ exports.commandName = 'weather';
 exports.run = async (client, interaction) => {
     //check to see if Mirror has permissions to send a message in the relevant channel
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
+        client.logger.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
         return;
     }
     //sends an error message to the channel if no arguement is provided

@@ -6,7 +6,7 @@ exports.keywordName = '<:fortbush:816549663812485151>'
 
 exports.run = async (client, message, args) => {
     if(!(await client.msgPermsCheck(client,message,[Permissions.FLAGS.ADD_REACTIONS,Permissions.FLAGS.USE_EXTERNAL_EMOJIS]))){
-        client.log(`Missing permissions to use ${this.keywordName} in channel: ${message.channel.name}, in guild: ${message.guild.name}`);
+        client.logger.log(`Missing permissions to use ${this.keywordName} in channel: ${message.channel.name}, in guild: ${message.guild.name}`);
         return;
     }
     message.react(':FortBush:816549663812485151');

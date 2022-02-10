@@ -7,14 +7,14 @@ exports.commandName = 'nasa';
 
 exports.run = async (client,interaction) => {
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
+        client.logger.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
         return;
     }
     await interaction.deferReply(); // this command can take a while to respond, so we need to defer the reply.
     let res = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${client.config.nasa_token}`);
     let jsonData = await res.json();
     let footer = `${jsonData.date} NASA Astronomy Picture of the day`; //we need this for the deprecation error we are getting with .setFooter()
-    client.log(jsonData); // <- remove eventually;
+    client.logger.log(jsonData); // <- remove eventually;
     var embed = new MessageEmbed()
     .setColor('#FFFFFF')
     .setDescription(`${jsonData.explanation.substr(0,200)}...`)

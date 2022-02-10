@@ -9,7 +9,7 @@ exports.commandName = 'gavin';
 let gav_records = new Enmap({name: 'gav_records'}); //named enmaps are persistent to the disk
 exports.run = async (client, interaction) => {
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.log(`Missing permissions in channel: ${interaction.channel.name}`);
+        client.logger.log(`Missing permissions in channel: ${interaction.channel.name}`);
         return;
     }
     options = interaction.options;

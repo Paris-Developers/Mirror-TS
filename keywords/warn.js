@@ -4,7 +4,7 @@ exports.keywordName = '!warn';
 
 exports.run = async (client, message, args) => {
     if(!(await client.msgPermsCheck(client,message,[Permissions.FLAGS.SEND_MESSAGES]))){
-        client.log(`Missing permissions to use ${this.keywordName} in channel: ${message.channel.name}, in guild: ${message.guild.name}`);
+        client.logger.log(`Missing permissions to use ${this.keywordName} in channel: ${message.channel.name}, in guild: ${message.guild.name}`);
         return;
     }
     message.reply('https://tenor.com/view/discord-meme-spooked-scared-mod-gif-18361254');

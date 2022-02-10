@@ -12,7 +12,7 @@
 //     }
 //     let res = await fetch(`https://rest.cryptoapis.io/v2/market-data/assets/BTC`, { headers });
 //     let jsonData = await res.json();
-//     client.log(jsonData);
+//     client.logger.log(jsonData);
 //     interaction.reply('Crypto finished');
 // }
 
