@@ -15,7 +15,7 @@ exports.run = async (client,interaction) => {
     let jsonData = await res.json();
     let embed = new MessageEmbed()
     .setColor('#0071b6')
-    .setImage(`${jsonData.url}`)
+    .setImage(jsonData.url)
     interaction.reply({embeds: [embed]});
 }
 
