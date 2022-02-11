@@ -29,10 +29,10 @@ exports.run = async (client,interaction) => {
             return;
         }
         //specify embed modifications for individual option and sends message
-        embed.setTitle(`${jsonData.articles[0].title}`);
-        embed.setURL(`${jsonData.articles[0].url}`);
-        embed.setDescription(`${jsonData.articles[0].description}`);
-        embed.setThumbnail(`${jsonData.articles[0].urlToImage}`);
+        embed.setTitle(jsonData.articles[0].title);
+        embed.setURL(jsonData.articles[0].url);
+        embed.setDescription(jsonData.articles[0].description);
+        embed.setThumbnail(jsonData.articles[0].urlToImage);
         interaction.reply({embeds:[embed]});
     }
     catch(err){//catches error 

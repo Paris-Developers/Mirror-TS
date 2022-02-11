@@ -28,7 +28,7 @@ exports.run = async (client, interaction) => {
     try{
         let query = interaction.options.getString('state') ? //if we have a state lets add it to the string
         `${interaction.options.getString('city')},US-${interaction.options.getString('state')}` :
-        `${interaction.options.getString('city')}`
+        interaction.options.getString('city')
         //Pulls data from the API and stores as a JSON object
         let res = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${client.config.weather_token}`);
         jsonData = await res.json();

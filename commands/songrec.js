@@ -9,7 +9,7 @@ exports.run = (client, interaction) => {
     const embed = new MessageEmbed()
     try{
         client.logger.debug("Hey")
-        client.logger.debug(`${interaction.user.id}`);
+        client.logger.debug(interaction.user.id);
         client.songRecs.set(interaction.user.id, interaction.options.getString("song"));
         client.logger.debug("past songRecs.set");
         let mes = client.songRecs.get(interaction.user.id);

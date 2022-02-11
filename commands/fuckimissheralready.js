@@ -21,7 +21,7 @@ exports.run = async (client,message,args) => {
     let jsonData = await res.json();
     let embed = new MessageEmbed()
     .setColor('#0071b6')
-    .setImage(`${jsonData.url}`)
+    .setImage(jsonData.url)
     .setFooter('I feel you bro');
     message.channel.send({embeds: [embed]});
 }
