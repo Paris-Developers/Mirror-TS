@@ -4,10 +4,14 @@ const fs = require('fs');
 const Enmap = require('enmap');
 const { permissionCheck, permissionsCheck } = require('./resources/permissionChecks');
 const { msgPermsCheck, msgPermCheck } = require('./resources/msgPermCheck');
+const cron = require('node-cron');
+const { birthdays, birthdayChannels } = require('./commands/birthday');
+const { fetch } = require('discord.js');
 
 
 //Requires the config.json file, creates token as a constant
 const config = require('./config.json');
+const { CronJob } = require('cron');
 
 //Creates instance of client
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_VOICE_STATES]});
@@ -108,6 +112,37 @@ configArray.forEach((token) => {
 if (config.mode != 'debug' && config.mode != 'production') {
     console.log('Invalid config.mode: set to \'debug\' or \'production\'')
 }
+
+// cron.schedule('* * * * *', function() {
+//     console.log('Running a task every minute');
+//     birthdays.forEach(element => console.log(element));
+// })
+cron.schedule('* * * * *', async function() {
+    console.log('-----------------------------');
+    let time = new Date();
+    let currentTime = `${time.getHours()}-${time.getMinutes()}-${time.getSeconds()}`;
+    let today = new Date();
+    let todaysDate = `${today.getDate()}-${today.getMonth()+1}`;
+    console.log(todaysDate, currentTime);
+    birthdays.forEach(async (bday, userId) => {
+        console.log(bday, userId);
+        if(todaysDate == bday){
+            birthdayChannels.forEach(async (birthChannel, birthGuild) => {
+                //TODO: If bot cannot send message, crash
+                //TODO: If bot is not in server, crash
+                let guild = client.guilds.cache.get(birthGuild.toString());
+                console.log(guild.id);
+                let bdayUser = client.users.cache.get(userId);
+                console.log(bdayUser);
+                if(!await guild.members.fetch(userId)) return; //if the user is not a member in the guild, end
+                let channel = client.channels.cache.get(birthChannel.toString());
+                if(!channel) return; //if the channel doesnt exist, or mirror cannot see it, end
+                await channel.send('Happy Birthday');
+            })
+        }
+    })
+})
+//birthdayChannels.deleteAll();
 
 //Uses Token to login to the client
 client.login(config.token);

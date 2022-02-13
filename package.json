@@ -12,6 +12,7 @@
     "@discordjs/voice": "latest",
     "chrono-node": "latest",
     "cron": "latest",
+    "node-cron": "latest",
     "discord.js": "^13.3.1",
     "enmap": "latest",
     "ffmpeg-static": "^4.4.1",
