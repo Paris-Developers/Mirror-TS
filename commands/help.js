@@ -4,6 +4,13 @@ const { MessageEmbed } = require('discord.js');
 
 exports.commandName = 'help';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Information about the bot.'
+    }
+} 
+
 exports.run = async (client,interaction) => {
     //TODO: Add permission checks
     const page1 = new MessageEmbed()
@@ -80,9 +87,3 @@ exports.run = async (client,interaction) => {
     });
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Information about the bot.'
-    }
-} 

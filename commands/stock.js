@@ -5,6 +5,19 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'stock';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Stock ticker data',
+        options: [{
+            name: 'tickers',
+            type: 'STRING',
+            description: 'tickers to query, space separated',
+            required: true
+        }],
+    }
+}
+
 exports.run = async (client, interaction) => {
     //checks to see if the bot can send a message in this guild
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
@@ -93,15 +106,3 @@ exports.run = async (client, interaction) => {
     }    
 }          
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Stock ticker data',
-        options: [{
-            name: 'tickers',
-            type: 'STRING',
-            description: 'tickers to query, space separated',
-            required: true
-        }],
-    }
-}

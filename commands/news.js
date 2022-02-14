@@ -5,6 +5,19 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'news';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Current news',
+        options: [{
+            name: 'query',
+            type: 'STRING',
+            description: 'headlines to query, space separated',
+            required: false
+        }],
+    }
+};
+
 exports.run = async (client,interaction) => {
     try{//Runs code as normal, sends  catch if an error is recieved
         const embed = new MessageEmbed() //creates embed
@@ -43,15 +56,3 @@ exports.run = async (client,interaction) => {
     }
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Current news',
-        options: [{
-            name: 'query',
-            type: 'STRING',
-            description: 'headlines to query, space separated',
-            required: false
-        }],
-    }
-};

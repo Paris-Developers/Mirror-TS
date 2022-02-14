@@ -10,6 +10,24 @@ let jsonData = {}
 
 exports.commandName = 'weather';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Weather data',
+        options: [{
+            name: 'city',
+            type: 'STRING',
+            description: 'City to query',
+            required: true
+        }, {
+            name: 'state',
+            type: 'STRING',
+            description: 'Two letter state code',
+            required: false
+        }],
+    }
+};
+
 exports.run = async (client, interaction) => {
     //check to see if Mirror has permissions to send a message in the relevant channel
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
@@ -94,20 +112,3 @@ exports.run = async (client, interaction) => {
     }
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Weather data',
-        options: [{
-            name: 'city',
-            type: 'STRING',
-            description: 'City to query',
-            required: true
-        }, {
-            name: 'state',
-            type: 'STRING',
-            description: 'Two letter state code',
-            required: false
-        }],
-    }
-};
