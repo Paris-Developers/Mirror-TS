@@ -30,7 +30,7 @@ exports.run = async (client, interaction) => {
 ```
 
 exports.commandName must be a valid string, usually matching the name of the .js file. Do not create commands with duplicate commandNames.  
-exports.requiredPermissions is an array of Permissions flags from the discord.js api. These permissions will be checked before the command runs, to make sure it has all the permissions it needs.  
+exports.requiredPermissions is an optional array of Permissions flags from the discord.js api. These permissions will be checked before the command runs, to make sure it has all the permissions it needs.  
 exports.registerData must return a valid slash command object as documented [here](https://discord.js.org/#/docs/discord.js/stable/typedef/ApplicationCommandData).  
 exports.run will be passed a [client](https://discord.js.org/#/docs/discord.js/stable/class/Client) object and an [interaction](https://discord.js.org/#/docs/discord.js/stable/class/CommandInteraction) object when it is called as a slash command.  
 exports.run will be passed a [client](https://discord.js.org/#/docs/discord.js/stable/class/Client) object, a [message](https://discord.js.org/#/docs/discord.js/stable/class/Message) object, and argument array when called as a traditional command.
