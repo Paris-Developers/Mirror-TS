@@ -5,6 +5,13 @@ const { Permissions } = require('discord.js');
 
 exports.commandName = 'join';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Have Mirror join your voice channel',
+    }
+}
+
 exports.run = async (client,interaction) => {
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES]))){
         client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
@@ -28,9 +35,3 @@ exports.run = async (client,interaction) => {
     return;
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Have Mirror join your voice channel',
-    }
-}

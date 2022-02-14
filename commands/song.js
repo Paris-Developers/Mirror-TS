@@ -5,6 +5,13 @@ const {MessageEmbed, Message} = require("discord.js");
 
 exports.commandName = 'song';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Get your song recommendation',
+    }
+};
+
 exports.run = async (client, interaction) => {
     const embed = new MessageEmbed();
     try{
@@ -19,9 +26,3 @@ exports.run = async (client, interaction) => {
     }
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Get your song recommendation',
-    }
-};

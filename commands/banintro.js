@@ -4,6 +4,19 @@ const fs = require('fs');
 
 exports.commandName = 'banintro';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Delete someones intro theme!',
+        options: [{
+            name: 'user',
+            type: 'USER',
+            description: 'Member to remove intro',
+            required: true
+       }]
+    }
+};
+
 exports.run = async (client, interaction) => {
     //TODO add permissions check?
     if(!interaction.member.permissionsIn(interaction.channel).has("ADMINISTRATOR")) {
@@ -34,16 +47,3 @@ exports.run = async (client, interaction) => {
         return;
     }
 }
-
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Delete someones intro theme!',
-        options: [{
-            name: 'user',
-            type: 'USER',
-            description: 'Member to remove intro',
-            required: true
-       }]
-    }
-};

@@ -6,6 +6,13 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'rock';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Information about RockCrafts',
+    }
+};
+
 exports.run = async (client,interaction) => {
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS]))){
         client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
@@ -59,10 +66,3 @@ exports.run = async (client,interaction) => {
     return;
 }
 
-
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Information about RockCrafts',
-    }
-};

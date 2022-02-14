@@ -5,6 +5,25 @@ const { Permissions } = require('discord.js');
 
 exports.commandName = 'reload';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Reloads a command',
+        options: [{
+            name: 'command',
+            type: 'STRING',
+            description: 'command to reload',
+            required: true
+        }],
+        permissions: [{
+            id: client.config.owner,
+            type: 'USER',
+            permission: true
+        }],
+    }
+};
+
+
 exports.run = async (client, interaction) => {
     if(!(await client.permissionCheck(client,interaction,Permissions.FLAGS.SEND_MESSAGES))){
         client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
@@ -34,20 +53,3 @@ exports.run = async (client, interaction) => {
         interaction.reply(`Reloaded keyword ${commandName}`);
     }
 }
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Reloads a command',
-        options: [{
-            name: 'command',
-            type: 'STRING',
-            description: 'command to reload',
-            required: true
-        }],
-        permissions: [{
-            id: client.config.owner,
-            type: 'USER',
-            permission: true
-        }],
-    }
-};

@@ -5,6 +5,13 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'kawaii';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Get a cute catgirl',
+    }
+};
+
 exports.run = async (client,interaction) => {
     if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS]))){
         client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
@@ -19,9 +26,3 @@ exports.run = async (client,interaction) => {
     interaction.reply({embeds: [embed]});
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Get a cute catgirl',
-    }
-};
