@@ -7,7 +7,7 @@ exports.commandName = 'reload';
 
 exports.run = async (client, interaction) => {
     if(!(await client.permissionCheck(client,interaction,Permissions.FLAGS.SEND_MESSAGES))){
-        console.log(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
+        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
         return;
     }
     const commandName = interaction.options.getString('command');
@@ -21,6 +21,7 @@ exports.run = async (client, interaction) => {
         client.commands.delete(commandName); //delete the function from the enmap
         const props = require(`./${commandName}.js`); //get the new version of the function
         client.commands.set(commandName, props); //assign the new version to the enmap
+        client.logger.info(`Reloaded command ${commandName}`);
         interaction.reply(`Reloaded command ${commandName}`);
     }
 
@@ -29,6 +30,7 @@ exports.run = async (client, interaction) => {
         client.keywords.delete(commandName);
         const props = require(`../keywords/${commandName}.js`);
         client.keywords.set(commandName, props);
+        client.logger.info(`Reloaded keyword ${commandName}`);
         interaction.reply(`Reloaded keyword ${commandName}`);
     }
 }

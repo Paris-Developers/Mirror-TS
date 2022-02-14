@@ -8,7 +8,7 @@ exports.commandName = 'superidol105';
 
 exports.run = async (client,message,args) => {
     if(!(await client.msgPermsCheck(client,message,[Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.SPEAK,Permissions.FLAGS.CONNECT]))){
-        console.log(`Missing permissions in channel: ${message.channel.name}`);
+        client.logger.warn(`Missing permissions in channel: ${message.channel.name}`);
         return;
     }
     let state = message.member.voice;

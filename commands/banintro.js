@@ -18,6 +18,7 @@ exports.run = async (client, interaction) => {
                     interaction.reply({content: `${badUser} does not have an intro.`, ephemeral:true});
                     return;
                 } else {
+                    client.logger.error(err);
                     interaction.reply({content: 'Error detected, contact an admin for further details.', ephemeral: true});
                     return;
                 }
@@ -28,7 +29,7 @@ exports.run = async (client, interaction) => {
             }
         }));
     } catch(err){
-        console.log(err);
+        client.logger.error(err);
         interaction.reply({content: 'Error', ephemeral:true});
         return;
     }
