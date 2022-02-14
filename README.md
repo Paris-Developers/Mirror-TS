@@ -8,5 +8,5 @@ Mirror is a public project and as such you are welcome to contribute if you desi
 
 If you want to work on Mirror with the team reach out to one of us on discord and we will get you started.
 
-[Command structure](docs/COMMANDSTRUCTURE.md)
+[Command structure](docs/COMMANDSTRUCTURE.md)  
 [APIs we use](docs/APIDOCUMENTATION.md)
