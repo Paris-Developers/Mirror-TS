@@ -4,11 +4,9 @@ const { Permissions } = require('discord.js');
 
 exports.commandName = 'leave';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
+
 exports.run = async (client, interaction) => {
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     let mirrorVoice = interaction.guild.me.voice;
     if(!mirrorVoice) {
         interaction.reply({content: 'Not in a voice channel', ephemeral: true});

@@ -6,11 +6,9 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'rock';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS];
+
 exports.run = async (client,interaction) => {
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     let res = await fetch(`https://api.fluxcup.org/members`);
     let jsonData = await res.json();
     let lines = [] //create an array we can iterate through

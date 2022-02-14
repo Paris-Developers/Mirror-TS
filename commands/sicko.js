@@ -5,11 +5,9 @@ const { Permissions } = require('discord.js');
 
 exports.commandName = 'sicko';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
+
 exports.run = async (client,interaction) => {
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     let state = interaction.member.voice;
     if(!state.channel){
         interaction.reply('you are not in a valid voice channel!');
@@ -24,7 +22,7 @@ exports.run = async (client,interaction) => {
     connection.subscribe(player);
     const mirrormp3 = voice.createAudioResource('./resources/music/sicko.mp3');
     player.play(mirrormp3);
-    interaction.reply('reply lol');
+    interaction.reply('Joined');
     return;
 }
 

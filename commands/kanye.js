@@ -5,11 +5,9 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'kanye';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
+
 exports.run = async (client,interaction) => {
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     let res = await fetch(`https://api.kanye.rest/`)
     let jsonData = await res.json();
     const embed = new MessageEmbed()
