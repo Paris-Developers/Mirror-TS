@@ -32,6 +32,75 @@ exports.commandName = 'poll';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS,Permissions.FLAGS.EMBED_LINKS];
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Create a poll with up to 10 options',
+        options: [{
+            name: 'title',
+            type: 'STRING',
+            description: 'Set the poll title',
+            required: true
+        } , {
+            name: 'time',
+            type: 'INTEGER',
+            description: 'How many minutes you want the poll open',
+            required: true
+        } , {
+            name: 'arguement1',
+            type: 'STRING',
+            description: 'first poll option',
+            required: true
+        }, {
+            name: 'arguement2',
+            type: 'STRING',
+            description: 'second poll option',
+            required: true
+        } , {
+            name: 'arguement3',
+            type: 'STRING',
+            description: 'third poll option',
+            required: false
+        } , {
+            name: 'arguement4',
+            type: 'STRING',
+            description: 'fourth poll option',
+            required: false
+        } , {
+            name: 'arguement5',
+            type: 'STRING',
+            description: 'fifth poll option',
+            required: false
+        } , {
+            name: 'arguement6',
+            type: 'STRING',
+            description: 'sixth poll option',
+            required: false
+        } , {
+            name: 'arguement7',
+            type: 'STRING',
+            description: 'seventh poll option',
+            required: false
+        } , {
+            name: 'arguement8',
+            type: 'STRING',
+            description: 'eigth poll option',
+            required: false
+        } , {
+            name: 'arguement9',
+            type: 'STRING',
+            description: 'ninth poll option',
+            required: false
+        } , {
+            name: 'arguement10',
+            type: 'STRING',
+            description: 'tenth poll option',
+            required: false
+        }
+        ]
+    }
+}
+
 exports.run = async (client, interaction) => { 
     let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
     client.logger.debug(options);
@@ -107,72 +176,4 @@ exports.run = async (client, interaction) => {
         embed.footer = `Poll created by ${interaction.user.tag}, poll closed.`
         client.logger.debug(`Ending collection, Collected ${total} items. ${emoteVal}`);
     }) 
-}
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Create a poll with up to 10 options',
-        options: [{
-            name: 'title',
-            type: 'STRING',
-            description: 'Set the poll title',
-            required: true
-        } , {
-            name: 'time',
-            type: 'INTEGER',
-            description: 'How many minutes you want the poll open',
-            required: true
-        } , {
-            name: 'arguement1',
-            type: 'STRING',
-            description: 'first poll option',
-            required: true
-        }, {
-            name: 'arguement2',
-            type: 'STRING',
-            description: 'second poll option',
-            required: true
-        } , {
-            name: 'arguement3',
-            type: 'STRING',
-            description: 'third poll option',
-            required: false
-        } , {
-            name: 'arguement4',
-            type: 'STRING',
-            description: 'fourth poll option',
-            required: false
-        } , {
-            name: 'arguement5',
-            type: 'STRING',
-            description: 'fifth poll option',
-            required: false
-        } , {
-            name: 'arguement6',
-            type: 'STRING',
-            description: 'sixth poll option',
-            required: false
-        } , {
-            name: 'arguement7',
-            type: 'STRING',
-            description: 'seventh poll option',
-            required: false
-        } , {
-            name: 'arguement8',
-            type: 'STRING',
-            description: 'eigth poll option',
-            required: false
-        } , {
-            name: 'arguement9',
-            type: 'STRING',
-            description: 'ninth poll option',
-            required: false
-        } , {
-            name: 'arguement10',
-            type: 'STRING',
-            description: 'tenth poll option',
-            required: false
-        }
-        ]
-    }
 }

@@ -8,6 +8,13 @@ exports.commandName = 'rock';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS];
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Information about RockCrafts',
+    }
+};
+
 exports.run = async (client,interaction) => {
     let res = await fetch(`https://api.fluxcup.org/members`);
     let jsonData = await res.json();
@@ -57,10 +64,3 @@ exports.run = async (client,interaction) => {
     return;
 }
 
-
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Information about RockCrafts',
-    }
-};

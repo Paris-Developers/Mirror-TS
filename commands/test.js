@@ -6,13 +6,14 @@ exports.commandName = 'test';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
 
-exports.run = async (client, interaction) => {
-    interaction.reply(`Hello ${interaction.user.username}`);
-}
-
 exports.registerData = (client) => {
     return {
         name: this.commandName,
         description: 'Replies with your name!',
     }
 };
+
+exports.run = async (client, interaction) => {
+    interaction.reply(`Hello ${interaction.user.username}`);
+}
+

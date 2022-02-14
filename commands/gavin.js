@@ -4,11 +4,71 @@
 const Enmap = require('enmap');
 const {MessageEmbed, Permissions } = require('discord.js');
 
+//If you add choices to a slash command's options, they will be the only thing a user can select/input. 
+//This is perfect for validating input before we even have the command run on our side.
+const liftChoices = [
+    {
+        name: 'Deadlift',
+        value: 'deadlift'
+    },
+    {
+        name: 'Bench',
+        value: 'bench'
+    },
+    {
+        name: 'Squat',
+        value: 'squat'
+    }
+];
+let gav_records = new Enmap({name: 'gav_records'}); //named enmaps are persistent to the disk
+
 exports.commandName = 'gavin';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
 
-let gav_records = new Enmap({name: 'gav_records'}); //named enmaps are persistent to the disk
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Lift data',
+        options: [{
+            name: 'all',
+            description: 'print all of the lift data',
+            type: 1,
+            required: false
+        },{
+            name: 'lift',
+            description: 'show a specific lift\'s data',
+            type: 1,
+            required: false,
+            options: [{
+                name: 'lifttype',
+                type: 'STRING',
+                description: 'the lift to display',
+                required: true,
+                choices: liftChoices
+            }]
+        },{
+            name: 'setlift',
+            description: 'set a specific lift\'s data',
+            type: 1,
+            required: false,
+            options: [{
+                name: 'lifttype',
+                type: 'STRING',
+                description: 'the lift to set',
+                required: true,
+                choices: liftChoices,
+            }, {
+                name: 'lift',
+                type: 'NUMBER', 
+                description: 'the lift record', 
+                required: true
+            }]
+        }]
+    }
+};
+
+
 exports.run = async (client, interaction) => {
     options = interaction.options;
     if(options.getSubcommand() == 'all'){ // subcommand for printing all the data
@@ -56,61 +116,3 @@ exports.run = async (client, interaction) => {
 }
 
 
-//If you add choices to a slash command's options, they will be the only thing a user can select/input. 
-//This is perfect for validating input before we even have the command run on our side.
-const liftChoices = [
-    {
-        name: 'Deadlift',
-        value: 'deadlift'
-    },
-    {
-        name: 'Bench',
-        value: 'bench'
-    },
-    {
-        name: 'Squat',
-        value: 'squat'
-    }
-]
-
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Lift data',
-        options: [{
-            name: 'all',
-            description: 'print all of the lift data',
-            type: 1,
-            required: false
-        },{
-            name: 'lift',
-            description: 'show a specific lift\'s data',
-            type: 1,
-            required: false,
-            options: [{
-                name: 'lifttype',
-                type: 'STRING',
-                description: 'the lift to display',
-                required: true,
-                choices: liftChoices
-            }]
-        },{
-            name: 'setlift',
-            description: 'set a specific lift\'s data',
-            type: 1,
-            required: false,
-            options: [{
-                name: 'lifttype',
-                type: 'STRING',
-                description: 'the lift to set',
-                required: true,
-                choices: liftChoices,
-            }, {
-                name: 'lift',
-                type: 'NUMBER', 
-                description: 'the lift record', 
-                required: true
-            }]
-        }]
-    }
-};

@@ -7,6 +7,13 @@ exports.commandName = 'kanye';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Kanye',
+    }
+};
+
 exports.run = async (client,interaction) => {
     let res = await fetch(`https://api.kanye.rest/`)
     let jsonData = await res.json();
@@ -17,9 +24,3 @@ exports.run = async (client,interaction) => {
     interaction.reply({embeds:[embed]});
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Kanye',
-    }
-};

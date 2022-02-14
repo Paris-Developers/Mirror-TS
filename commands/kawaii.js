@@ -7,6 +7,13 @@ exports.commandName = 'kawaii';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS];
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Get a cute catgirl',
+    }
+};
+
 exports.run = async (client,interaction) => {
     //fetches the nekos.best api
     let res = await fetch(`https://nekos.best/api/v1/wink`);
@@ -17,9 +24,3 @@ exports.run = async (client,interaction) => {
     interaction.reply({embeds: [embed]});
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Get a cute catgirl',
-    }
-};

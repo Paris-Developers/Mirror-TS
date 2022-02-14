@@ -5,7 +5,20 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'stock';
 
-exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
+
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Stock ticker data',
+        options: [{
+            name: 'tickers',
+            type: 'STRING',
+            description: 'tickers to query, space separated',
+            required: true
+        }],
+    }
+}
 
 exports.run = async (client, interaction) => {
     //tests to see if the command was passed in with arguements
@@ -90,15 +103,3 @@ exports.run = async (client, interaction) => {
     }    
 }          
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Stock ticker data',
-        options: [{
-            name: 'tickers',
-            type: 'STRING',
-            description: 'tickers to query, space separated',
-            required: true
-        }],
-    }
-}

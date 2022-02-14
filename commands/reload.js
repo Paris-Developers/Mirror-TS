@@ -7,6 +7,25 @@ exports.commandName = 'reload';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Reloads a command',
+        options: [{
+            name: 'command',
+            type: 'STRING',
+            description: 'command to reload',
+            required: true
+        }],
+        permissions: [{
+            id: client.config.owner,
+            type: 'USER',
+            permission: true
+        }],
+    }
+};
+
+
 exports.run = async (client, interaction) => {
     const commandName = interaction.options.getString('command');
 
@@ -32,20 +51,3 @@ exports.run = async (client, interaction) => {
         interaction.reply(`Reloaded keyword ${commandName}`);
     }
 }
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Reloads a command',
-        options: [{
-            name: 'command',
-            type: 'STRING',
-            description: 'command to reload',
-            required: true
-        }],
-        permissions: [{
-            id: client.config.owner,
-            type: 'USER',
-            permission: true
-        }],
-    }
-};

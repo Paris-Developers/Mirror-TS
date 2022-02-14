@@ -5,6 +5,19 @@ const { MessageEmbed} = require("discord.js");
 
 exports.commandName = 'songrec';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Set your song recommendation',
+        options: [{
+            name: 'song',
+            type: 'STRING',
+            description: 'Song to recommend',
+            required: true
+        }]
+    }
+};
+
 exports.run = (client, interaction) => {
     const embed = new MessageEmbed()
     try{
@@ -22,16 +35,3 @@ exports.run = (client, interaction) => {
         return;
     }
 }
-
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Set your song recommendation',
-        options: [{
-            name: 'song',
-            type: 'STRING',
-            description: 'Song to recommend',
-            required: true
-        }]
-    }
-};

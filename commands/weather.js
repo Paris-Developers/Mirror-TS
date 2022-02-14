@@ -12,6 +12,24 @@ exports.commandName = 'weather';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Weather data',
+        options: [{
+            name: 'city',
+            type: 'STRING',
+            description: 'City to query',
+            required: true
+        }, {
+            name: 'state',
+            type: 'STRING',
+            description: 'Two letter state code',
+            required: false
+        }],
+    }
+};
+
 exports.run = async (client, interaction) => {
     //sends an error message to the channel if no arguement is provided
     if (!interaction.options.getString('city')){ 
@@ -91,20 +109,3 @@ exports.run = async (client, interaction) => {
     }
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Weather data',
-        options: [{
-            name: 'city',
-            type: 'STRING',
-            description: 'City to query',
-            required: true
-        }, {
-            name: 'state',
-            type: 'STRING',
-            description: 'Two letter state code',
-            required: false
-        }],
-    }
-};

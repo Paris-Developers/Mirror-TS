@@ -7,6 +7,18 @@ const mkdirp = require('mkdirp');
 
 exports.commandName = 'intro';
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Update your intro theme!',
+        options: [{
+            name: 'video',
+            type: 'STRING',
+            description: 'Youtube link to intro',
+            required: true
+        }]
+    }
+};
 
 exports.run = async (client, interaction) => {
     try{
@@ -38,16 +50,3 @@ exports.run = async (client, interaction) => {
         return;
     }
 }
-
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Update your intro theme!',
-        options: [{
-            name: 'video',
-            type: 'STRING',
-            description: 'Youtube link to intro',
-            required: true
-        }]
-    }
-};

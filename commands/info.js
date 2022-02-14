@@ -6,6 +6,13 @@ exports.commandName = 'info';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Info about the bot',
+    }
+};
+
 exports.run = async (client, interaction) => {
     const embed = new MessageEmbed()
         .setColor('#d4af37')
@@ -19,9 +26,3 @@ exports.run = async (client, interaction) => {
     interaction.reply({embeds:[embed]});
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Info about the bot',
-    }
-};

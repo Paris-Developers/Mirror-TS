@@ -7,6 +7,13 @@ exports.commandName = 'nasa';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Get daily astronomy pictures',
+    }
+};
+
 exports.run = async (client,interaction) => {
     await interaction.deferReply(); // this command can take a while to respond, so we need to defer the reply.
     let res = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${client.config.nasa_token}`);
@@ -24,9 +31,3 @@ exports.run = async (client,interaction) => {
     interaction.editReply({embeds: [embed] }); //technically deferReply() creates the reply, so we need to edit that.
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Get daily astronomy pictures',
-    }
-};

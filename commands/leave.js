@@ -6,6 +6,13 @@ exports.commandName = 'leave';
 
 exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
 
+exports.registerData = (client) => {
+    return {
+        name: this.commandName,
+        description: 'Have Mirror leave your voice channel.',
+    }
+}
+
 exports.run = async (client, interaction) => {
     let mirrorVoice = interaction.guild.me.voice;
     if(!mirrorVoice) {
@@ -17,9 +24,3 @@ exports.run = async (client, interaction) => {
     return;
 }
 
-exports.registerData = (client) => {
-    return {
-        name: this.commandName,
-        description: 'Have Mirror leave your voice channel.',
-    }
-}
