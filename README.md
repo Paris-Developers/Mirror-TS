@@ -1,6 +1,6 @@
 # Mirror JS
 
-Mirror is a informational Discord bot.
+Mirror is an informational Discord bot.
 
 Mirror was created by Fordle#0001 and Phantasm#0001
 
