@@ -1,6 +1,6 @@
 //Call: Slash command news or n
 //Returns news story from specified topic or just returns the top news story in the US.
-const {MessageEmbed, Message} = require('discord.js');
+const {MessageEmbed} = require('discord.js');
 const fetch = require('node-fetch');
 
 exports.commandName = 'news';
