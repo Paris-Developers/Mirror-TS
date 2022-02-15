@@ -2,6 +2,7 @@ const { Permissions } = require('discord.js');
 
 exports.commandName = 'support';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
 
 exports.registerData = (client) => {
     return {
@@ -11,10 +12,6 @@ exports.registerData = (client) => {
 };
 
 exports.run = async (client, interaction) => {
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     interaction.reply('discord.gg/uvdg2R5PAU');
     return;
 
