@@ -1,4 +1,4 @@
-const { MessageEmbed, User } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 
 exports.commandName = 'boey';
 
