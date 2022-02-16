@@ -38,10 +38,12 @@ exports.run = async (client, interaction) => {
         return;
     }
     return;
-    if(interacion.options.getSubcommand() == 'message'){
+    if(interaction.options.getSubcommand() == 'message'){
         //TODO: Permission Check
     }
+    if(interaction.options.getSubcommand() == 'time'){
     //TODO, handle errors, this may have to be done in every sub command
+    }
 }
 
 const months = [{
@@ -120,6 +122,15 @@ exports.registerData = (client) => {
             description: 'Edit the message used when its someones birthday',
             type: 'STRING',
             required: false
+        },{
+            name:'time',
+            description:'Edit the time the birthday message is sent in your local time',
+            type: 1,
+            require: false,
+            options: [{
+                name: 'time'
+
+            }]
         }]
     }
 }
