@@ -1,3 +1,5 @@
+const { Permissions } = require('discord.js');
+
 exports.commandName = 'cringe';
 
 exports.run = async (client, message, args) => {
