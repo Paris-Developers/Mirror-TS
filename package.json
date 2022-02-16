@@ -12,14 +12,19 @@
     "@discordjs/voice": "latest",
     "chrono-node": "latest",
     "cron": "latest",
-    "discord.js": "^13.3.1",
+    "discord.js": "latest",
     "enmap": "latest",
+    "ffmpeg": "latest",
     "ffmpeg-static": "^4.4.1",
     "geo-tz": "latest",
-    "node-fetch": "^2.6.1",
-    "ytdl": "latest",
-    "ffmpeg": "latest",
     "mkdirp": "latest",
-    "simple-node-logger": "latest"
+    "node-fetch": "^2.6.1",
+    "simple-node-logger": "latest",
+    "tslog": "^3.3.2",
+    "typescript": "^4.5.5",
+    "ytdl": "latest"
+  },
+  "devDependencies": {
+    "@types/mkdirp": "^1.0.2"
   }
 }
