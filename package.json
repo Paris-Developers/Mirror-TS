@@ -19,7 +19,6 @@
     "geo-tz": "latest",
     "mkdirp": "latest",
     "node-fetch": "^2.6.1",
-    "simple-node-logger": "latest",
     "tslog": "^3.3.2",
     "typescript": "^4.5.5",
     "ytdl": "latest"
