@@ -5,6 +5,8 @@ const fetch = require("node-fetch");
 
 exports.commandName = 'nasa';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
+
 exports.registerData = (client) => {
     return {
         name: this.commandName,
@@ -13,10 +15,6 @@ exports.registerData = (client) => {
 };
 
 exports.run = async (client,interaction) => {
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     await interaction.deferReply(); // this command can take a while to respond, so we need to defer the reply.
     let res = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${client.config.nasa_token}`);
     let jsonData = await res.json();

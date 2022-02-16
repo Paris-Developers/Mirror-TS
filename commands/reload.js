@@ -5,6 +5,8 @@ const { Permissions } = require('discord.js');
 
 exports.commandName = 'reload';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
+
 exports.registerData = (client) => {
     return {
         name: this.commandName,
@@ -25,10 +27,6 @@ exports.registerData = (client) => {
 
 
 exports.run = async (client, interaction) => {
-    if(!(await client.permissionCheck(client,interaction,Permissions.FLAGS.SEND_MESSAGES))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     const commandName = interaction.options.getString('command');
 
     if (!client.commands.has(commandName) && !client.keywords.has(commandName)) { //neither enmap has it so just exit

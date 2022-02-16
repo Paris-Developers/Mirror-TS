@@ -5,6 +5,8 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'kawaii';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS];
+
 exports.registerData = (client) => {
     return {
         name: this.commandName,
@@ -13,10 +15,6 @@ exports.registerData = (client) => {
 };
 
 exports.run = async (client,interaction) => {
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     //fetches the nekos.best api
     let res = await fetch(`https://nekos.best/api/v1/wink`);
     let jsonData = await res.json();

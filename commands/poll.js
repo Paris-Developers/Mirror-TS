@@ -2,7 +2,35 @@
 //Returns a custom in depth poll
 const {MessageEmbed, ReactionCollector, Message, Permissions} = require('discord.js');
 
+const progBar = [ //remember to index this properly!
+    '[                   ]',
+    '[■                 ]',
+    '[■■                ]',
+    '[■■■              ]',
+    '[■■■■            ]',
+    '[■■■■■          ]',
+    '[■■■■■■        ]',
+    '[■■■■■■■      ]',
+    '[■■■■■■■■    ]',
+    '[■■■■■■■■■  ]',
+    '[■■■■■■■■■■]'
+]
+const emoteIndex = {
+    '1️⃣': 0,
+    '2️⃣': 1,
+    '3️⃣': 2,
+    '4️⃣': 3,
+    '5️⃣': 4,
+    '6️⃣': 5,
+    '7️⃣': 7,
+    '8️⃣': 8,
+    '9️⃣': 9,
+    '🔟': 10
+};
+
 exports.commandName = 'poll';
+
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS,Permissions.FLAGS.EMBED_LINKS];
 
 exports.registerData = (client) => {
     return {
@@ -73,38 +101,7 @@ exports.registerData = (client) => {
     }
 }
 
-const progBar = [ //remember to index this properly!
-    '[                   ]',
-    '[■                 ]',
-    '[■■                ]',
-    '[■■■              ]',
-    '[■■■■            ]',
-    '[■■■■■          ]',
-    '[■■■■■■        ]',
-    '[■■■■■■■      ]',
-    '[■■■■■■■■    ]',
-    '[■■■■■■■■■  ]',
-    '[■■■■■■■■■■]'
-]
-const emoteIndex = {
-    '1️⃣': 0,
-    '2️⃣': 1,
-    '3️⃣': 2,
-    '4️⃣': 3,
-    '5️⃣': 4,
-    '6️⃣': 5,
-    '7️⃣': 7,
-    '8️⃣': 8,
-    '9️⃣': 9,
-    '🔟': 10
-};
-
 exports.run = async (client, interaction) => { 
-    //Checks discord permissions for the guild
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.MANAGE_MESSAGES,Permissions.FLAGS.ADD_REACTIONS,Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
     client.logger.debug(options);
     //TODO: error test for empty arguements

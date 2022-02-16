@@ -24,6 +24,8 @@ let gav_records = new Enmap({name: 'gav_records'}); //named enmaps are persisten
 
 exports.commandName = 'gavin';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
+
 exports.registerData = (client) => {
     return {
         name: this.commandName,
@@ -68,10 +70,6 @@ exports.registerData = (client) => {
 
 
 exports.run = async (client, interaction) => {
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.warn(`Missing permissions in channel: ${interaction.channel.name}`);
-        return;
-    }
     options = interaction.options;
     if(options.getSubcommand() == 'all'){ // subcommand for printing all the data
         let bench = gav_records.ensure('bench',365);

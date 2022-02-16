@@ -2,6 +2,8 @@ const { MessageEmbed,Permissions } = require('discord.js');
 
 exports.commandName = 'invite';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
+
 exports.registerData = (client) => {
     return {
         name: this.commandName,
@@ -10,11 +12,6 @@ exports.registerData = (client) => {
 };
 
 exports.run = async (client, interaction) => {
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
-
     const embed = new MessageEmbed()
         .setTitle('**__Invite Mirror__**')
         .setDescription('Want to invite Mirror to your own server? Click the link above.')

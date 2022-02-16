@@ -5,6 +5,8 @@ const fetch = require('node-fetch');
 
 exports.commandName = 'stock';
 
+exports.requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS];
+
 exports.registerData = (client) => {
     return {
         name: this.commandName,
@@ -19,11 +21,6 @@ exports.registerData = (client) => {
 }
 
 exports.run = async (client, interaction) => {
-    //checks to see if the bot can send a message in this guild
-    if(!(await client.permissionsCheck(client,interaction,[Permissions.FLAGS.SEND_MESSAGES,Permissions.FLAGS.EMBED_LINKS]))){
-        client.logger.warn(`Missing permissions to use ${this.commandName} in channel: ${interaction.channel.name}, in ${interaction.guild.name}`);
-        return;
-    }
     //tests to see if the command was passed in with arguements
     if(!interaction.options.getString("tickers")){ 
         const embed = new MessageEmbed()
