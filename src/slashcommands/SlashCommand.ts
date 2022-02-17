@@ -1,10 +1,14 @@
 //All slash commands derive from this interface
 import { Bot } from '../Bot';
-import { CommandInteraction, ApplicationCommandData } from 'discord.js';
+import {
+	ChatInputApplicationCommandData,
+	CommandInteraction,
+} from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
 
 export interface SlashCommand {
 	name: string;
-	registerData: ApplicationCommandData;
+	registerData: ChatInputApplicationCommandData;
 	requiredPermissions: Array<bigint>;
 	run(bot: Bot, interaction: CommandInteraction): Promise<void>;
 }
