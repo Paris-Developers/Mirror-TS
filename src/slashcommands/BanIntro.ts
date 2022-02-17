@@ -1,11 +1,9 @@
 //Call: Slash command banintro
 //Removes a selected users intro
 import {
-	ApplicationCommandData,
 	CommandInteraction,
 	CacheType,
 	GuildMember,
-	ThreadChannel,
 	TextChannel,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';

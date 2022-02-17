@@ -1,0 +1,46 @@
+//Call: Slash command nasa
+//Returns the Nasa Image of the Day and corresponding description
+import {
+	CacheType,
+	ChatInputApplicationCommandData,
+	CommandInteraction,
+	MessageEmbed,
+	Permissions,
+} from 'discord.js';
+import fetch from 'node-fetch';
+import { Bot } from '../Bot';
+import { SlashCommand } from './SlashCommand';
+import config from '../../config.json';
+
+export class Nasa implements SlashCommand {
+	name: string = 'nasa';
+	registerData: ChatInputApplicationCommandData = {
+		name: this.name,
+		description: 'Get daily astronomy pictures',
+	};
+	requiredPermissions: bigint[] = [
+		Permissions.FLAGS.SEND_MESSAGES,
+		Permissions.FLAGS.EMBED_LINKS,
+	];
+	async run(
+		bot: Bot,
+		interaction: CommandInteraction<CacheType>
+	): Promise<void> {
+		await interaction.deferReply(); // this command can take a while to respond, so we need to defer the reply.
+		let res = await fetch(
+			`https://api.nasa.gov/planetary/apod?api_key=${config.nasa_token}`
+		);
+		let jsonData = await res.json();
+		let footer = `${jsonData.date} NASA Astronomy Picture of the day`; //we need this for the deprecation error we are getting with .setFooter()
+		bot.logger.debug(jsonData); // <- remove eventually;
+		var embed = new MessageEmbed()
+			.setColor('#FFFFFF')
+			.setDescription(`${jsonData.explanation.substr(0, 200)}...`)
+			.setFooter(footer)
+			.setImage(jsonData.url)
+			.setTitle(`**${jsonData.title}**`)
+			.setURL('https://apod.nasa.gov/apod/astropix.html');
+		if (jsonData.copyright) embed.setAuthor(jsonData.copyright); //checks to see if the copyright item exists, then it will include it in the author slot.
+		interaction.editReply({ embeds: [embed] }); //technically deferReply() creates the reply, so we need to edit that.
+	}
+}

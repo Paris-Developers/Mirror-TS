@@ -1,4 +1,7 @@
-import { KeywordTest } from './KeywordTest';
-import { Keyword } from './Keyword';
+//Autobuilt by build.bat 
+import { Keyword } from './Keyword'; 
+import { KeywordTest } from './KeywordTest'; 
 
-export let Keywords: Array<Keyword> = [new KeywordTest()];
+export let Keywords: Array<Keyword> = [
+ new KeywordTest(),
+];
