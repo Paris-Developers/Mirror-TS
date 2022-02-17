@@ -2,12 +2,12 @@
 //Returns a greeting reply to the user
 import { Bot } from '../Bot';
 import { Permissions, CommandInteraction, CacheType } from 'discord.js';
-import { Command } from './Command';
+import { SlashCommand } from './SlashCommand';
 
-export class Test implements Command {
-	public commandName = 'test';
+export class Test implements SlashCommand {
+	public name = 'test';
 	public registerData = {
-		name: this.commandName,
+		name: this.name,
 		description: 'Replies with your name!',
 	};
 	public requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];

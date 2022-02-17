@@ -14,6 +14,7 @@ let options = {
 let bot = new Bot(
 	config.token,
 	new Client(options),
+	'$',
 	config.mode,
 	config.test_server
 );

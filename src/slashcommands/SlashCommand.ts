@@ -1,10 +1,9 @@
-//Call: Slash command test
-//Returns a greeting reply to the user
+//All slash commands derive from this interface
 import { Bot } from '../Bot';
 import { CommandInteraction, ApplicationCommandData } from 'discord.js';
 
-export interface Command {
-	commandName: string;
+export interface SlashCommand {
+	name: string;
 	registerData: ApplicationCommandData;
 	requiredPermissions: Array<bigint>;
 	run(bot: Bot, interaction: CommandInteraction): Promise<void>;

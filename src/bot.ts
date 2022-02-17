@@ -2,10 +2,11 @@ import { Client } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
-import { readdir } from 'fs';
-import { Commands } from './commands/Commands';
+import { SlashCommands } from './slashcommands/SlashCommands';
+import { Keywords } from './keywords/Keywords';
 import { Events } from './events/Events';
-import Enmap from 'enmap';
+import { SlashCommand } from './slashcommands/SlashCommand';
+import { Keyword } from './keywords/Keyword';
 
 export class Bot {
 	public logger: CustomLogger;
@@ -14,11 +15,13 @@ export class Bot {
 	public permissionsCheck = permissionsCheck;
 
 	//data stores
-	public commands: Enmap = Commands;
+	public commands: Array<SlashCommand> = SlashCommands;
+	public keywords: Array<Keyword> = Keywords;
 
 	constructor(
 		private token: string,
 		public client: Client,
+		public prefix: string,
 		private mode: string,
 		private test_server: string
 	) {

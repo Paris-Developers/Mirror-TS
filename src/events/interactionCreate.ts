@@ -8,9 +8,13 @@ export class InteractionCreate implements EventHandler {
 	async process(bot: Bot, interaction: CommandInteraction) {
 		if (!interaction.isCommand()) return;
 
-		if (!bot.commands.has(interaction.commandName)) return;
+		//attempt to find the command from the array of all of them
+		let command = bot.commands.find(
+			(command) => command.name === interaction.commandName
+		);
 
-		let command = bot.commands.get(interaction.commandName);
+		//we didn't find it, exit
+		if (!command) return;
 
 		//if the command requires permissions
 		if (command.requiredPermissions) {
@@ -24,12 +28,12 @@ export class InteractionCreate implements EventHandler {
 				// We don't have all the permissions we need. Log and return.
 				if (!(interaction.channel instanceof TextChannel)) {
 					bot.logger.error(
-						`Somehow permissionsCheck returned false in a non-textchannel. Offending command: ${command.commandName}`
+						`Somehow permissionsCheck returned false in a non-textchannel. Offending command: ${command.name}`
 					);
 				} else {
 					bot.logger.warn(
 						`Missing permissions to use ${
-							command.commandName
+							command.name
 						} in channel: ${interaction.channel!.name}, in ${
 							interaction.guild!.name
 						}`
