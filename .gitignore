@@ -6,3 +6,4 @@ local_files/
 mirror.flp
 logs/
 built/
+.prettierrc

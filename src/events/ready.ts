@@ -1,9 +1,10 @@
-import { CommandInteraction } from "discord.js";
-import { Bot } from "../bot";
+import { EventHandler } from './EventHandler';
+import { Bot } from '../Bot';
 
-module.exports = async (bot: Bot) => {
-
-    bot.logger.info("Registering slash commands");
-    bot.registerSlashCommands();
-
+export class Ready implements EventHandler {
+	eventName = 'ready';
+	async process(bot: Bot): Promise<void> {
+		bot.logger.info('Logged in');
+		bot.registerSlashCommands();
+	}
 }
