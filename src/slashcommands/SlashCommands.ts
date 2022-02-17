@@ -12,6 +12,8 @@ import { Kawaii } from './Kawaii';
 import { Leave } from './Leave'; 
 import { Mirror } from './Mirror'; 
 import { Nasa } from './Nasa'; 
+import { News } from './News'; 
+import { Poll } from './Poll'; 
 import { SlashCommand } from './SlashCommand'; 
 import { Test } from './Test'; 
 
@@ -29,5 +31,7 @@ export let SlashCommands: Array<SlashCommand> = [
  new Leave(),
  new Mirror(),
  new Nasa(),
+ new News(),
+ new Poll(),
  new Test(),
 ];

@@ -28,7 +28,8 @@ const progBar = [
 	'[■■■■■■■■■  ]',
 	'[■■■■■■■■■■]',
 ];
-const emoteIndex = {
+type index = { [index: string]: number };
+const emoteIndex: index = {
 	'1️⃣': 0,
 	'2️⃣': 1,
 	'3️⃣': 2,
@@ -143,7 +144,7 @@ export class Poll implements SlashCommand {
 					interaction.user.tag
 				}, open for ${interaction.options.getInteger('time')} minutes.`
 			);
-		let emoteVal = {
+		let emoteVal: index = {
 			'1️⃣': 0,
 			'2️⃣': 0,
 			'3️⃣': 0,
@@ -204,15 +205,16 @@ export class Poll implements SlashCommand {
 					value: `${
 						progBar[Math.round((emoteVal[emoteKeys[ctr]] / total) * 10)]
 					} **${Math.round((emoteVal[emoteKeys[ctr]] / total) * 100)}%**`,
+					inline: false,
 				};
 				ctr += 1;
 			}
 			message.edit({ embeds: [embed] });
 		});
 		collector.on('remove', (reaction, user) => {
-			client.logger.debug(`Removed ${reaction.emoji.name} from ${user.tag}`);
+			bot.logger.debug(`Removed ${reaction.emoji.name} from ${user.tag}`);
 			total = total - 1;
-			emoteVal[reaction.emoji.name] -= 1; //saves number of votes for each emoji
+			emoteVal[reaction.emoji.name!] -= 1; //saves number of votes for each emoji
 			ctr = 0;
 			for (let arg of options) {
 				//rewrite the embed and send the edits
@@ -221,6 +223,7 @@ export class Poll implements SlashCommand {
 					value: `${
 						progBar[Math.round((emoteVal[emoteKeys[ctr]] / total) * 10)]
 					} ${Math.round((emoteVal[emoteKeys[ctr]] / total) * 100)}%`,
+					inline: false,
 				};
 				ctr += 1;
 			}
@@ -228,8 +231,10 @@ export class Poll implements SlashCommand {
 		});
 		//when the collectors end send a message to the console.
 		collector.on('end', (collected) => {
-			embed.footer = `Poll created by ${interaction.user.tag}, poll closed.`;
-			client.logger.debug(
+			embed.footer = {
+				text: `Poll created by ${interaction.user.tag}, poll closed.`,
+			};
+			bot.logger.debug(
 				`Ending collection, Collected ${total} items. ${emoteVal}`
 			);
 		});
