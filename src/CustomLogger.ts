@@ -1,5 +1,5 @@
 import {ILogObject, Logger, TLogLevelName, TTransportLogger} from 'tslog';
-import { appendFileSync } from 'fs';
+import { appendFile } from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
 
@@ -54,13 +54,15 @@ export class CustomLogger {
     error(message: string): void {
         this.logger.error(message);
     }
-    
+
     fatal(message: string): void {
         this.logger.fatal(message);
     }
 
     logToTransport(logObject: ILogObject) {
-        appendFileSync(this.savePath, JSON.stringify(logObject) + "\n");
+        appendFile(this.savePath, JSON.stringify(logObject) + "\n", (err) => {
+            if (err) console.log(err); //something is wrong in logging, print directly to console
+        });
     }
 
 }
