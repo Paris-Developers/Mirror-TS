@@ -20,16 +20,8 @@ export class Bot {
 
     public async start(): Promise<void> {
 
-        //perform config checks
-        checkConfig();
+        this.logger.debug("test");
 
-        //import relevant files
-        importEvents();
-        importCommands();
-        importKeywords();
-
-        //Uses Token to login to the client
-        client.login(config.token);
     }
 
 }
