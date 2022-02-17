@@ -1,37 +1,66 @@
-import {ILogObject, Logger, TLogLevelName} from 'tslog';
-import { appendFile } from 'fs';
+import {ILogObject, Logger, TLogLevelName, TTransportLogger} from 'tslog';
+import { appendFileSync } from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
 
 
-
 export class CustomLogger {
-    public logger: Logger;
+    private logger: Logger;
 
     constructor(
         private savePath: string,
         private saveLevel: TLogLevelName
     ) {
         this.logger = new Logger();
-        //only attach the logging to file function after the directory has been created
-        mkdirp(path.dirname(this.savePath)).then(() => {
-            this.logger.attachTransport({
-                silly: this.logToTransport,
-                debug: this.logToTransport,
-                trace: this.logToTransport,
-                info: this.logToTransport,
-                warn: this.logToTransport,
-                error: this.logToTransport,
-                fatal: this.logToTransport,
-              },
-              this.saveLevel)
-        });        
+    }
+
+    initialize = async () => {
+        //only attach the logging to file function after the directory has been created 
+        await mkdirp(path.dirname(this.savePath));
+        //bind the transport function so we can access the savePath from this
+        const boundTransport = this.logToTransport.bind(this);
+        
+        //attach all transports
+        this.logger.attachTransport({
+                silly: boundTransport,
+                debug: boundTransport,
+                trace: boundTransport,
+                info: boundTransport,
+                warn: boundTransport,
+                error: boundTransport,
+                fatal: boundTransport,
+            },
+            this.saveLevel);
+    }
+
+    silly(message: string): void {
+        this.logger.silly(message);
+    }
+
+    debug(message: string): void {
+        this.logger.debug(message);
+    }
+
+    trace(message: string): void {
+        this.logger.trace(message);
+    }
+
+    info(message: string): void {
+        this.logger.info(message);
+    }
+    warn(message: string): void {
+        this.logger.warn(message);
+    }
+    error(message: string): void {
+        this.logger.error(message);
+    }
+    
+    fatal(message: string): void {
+        this.logger.fatal(message);
     }
 
     logToTransport(logObject: ILogObject) {
-        appendFile(this.savePath, JSON.stringify(logObject), (err) => {
-            if (err) console.log(err); // there's an error in the logger, so we should hard print to console
-        });
+        appendFileSync(this.savePath, JSON.stringify(logObject) + "\n");
     }
 
 }

@@ -4,7 +4,7 @@ import { TLogLevelName, Logger } from 'tslog';
 
 export class Bot {
 
-    private logger: Logger;
+    public logger: CustomLogger;
 
     constructor(
         private token: string,
@@ -13,13 +13,14 @@ export class Bot {
     ){
         //initialize logger
         let now = new Date();
-        let logfileName = `${now.getMonth()+1}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
+        let logfileName = `./logs/${now.getMonth()+1}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
         let logLevel: TLogLevelName = this.mode == 'debug' ? "debug" : "info";
-        this.logger = new CustomLogger(logfileName, logLevel).logger;
+        this.logger = new CustomLogger(logfileName, logLevel);
     }
 
     public async start(): Promise<void> {
 
+        await this.logger.initialize();
         this.logger.debug("test");
 
     }

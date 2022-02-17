@@ -2,9 +2,10 @@
   "name": "mirror-java",
   "version": "1.0.0",
   "description": "Mirror Discord Bot TypeScript edition",
-  "main": "index.js",
+  "main": "built/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./built/index.js"
   },
   "author": "Ford Friedel",
   "license": "ISC",
