@@ -14,7 +14,7 @@ export class CustomLogger {
         this.logger = new Logger();
     }
 
-    initialize = async () => {
+    async initialize() {
         //only attach the logging to file function after the directory has been created 
         await mkdirp(path.dirname(this.savePath));
         //bind the transport function so we can access the savePath from this
