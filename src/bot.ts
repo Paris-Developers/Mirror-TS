@@ -33,7 +33,7 @@ export class Bot {
 
 	public async start(): Promise<void> {
 		await this.logger.initialize();
-		this.logger.debug('Logging initialized');
+		this.logger.info('Logging initialized');
 
 		this.registerEvents();
 
