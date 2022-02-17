@@ -1,12 +1,8 @@
 import { Message } from 'discord.js';
 import { Bot } from '../Bot';
-import { EventHandler } from './EventHandler';
-import { Command } from '../commands/SlashCommand';
 import { Keyword } from '../keywords/Keyword';
-
-function isCommandType(command: Command | Keyword): command is Command {
-	return (command as Command).registerData !== undefined;
-}
+import { MessageCommand } from '../messagecommands/MessageCommand';
+import { EventHandler } from './EventHandler';
 
 export class MessageCreate implements EventHandler {
 	eventName = 'messageCreate';
@@ -27,15 +23,14 @@ export class MessageCreate implements EventHandler {
 			? args[0].slice(prefix.length).toLowerCase()
 			: args[0].toLowerCase(); //if it's a command we need to slice out the prefix
 		args.shift(); //remove the first argument because we won't need to pass the command/keyword name to the triggered function
-		const command = isCommand
-			? bot.commands.find((command) => command.name === commandName)
+		const command: undefined | Keyword | MessageCommand = isCommand
+			? bot.messageCommands.find(
+					(command) => command.name === commandName
+			  )
 			: bot.keywords.find((keyword) => keyword.name === commandName); //if it's a command, get it from command enmap, otherwise check keyword enmap
 
 		//if the command/keyword doesn't exist, just exit
 		if (!command) return;
-
-		//dont run slash commands using this method
-		if (isCommandType(command) && command.registerData) return;
 
 		//run command/keyword
 		command.run(bot, message, args);

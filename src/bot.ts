@@ -2,11 +2,13 @@ import { Client } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
-import { SlashCommands } from './slashcommands/SlashCommands';
-import { Keywords } from './keywords/Keywords';
 import { Events } from './events/Events';
 import { SlashCommand } from './slashcommands/SlashCommand';
+import { SlashCommands } from './slashcommands/SlashCommands';
 import { Keyword } from './keywords/Keyword';
+import { Keywords } from './keywords/Keywords';
+import { MessageCommand } from './messagecommands/MessageCommand';
+import { MessageCommands } from './messagecommands/MessageCommands';
 
 export class Bot {
 	public logger: CustomLogger;
@@ -15,7 +17,8 @@ export class Bot {
 	public permissionsCheck = permissionsCheck;
 
 	//data stores
-	public commands: Array<SlashCommand> = SlashCommands;
+	public slashCommands: Array<SlashCommand> = SlashCommands;
+	public messageCommands: Array<MessageCommand> = MessageCommands;
 	public keywords: Array<Keyword> = Keywords;
 
 	constructor(
@@ -74,7 +77,7 @@ export class Bot {
 			}
 		}
 
-		this.commands.forEach(async (command, commandName) => {
+		this.slashCommands.forEach(async (command, commandName) => {
 			if (command.registerData) {
 				//check the command has slash command data
 				let registerData = command.registerData;

@@ -9,7 +9,7 @@ export class InteractionCreate implements EventHandler {
 		if (!interaction.isCommand()) return;
 
 		//attempt to find the command from the array of all of them
-		let command = bot.commands.find(
+		let command = bot.slashCommands.find(
 			(command) => command.name === interaction.commandName
 		);
 
