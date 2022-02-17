@@ -23,7 +23,7 @@ export class Bot {
     ){
         //initialize logger
         let now = new Date();
-        let logfileName = `./logs/${now.getMonth()+1}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
+        let logfileName = `${__dirname}/../logs/${now.getMonth()+1}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
         let logLevel: TLogLevelName = this.mode == 'debug' ? "debug" : "info";
         this.logger = new CustomLogger(logfileName, logLevel);
     }
@@ -41,11 +41,11 @@ export class Bot {
     }
 
     async importCommands() {    
-        readdir("./commands/", (err, files) => {
+        readdir(`${__dirname}/commands/`, (err, files) => {
             if (err) return this.logger.error(err.message);
             files.forEach(file => {
                 if (!file.endsWith(".js")) return;
-                let props = require(`./commands/${file}`);
+                let props = require(`${__dirname}/commands/${file}`);
                 let commandName = props.commandName;
                 this.logger.info(`Attempting to load command ${commandName}`);
                 this.commands.set(commandName, props);
@@ -54,11 +54,11 @@ export class Bot {
     }
 
     async importEvents() {
-        readdir("./events/", (err, files) => {
+        readdir(`${__dirname}/events/`, (err, files) => {
             if (err) return this.logger.error(err.message);
             files.forEach(file => {
                 if (!file.endsWith(".js")) return;
-                const event = require(`./events/${file}`);
+                const event = require(`${__dirname}/events/${file}`);
                 let eventName = file.split(".")[0];
                 this.client.on(eventName, event.bind(null, this));
             });
