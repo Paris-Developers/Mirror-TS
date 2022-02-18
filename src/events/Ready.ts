@@ -7,5 +7,8 @@ export class Ready implements EventHandler {
 		bot.logger.info('Logged in');
 		bot.registerSlashCommands();
 		bot.scheduleBirthdays();
+		bot.client.user?.setActivity(' lofi | /help', {
+			type: 'LISTENING',
+		});
 	}
 }
