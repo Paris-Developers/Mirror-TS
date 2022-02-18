@@ -15,8 +15,8 @@ for f in "./"/*
 do
     filename=$(basename $f)
     importName=${filename%.*}
-    echo $importName
     if [[ "$importName" -ne "SlashCommands" ]]; then
+        echo $importName
         printf "import { %s } from './%s';" $importName >> SlashCommands.ts
     fi
 done
