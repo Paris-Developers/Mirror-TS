@@ -1,6 +1,6 @@
 # Mirror TS
 
-Mirror is an informational Discord bot.
+Mirror is an informational Discord bot. Dott
 
 Mirror was created by Fordle#0001 and Phantasm#0001
 
