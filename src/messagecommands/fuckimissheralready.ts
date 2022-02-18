@@ -14,7 +14,7 @@ import fetch from 'node-fetch';
 //update? Still in love, I just want to hold her close
 
 export class fuckimissheralready implements MessageCommand {
-	name: string = 'fuckimessheralready';
+	name: string = 'fuckimissheralready';
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.MANAGE_MESSAGES,
 		Permissions.FLAGS.SEND_MESSAGES,

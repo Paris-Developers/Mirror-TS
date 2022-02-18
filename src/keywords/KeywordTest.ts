@@ -6,6 +6,7 @@ import { Keyword } from './Keyword';
 
 export class KeywordTest implements Keyword {
 	name = 'keywordtest';
+	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
 		message: Message<boolean>,

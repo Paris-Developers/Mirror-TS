@@ -9,6 +9,7 @@ import { Keyword } from './keywords/Keyword';
 import { Keywords } from './keywords/Keywords';
 import { MessageCommand } from './messagecommands/MessageCommand';
 import { MessageCommands } from './messagecommands/MessageCommands';
+import Enmap from 'enmap';
 
 export class Bot {
 	public logger: CustomLogger;
@@ -20,6 +21,7 @@ export class Bot {
 	public slashCommands: Array<SlashCommand> = SlashCommands;
 	public messageCommands: Array<MessageCommand> = MessageCommands;
 	public keywords: Array<Keyword> = Keywords;
+	public songRecs: Enmap = new Enmap({ name: 'songs' });
 
 	constructor(
 		private token: string,
@@ -36,6 +38,9 @@ export class Bot {
 		}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
 		let logLevel: TLogLevelName = this.mode == 'debug' ? 'debug' : 'info';
 		this.logger = new CustomLogger(logfileName, logLevel);
+
+		//fetch enmaps
+		this.songRecs.fetchEverything();
 	}
 
 	public async start(): Promise<void> {

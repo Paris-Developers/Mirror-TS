@@ -14,6 +14,8 @@ import { Mirror } from './Mirror';
 import { Nasa } from './Nasa'; 
 import { News } from './News'; 
 import { Poll } from './Poll'; 
+import { Rockcrafts } from './Rockcrafts'; 
+import { Sicko } from './Sicko'; 
 import { SlashCommand } from './SlashCommand'; 
 import { Test } from './Test'; 
 
@@ -33,5 +35,7 @@ export let SlashCommands: Array<SlashCommand> = [
  new Nasa(),
  new News(),
  new Poll(),
+ new Rockcrafts(),
+ new Sicko(),
  new Test(),
 ];
