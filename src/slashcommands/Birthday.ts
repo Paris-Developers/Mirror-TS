@@ -73,9 +73,34 @@ const months = [
 		value: 'december',
 	},
 ];
-
-export let birthdays = new Enmap({ name: 'birthdays' });
-export let birthdayChannels = new Enmap({ name: 'channels' });
+const timezones = [
+	{
+		name: 'EST',
+		value: 'est',
+	},
+	{
+		name: 'CST',
+		value: 'cst',
+	},
+	{
+		name: 'MST',
+		value: 'mst',
+	},
+	{
+		name: 'PST',
+		value: 'pst',
+	},
+];
+type timeIndex = { [index: string]: number };
+const timezoneCode = {
+	est: 1,
+	cst: 0,
+	gmt: -1,
+	pst: -2,
+} as timeIndex;
+export let bdayDates = new Enmap({ name: 'bdayDates' });
+export let bdayChannels = new Enmap({ name: 'bdayChannels' });
+export let bdayTimes = new Enmap({ name: 'bdayTimes' });
 
 export class Birthday implements SlashCommand {
 	name: string = 'birthday';
@@ -100,7 +125,7 @@ export class Birthday implements SlashCommand {
 					{
 						name: 'day',
 						description: 'The date of your birthday',
-						type: ApplicationCommandOptionTypes.NUMBER,
+						type: ApplicationCommandOptionTypes.INTEGER,
 						required: true,
 					},
 				],
@@ -131,12 +156,27 @@ export class Birthday implements SlashCommand {
 				description:
 					'Edit the time the birthday message is sent in your local time',
 				type: 1,
-				required: false,
+				require: false,
 				options: [
 					{
-						name: 'time',
-						description: 'The time for the birthday message',
-						type: ApplicationCommandOptionTypes.NUMBER,
+						name: 'hour',
+						description:
+							'The hour you want to send Birthday messages in local time, military format (0-23)',
+						type: 'INTEGER',
+						required: true,
+					},
+					{
+						name: 'minute',
+						description: 'The minut you want to send Birthday messages',
+						type: 'INTEGER',
+						required: true,
+					},
+					{
+						name: 'timezone',
+						description: 'Your local timezone',
+						type: 'STRING',
+						required: true,
+						choices: timezones,
 					},
 				],
 			},
@@ -151,14 +191,14 @@ export class Birthday implements SlashCommand {
 			//TODO: Permission Check
 
 			//ensure that the enmap has stored the user, and stores their birthday. If not create it and give it an empty string.
-			var userBirthday = birthdays.ensure(`${interaction.user.id}`, '');
+			var userBirthday = bdayDates.ensure(`${interaction.user.id}`, '');
 			//store the date of birth in numerical form
 			let formattedBirthday = `${interaction.options.getInteger('day')}-${
 				monthCode[interaction.options.getString('month')!]
 			}`;
 			//place the updated guild JSON in the enmap
-			birthdays.set(`${interaction.user.id}`, userBirthday);
-			birthdays.forEach((element) => console.log(element));
+			bdayDates.set(`${interaction.user.id}`, userBirthday);
+			bdayDates.forEach((element) => console.log(element));
 			interaction.reply({
 				content: `Successfully set your birthday to ${interaction.options.getInteger(
 					'day'
@@ -172,15 +212,12 @@ export class Birthday implements SlashCommand {
 			//TODO: verify user is an admin
 
 			//ensure that the enmap has stored the guild and brings in the JSON. If not create it and give it an empty JSON.
-			var guildChannel = birthdayChannels.ensure(
-				`${interaction.guild!.id}`,
-				''
-			);
+			var guildChannel = bdayChannels.ensure(`${interaction.guild!.id}`, '');
 			//store the date of birth in numerical form
 			guildChannel = interaction.options.getChannel('channel');
 			//place the updated guild JSON in the enmap
-			birthdayChannels.set(`${interaction.guild!.id}`, guildChannel.id);
-			birthdayChannels.forEach((element) => console.log(element));
+			bdayChannels.set(`${interaction.guild!.id}`, guildChannel.id);
+			bdayChannels.forEach((element) => console.log(element));
 			interaction.reply({
 				content: `Successfully set your birthday Channel to ${interaction.options.getChannel(
 					'channel'
@@ -188,6 +225,37 @@ export class Birthday implements SlashCommand {
 				ephemeral: false,
 			});
 			return;
+		}
+		if (interaction.options.getSubcommand() == 'time') {
+			let hour = interaction.options.getInteger('hour')!;
+			if (hour > 23 || hour < 0)
+				return interaction.reply({
+					content:
+						'Invalid hour, please use military format (0-23) where 0 represents midnight.',
+					ephemeral: true,
+				});
+			var minute = interaction.options.getInteger('minute')!;
+			if (minute > 60 || minute < 0)
+				return interaction.reply({
+					content: 'Invalid minute, please provide an integer between 0 and 60',
+					ephemeral: true,
+				});
+			var timezone = interaction.options.getString('timezone')!;
+			let tzChange = timezoneCode[timezone];
+			let cst = hour + tzChange;
+			let date = 'x';
+			if (cst + tzChange >= 24) {
+				date = 'plus';
+				cst -= 24;
+			}
+			if (cst + tzChange < 0) {
+				date = 'minus';
+				cst += 24;
+			}
+			let infostring = bdayChannels.ensure(`${interaction.guild!.id}`, '');
+			infostring = `${minute}-${hour}-${date}-${timezone}`; //readable splitable string that will be used in creating crons MM-HH-DATEMOD-TIMEZONE
+			bdayChannels.set(`${interaction.guild!.id}`, infostring);
+			//TODO start the CronJob
 		}
 		return;
 		if (interaction.options.getSubcommand() == 'message') {
