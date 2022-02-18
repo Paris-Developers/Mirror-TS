@@ -21,7 +21,7 @@ export class BanIntro implements SlashCommand {
 			{
 				name: 'user',
 				description: 'Member to remove intro',
-				type: ApplicationCommandOptionTypes.USER,
+				type: 6,
 				required: true,
 			},
 		],
