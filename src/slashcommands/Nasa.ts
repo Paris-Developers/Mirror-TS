@@ -36,11 +36,11 @@ export class Nasa implements SlashCommand {
 		var embed = new MessageEmbed()
 			.setColor('#FFFFFF')
 			.setDescription(`${jsonData.explanation.substr(0, 200)}...`)
-			.setFooter(footer)
+			.setFooter({ text: footer })
 			.setImage(jsonData.url)
 			.setTitle(`**${jsonData.title}**`)
 			.setURL('https://apod.nasa.gov/apod/astropix.html');
-		if (jsonData.copyright) embed.setAuthor(jsonData.copyright); //checks to see if the copyright item exists, then it will include it in the author slot.
+		if (jsonData.copyright) embed.setAuthor({ name: jsonData.copyright }); //checks to see if the copyright item exists, then it will include it in the author slot.
 		interaction.editReply({ embeds: [embed] }); //technically deferReply() creates the reply, so we need to edit that.
 	}
 }

@@ -39,7 +39,7 @@ export class Join implements SlashCommand {
 		});
 		let player = createAudioPlayer();
 		connection.subscribe(player);
-		const mirrormp3 = createAudioResource('./resources/music/mirror.mp3');
+		const mirrormp3 = createAudioResource('./music/mirror.mp3');
 		player.play(mirrormp3);
 		interaction.reply({ content: 'success', ephemeral: true }); //hides the reply to anyone but the user
 		return;
