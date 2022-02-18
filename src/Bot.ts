@@ -108,23 +108,23 @@ export class Bot {
 
 	async scheduleBirthdays() {
 		cron.schedule('* * * * *', async () => {
-			console.log('-----------------------------');
+			this.logger.debug('-----------------------------');
 			let time = new Date();
 			let currentTime = `${time.getHours()}-${time.getMinutes()}-${time.getSeconds()}`;
 			let today = new Date();
 			let todaysDate = `${today.getDate()}-${today.getMonth() + 1}`;
-			console.log(todaysDate, currentTime);
+			this.logger.debug(todaysDate, currentTime);
 			birthdays.forEach(async (bday, userId) => {
-				console.log(bday, userId);
+				this.logger.debug(bday, userId);
 				let stringId = userId.toString();
 				if (todaysDate == bday) {
 					birthdayChannels.forEach(async (birthChannel, birthGuild) => {
 						//TODO: If bot cannot send message, crash
 						//TODO: If bot is not in server, crash
 						let guild = this.client.guilds.cache.get(birthGuild.toString())!;
-						console.log(guild.id);
+						this.logger.debug(guild.id);
 						let bdayUser = this.client.users.cache.get(stringId);
-						console.log(bdayUser);
+						this.logger.debug(bdayUser);
 						if (!(await guild.members.fetch(stringId))) return; //if the user is not a member in the guild, end
 						let channel = this.client.channels.cache.get(
 							birthChannel.toString()
