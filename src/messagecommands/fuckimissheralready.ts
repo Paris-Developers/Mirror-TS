@@ -31,7 +31,7 @@ export class fuckimissheralready implements MessageCommand {
 		let embed = new MessageEmbed()
 			.setColor('#0071b6')
 			.setImage(jsonData.url)
-			.setFooter('I feel you bro');
+			.setFooter({ text: 'I feel you bro' });
 		message.channel.send({ embeds: [embed] });
 	}
 }
