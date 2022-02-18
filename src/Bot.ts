@@ -69,20 +69,29 @@ export class Bot {
 		if (!this.client.application?.owner) await this.client.application?.fetch(); // make sure the bot is fully fetched
 
 		if (this.mode == 'debug') {
-			let guildCommands = await this.client.guilds.cache.get(this.test_server)
-				?.commands.cache;
-			for (let [commandKey, command] of guildCommands!) {
-				await command.delete();
+			let guildCommands = await this.client.guilds.cache
+				.get(this.test_server)
+				?.commands.fetch();
+			for (let [commandKey, registeredCommand] of guildCommands!) {
+				let command = this.slashCommands.find(
+					(command) => command.name === registeredCommand.name
+				);
+				if (command) continue;
+				await registeredCommand.delete();
 				this.logger.info(
-					`Deleted ${command.name} from the guild command cache`
+					`Deleted ${registeredCommand.name} from the guild command cache`
 				);
 			}
 		} else {
-			for (let [commandKey, command] of this.client.application?.commands
-				.cache!) {
-				await command.delete();
+			let commands = await this.client.application?.commands.fetch();
+			for (let [commandKey, registeredCommand] of commands!) {
+				let command = this.slashCommands.find(
+					(command) => command.name === registeredCommand.name
+				);
+				if (command) continue;
+				await registeredCommand.delete();
 				this.logger.info(
-					`Deleted ${command.name} from the application command cache`
+					`Deleted ${registeredCommand.name} from the application command cache`
 				);
 			}
 		}

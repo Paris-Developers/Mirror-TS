@@ -11,6 +11,7 @@ import {
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
+import fetch from 'node-fetch';
 
 export class Stock implements SlashCommand {
 	name: string = 'stock';
