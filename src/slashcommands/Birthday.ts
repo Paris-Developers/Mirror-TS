@@ -131,10 +131,12 @@ export class Birthday implements SlashCommand {
 				description:
 					'Edit the time the birthday message is sent in your local time',
 				type: 1,
-				require: false,
+				required: false,
 				options: [
 					{
 						name: 'time',
+						description: 'The time for the birthday message',
+						type: ApplicationCommandOptionTypes.NUMBER,
 					},
 				],
 			},
