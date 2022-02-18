@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -d "./built" ] then
+if [ -d "./built" ]; then
     echo "Removing old built files"
     rm -r ./built
 fi
