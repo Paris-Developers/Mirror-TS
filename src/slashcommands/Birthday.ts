@@ -123,7 +123,7 @@ export class Birthday implements SlashCommand {
 			{
 				name: 'message',
 				description: 'Edit the message used when its someones birthday',
-				type: ApplicationCommandOptionTypes.STRING,
+				type: 1,
 				required: false,
 			},
 			{

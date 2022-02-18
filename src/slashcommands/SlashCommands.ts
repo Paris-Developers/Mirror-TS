@@ -1,7 +1,9 @@
 //Autobuilt by build.bat 
 import { BanIntro } from './BanIntro'; 
 import { Birthday } from './Birthday'; 
+import { Boey } from './Boey'; 
 import { Gavin } from './Gavin'; 
+import { Github } from './Github'; 
 import { Help } from './Help'; 
 import { Info } from './Info'; 
 import { Intro } from './Intro'; 
@@ -17,12 +19,19 @@ import { Poll } from './Poll';
 import { Rockcrafts } from './Rockcrafts'; 
 import { Sicko } from './Sicko'; 
 import { SlashCommand } from './SlashCommand'; 
+import { Song } from './Song'; 
+import { Songrec } from './Songrec'; 
+import { Stock } from './Stock'; 
+import { Support } from './Support'; 
 import { Test } from './Test'; 
+import { Weather } from './Weather'; 
 
 export let SlashCommands: Array<SlashCommand> = [
  new BanIntro(),
  new Birthday(),
+ new Boey(),
  new Gavin(),
+ new Github(),
  new Help(),
  new Info(),
  new Intro(),
@@ -37,5 +46,10 @@ export let SlashCommands: Array<SlashCommand> = [
  new Poll(),
  new Rockcrafts(),
  new Sicko(),
+ new Song(),
+ new Songrec(),
+ new Stock(),
+ new Support(),
  new Test(),
+ new Weather(),
 ];
