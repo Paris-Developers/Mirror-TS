@@ -13,7 +13,7 @@ cd src/slashcommands
 
 for f in "./"/*
 do
-    let filename = basename $f
+    let filename = "${basename $f}"
     let importName = ${filename##*/}
     echo importName
 done
