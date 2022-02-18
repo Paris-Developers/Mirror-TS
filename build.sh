@@ -16,7 +16,7 @@ do
     filename=$(basename $f)
     importName=${filename%.*}
     if [ "$importName" != "SlashCommands" ]; then
-        printf "import { %s } from './%s';\n" $importName >> SlashCommands.ts
+        printf "import { %s } from './%s';\n" $importName $importName >> SlashCommands.ts
     fi
 done
 #Construct array
@@ -27,7 +27,7 @@ do
     filename=$(basename $f)
     importName=${filename%.*}
     if [ "$importName" != "SlashCommands" ] && [ "$importName" != "SlashCommand" ]; then
-        printf "    new %s()," %importName>> SlashCommands.ts
+        printf "    new %s()," $importName>> SlashCommands.ts
     fi
 done
 printf "];" >> SlashCommands.ts
