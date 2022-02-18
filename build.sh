@@ -8,12 +8,12 @@ fi
 #Construct SlashCommands.ts
 echo "Compiling slash commands into SlashCommands.ts"
 cd src/slashcommands
-@echo //Autobuilt by build.bat > SlashCommands.ts
+echo "//Autobuilt by build.sh" > SlashCommands.ts
 
 
 for f in "./"/*
 do
-    let filename = "${basename $f}"
+    let filename = basename $f
     let importName = ${filename##*/}
     echo importName
 done
