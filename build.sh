@@ -14,6 +14,6 @@ echo "//Autobuilt by build.sh" > SlashCommands.ts
 for f in "./"/*
 do
     filename=$(basename $f)
-    importName=${filename##*/}
+    importName=${filename%.*}
     echo $importName
 done
