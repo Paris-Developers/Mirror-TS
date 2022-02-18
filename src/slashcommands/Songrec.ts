@@ -12,7 +12,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 
 export class Songrec implements SlashCommand {
-	name: string = 'Songrec';
+	name: string = 'songrec';
 	registerData: ChatInputApplicationCommandData = {
 		name: this.name,
 		description: 'Set your song recommendation',
