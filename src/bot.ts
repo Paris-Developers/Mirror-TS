@@ -2,6 +2,7 @@ import { Client } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
+import { msgPermsCheck } from './resources/msgPermCheck';
 import { Events } from './events/Events';
 import { SlashCommand } from './slashcommands/SlashCommand';
 import { SlashCommands } from './slashcommands/SlashCommands';
@@ -16,6 +17,7 @@ export class Bot {
 
 	//helper functions
 	public permissionsCheck = permissionsCheck;
+	public msgPermsCheck = msgPermsCheck;
 
 	//data stores
 	public slashCommands: Array<SlashCommand> = SlashCommands;

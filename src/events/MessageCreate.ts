@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from '../keywords/Keyword';
 import { MessageCommand } from '../messagecommands/MessageCommand';
@@ -24,13 +24,31 @@ export class MessageCreate implements EventHandler {
 			: args[0].toLowerCase(); //if it's a command we need to slice out the prefix
 		args.shift(); //remove the first argument because we won't need to pass the command/keyword name to the triggered function
 		const command: undefined | Keyword | MessageCommand = isCommand
-			? bot.messageCommands.find(
-					(command) => command.name === commandName
-			  )
+			? bot.messageCommands.find((command) => command.name === commandName)
 			: bot.keywords.find((keyword) => keyword.name === commandName); //if it's a command, get it from command enmap, otherwise check keyword enmap
 
 		//if the command/keyword doesn't exist, just exit
 		if (!command) return;
+
+		if (command.requiredPermissions) {
+			if (
+				!(await bot.msgPermsCheck(bot, message, command.requiredPermissions))
+			) {
+				// We don't have all the permissions we need. Log and return.
+				if (!(message.channel instanceof TextChannel)) {
+					bot.logger.error(
+						`Somehow permissionsCheck returned false in a non-textchannel. Offending command: ${command.name}`
+					);
+				} else {
+					bot.logger.warn(
+						`Missing permissions to use ${command.name} in channel: ${
+							message.channel!.name
+						}, in ${message.guild!.name}`
+					);
+				}
+				return;
+			}
+		}
 
 		//run command/keyword
 		command.run(bot, message, args);
