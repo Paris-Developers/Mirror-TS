@@ -13,7 +13,6 @@ import { MessageCommands } from './messagecommands/MessageCommands';
 import Enmap from 'enmap';
 import cron from 'node-cron';
 import { birthdays, birthdayChannels } from './slashcommands/Birthday';
-const { fetch } = require('discord.js');
 
 export class Bot {
 	public logger: CustomLogger;
