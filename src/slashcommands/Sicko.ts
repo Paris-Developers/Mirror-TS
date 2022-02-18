@@ -40,7 +40,7 @@ export class Sicko implements SlashCommand {
 		});
 		let player = createAudioPlayer();
 		connection.subscribe(player);
-		const mirrormp3 = createAudioResource('./resources/music/sicko.mp3');
+		const mirrormp3 = createAudioResource('./music/sicko.mp3');
 		player.play(mirrormp3);
 		interaction.reply('reply lol');
 		return;

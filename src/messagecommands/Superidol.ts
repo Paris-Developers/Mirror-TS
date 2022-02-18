@@ -34,7 +34,7 @@ export class Superidol implements MessageCommand {
 		});
 		let player = createAudioPlayer();
 		connection.subscribe(player);
-		const superidolmp3 = createAudioResource('./resources/music/superidol.mp3');
+		const superidolmp3 = createAudioResource('./music/superidol.mp3');
 		player.play(superidolmp3);
 	}
 }
