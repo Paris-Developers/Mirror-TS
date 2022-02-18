@@ -5,7 +5,9 @@ import path from 'path';
 
 export class CustomLogger extends Logger {
 	constructor(private savePath: string, private saveLevel: TLogLevelName) {
-		super();
+		super({
+			minLevel: saveLevel,
+		});
 	}
 
 	async initialize() {
