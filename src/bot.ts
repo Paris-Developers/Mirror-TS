@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, TextChannel } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
@@ -11,6 +11,9 @@ import { Keywords } from './keywords/Keywords';
 import { MessageCommand } from './messagecommands/MessageCommand';
 import { MessageCommands } from './messagecommands/MessageCommands';
 import Enmap from 'enmap';
+import cron from 'node-cron';
+import { birthdays, birthdayChannels } from './slashcommands/Birthday';
+const { fetch } = require('discord.js');
 
 export class Bot {
 	public logger: CustomLogger;
@@ -101,5 +104,36 @@ export class Bot {
 			}
 		});
 		return true;
+	}
+
+	async scheduleBirthdays() {
+		cron.schedule('* * * * *', async () => {
+			console.log('-----------------------------');
+			let time = new Date();
+			let currentTime = `${time.getHours()}-${time.getMinutes()}-${time.getSeconds()}`;
+			let today = new Date();
+			let todaysDate = `${today.getDate()}-${today.getMonth() + 1}`;
+			console.log(todaysDate, currentTime);
+			birthdays.forEach(async (bday, userId) => {
+				console.log(bday, userId);
+				let stringId = userId.toString();
+				if (todaysDate == bday) {
+					birthdayChannels.forEach(async (birthChannel, birthGuild) => {
+						//TODO: If bot cannot send message, crash
+						//TODO: If bot is not in server, crash
+						let guild = this.client.guilds.cache.get(birthGuild.toString())!;
+						console.log(guild.id);
+						let bdayUser = this.client.users.cache.get(stringId);
+						console.log(bdayUser);
+						if (!(await guild.members.fetch(stringId))) return; //if the user is not a member in the guild, end
+						let channel = this.client.channels.cache.get(
+							birthChannel.toString()
+						) as TextChannel;
+						if (!channel) return; //if the channel doesnt exist, or mirror cannot see it, end
+						await channel.send('Happy Birthday');
+					});
+				}
+			});
+		});
 	}
 }

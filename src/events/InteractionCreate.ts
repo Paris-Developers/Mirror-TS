@@ -32,11 +32,9 @@ export class InteractionCreate implements EventHandler {
 					);
 				} else {
 					bot.logger.warn(
-						`Missing permissions to use ${
-							command.name
-						} in channel: ${interaction.channel!.name}, in ${
-							interaction.guild!.name
-						}`
+						`Missing permissions to use ${command.name} in channel: ${
+							interaction.channel!.name
+						}, in ${interaction.guild!.name}`
 					);
 				}
 				return;

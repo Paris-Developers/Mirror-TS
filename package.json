@@ -19,13 +19,15 @@
 		"ffmpeg-static": "^4.4.1",
 		"geo-tz": "latest",
 		"mkdirp": "latest",
+		"node-cron": "latest",
 		"node-fetch": "^2.6.1",
 		"tslog": "^3.3.2",
+		"tweetnacl": "latest",
 		"typescript": "^4.5.5",
-		"ytdl": "latest",
-		"tweetnacl": "latest"
+		"ytdl": "latest"
 	},
 	"devDependencies": {
-		"@types/mkdirp": "^1.0.2"
+		"@types/mkdirp": "^1.0.2",
+		"@types/node-cron": "^3.0.1"
 	}
 }

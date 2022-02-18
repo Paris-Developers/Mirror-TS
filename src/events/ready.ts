@@ -6,5 +6,6 @@ export class Ready implements EventHandler {
 	async process(bot: Bot): Promise<void> {
 		bot.logger.info('Logged in');
 		bot.registerSlashCommands();
+		bot.scheduleBirthdays();
 	}
 }
