@@ -37,7 +37,7 @@ export class Bot {
 		//initialize logger
 		let now = new Date();
 		//have the logs sit outside the built directory as it gets removed during building
-		let logfileName = `${__dirname}/../../logs/${
+		let logfileName = `./logs/${
 			now.getMonth() + 1
 		}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
 		let logLevel: TLogLevelName = this.mode == 'debug' ? 'debug' : 'info';
