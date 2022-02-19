@@ -21,7 +21,7 @@ export class Song implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		const embed = new MessageEmbed();
 		try {
 			bot.logger.debug('Test1');
@@ -29,10 +29,13 @@ export class Song implements SlashCommand {
 			let member = interaction.member as GuildMember;
 			embed.setTitle(`${member.displayName}'s Song Recommendation`);
 			embed.setDescription(mes);
-			interaction.reply({ embeds: [embed] });
+			await interaction.reply({ embeds: [embed] });
+			return true;
 		} catch (err) {
+			bot.logger.error(err);
 			embed.setDescription(`Error: ${err}`);
-			interaction.reply({ embeds: [embed] });
+			await interaction.reply({ embeds: [embed] });
+			return false;
 		}
 	}
 }

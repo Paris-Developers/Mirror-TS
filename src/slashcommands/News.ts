@@ -30,7 +30,7 @@ export class News implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		try {
 			//Runs code as normal, sends  catch if an error is recieved
 			const embed = new MessageEmbed() //creates embed
@@ -57,20 +57,23 @@ export class News implements SlashCommand {
 			let jsonData = await res.json();
 			if (jsonData.totalResults == 0) {
 				interaction.reply("Couldn't find any articles with those queries");
-				return;
+				return true;
 			}
 			//specify embed modifications for individual option and sends message
 			embed.setTitle(jsonData.articles[0].title);
 			embed.setURL(jsonData.articles[0].url);
 			embed.setDescription(jsonData.articles[0].description);
 			embed.setThumbnail(jsonData.articles[0].urlToImage);
-			interaction.reply({ embeds: [embed] });
+			await interaction.reply({ embeds: [embed] });
+			return true;
 		} catch (err) {
 			//catches error
 			//add documentation and finish error testong for api related errors
+			bot.logger.error(err);
 			const embed = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setDescription('Error: Try calling the function again');
+			return false;
 		}
 	}
 }

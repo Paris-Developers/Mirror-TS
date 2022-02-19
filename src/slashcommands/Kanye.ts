@@ -24,7 +24,7 @@ export class Kanye implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		let res = await fetch(`https://api.kanye.rest/`);
 		let jsonData = await res.json();
 		const embed = new MessageEmbed()
@@ -34,6 +34,7 @@ export class Kanye implements SlashCommand {
 				text: 'Kanye West',
 				iconURL: 'https://imgur.com/olrP4cN.jpeg',
 			});
-		interaction.reply({ embeds: [embed] });
+		await interaction.reply({ embeds: [embed] });
+		return true;
 	}
 }

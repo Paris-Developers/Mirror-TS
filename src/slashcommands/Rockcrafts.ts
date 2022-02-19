@@ -30,7 +30,7 @@ export class Rockcrafts implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		let res = await fetch(`https://api.fluxcup.org/members`);
 		let jsonData = await res.json();
 		let lines: string[] = []; //create an array we can iterate through
@@ -88,6 +88,6 @@ export class Rockcrafts implements SlashCommand {
 			reaction.users.remove(user.id); //remove the emoji so the user doesn't have to remove it themselves
 		});
 
-		return;
+		return true;
 	}
 }

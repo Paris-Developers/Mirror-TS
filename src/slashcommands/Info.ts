@@ -19,7 +19,7 @@ export class Info implements SlashCommand {
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
 	];
-	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction): Promise<boolean> {
 		const embed = new MessageEmbed()
 			.setColor('#d4af37')
 			.setTitle(':mirror: __Mirror__ :mirror:')
@@ -38,5 +38,6 @@ export class Info implements SlashCommand {
 			});
 
 		interaction.reply({ embeds: [embed] });
+		return true;
 	}
 }

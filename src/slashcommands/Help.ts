@@ -22,7 +22,7 @@ export class Help implements SlashCommand {
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
 	];
-	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction): Promise<boolean> {
 		//TODO: Add permission checks
 		const page1 = new MessageEmbed()
 			.setColor('#FFFFFF')
@@ -113,5 +113,6 @@ export class Help implements SlashCommand {
 			message.edit({ embeds: [embedArray[index]] });
 			reaction.users.remove(user.id); //remove the emoji so the user doesn't have to remove it themselves
 		});
+		return true;
 	}
 }

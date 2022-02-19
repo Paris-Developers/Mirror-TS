@@ -19,14 +19,14 @@ export class Leave implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		let mirrorVoice = interaction.guild!.me!.voice;
 		if (!mirrorVoice) {
 			interaction.reply({ content: 'Not in a voice channel', ephemeral: true });
-			return;
+			return true;
 		}
-		mirrorVoice.disconnect();
-		interaction.reply('Left the voice channel :wave:');
-		return;
+		await mirrorVoice.disconnect();
+		await interaction.reply('Left the voice channel :wave:');
+		return true;
 	}
 }

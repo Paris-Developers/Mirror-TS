@@ -25,12 +25,12 @@ export class Join implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		let member = interaction.member as GuildMember;
 		let state = member.voice;
 		if (!state.channel) {
 			interaction.reply('you are not in a valid voice channel!');
-			return;
+			return true;
 		}
 		const connection = joinVoiceChannel({
 			channelId: state.channelId!,
@@ -41,7 +41,7 @@ export class Join implements SlashCommand {
 		connection.subscribe(player);
 		const mirrormp3 = createAudioResource('./music/mirror.mp3');
 		player.play(mirrormp3);
-		interaction.reply({ content: 'success', ephemeral: true }); //hides the reply to anyone but the user
-		return;
+		await interaction.reply({ content: 'success', ephemeral: true }); //hides the reply to anyone but the user
+		return true;
 	}
 }

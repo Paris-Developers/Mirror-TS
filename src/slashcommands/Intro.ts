@@ -33,7 +33,7 @@ export class Intro implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		try {
 			await interaction.deferReply({ ephemeral: true });
 			const url = interaction.options.getString('video');
@@ -44,7 +44,7 @@ export class Intro implements SlashCommand {
 				interaction.editReply({
 					content: 'Video is too long, select something 10 seconds or shorter',
 				});
-				return;
+				return true;
 			}
 			await mkdirp(`./data/intros/${interaction.guild!.id}`);
 			let writeStream = fs.createWriteStream(
@@ -60,18 +60,18 @@ export class Intro implements SlashCommand {
 				});
 				return;
 			});
-			return;
+			return true;
 		} catch (err: any) {
 			bot.logger.warn(err.message);
 			if (err.message == 'Status code: 410') {
 				interaction.editReply(
 					'Your video is private or age restricted, please choose another'
 				);
-				return;
+				return true;
 			}
 			bot.logger.error(err);
 			interaction.editReply('Error detected, contact an admin to investigate.');
-			return;
+			return false;
 		}
 	}
 }

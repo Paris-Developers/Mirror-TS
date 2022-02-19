@@ -15,7 +15,8 @@ export class Test implements SlashCommand {
 	public async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
-		interaction.reply(`Hello ${interaction.user.username}`);
+	): Promise<boolean> {
+		await interaction.reply(`Hello ${interaction.user.username}`);
+		return true;
 	}
 }

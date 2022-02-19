@@ -21,7 +21,7 @@ export class Invite implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		const embed = new MessageEmbed()
 			.setTitle('**__Invite Mirror__**')
 			.setDescription(
@@ -32,7 +32,7 @@ export class Invite implements SlashCommand {
 				'https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=0&scope=bot%20applications.commands'
 			)
 			.setFooter({ text: 'Created in 2021, by Fordle#0001 and Phantasm#0001' });
-		interaction.reply({ embeds: [embed] });
-		return;
+		await interaction.reply({ embeds: [embed] });
+		return true;
 	}
 }

@@ -20,9 +20,10 @@ export class Mirror implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
-		interaction.reply(
+	): Promise<boolean> {
+		await interaction.reply(
 			'https://cdn.discordapp.com/attachments/668116812680003597/933108457463230464/IMG_3906.png'
 		);
+		return true;
 	}
 }

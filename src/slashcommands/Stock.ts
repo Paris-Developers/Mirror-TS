@@ -34,14 +34,14 @@ export class Stock implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		//tests to see if the command was passed in with arguements
 		if (!interaction.options.getString('tickers')) {
 			const embed = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setDescription('Please provide a valid ticker(s)');
 			interaction.reply({ embeds: [embed] });
-			return;
+			return true;
 		}
 		//splits the entry text into separate arguements
 		let args = interaction.options.getString('tickers')!.split(' ');
@@ -50,7 +50,7 @@ export class Stock implements SlashCommand {
 				.setColor('#FFFFFF')
 				.setDescription('Please provide 10 or fewer stocks to call');
 			interaction.reply({ embeds: [embed] });
-			return;
+			return true;
 		}
 		//trys the code as normal but if it encounters an error it will run the code under the catch function
 		try {
@@ -124,14 +124,16 @@ export class Stock implements SlashCommand {
 				ctr += 1;
 			}
 			//sends embed array to the channel
-			interaction.reply({ embeds: embedList });
-			return;
+			await interaction.reply({ embeds: embedList });
+			return true;
 		} catch (err) {
 			//sends an error message if the json is invalid
+			bot.logger.error(err);
 			const embed = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setDescription(`Error: ${err}`);
 			interaction.reply({ embeds: [embed] });
+			return false;
 		}
 	}
 }

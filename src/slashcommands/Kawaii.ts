@@ -24,11 +24,12 @@ export class Kawaii implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		//fetches the nekos.best api
 		let res = await fetch(`https://nekos.best/api/v1/wink`);
 		let jsonData = await res.json();
 		let embed = new MessageEmbed().setColor('#0071b6').setImage(jsonData.url);
 		interaction.reply({ embeds: [embed] });
+		return true;
 	}
 }

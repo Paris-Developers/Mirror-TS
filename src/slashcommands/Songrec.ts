@@ -29,7 +29,7 @@ export class Songrec implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		const embed = new MessageEmbed();
 		try {
 			bot.logger.debug('Hey');
@@ -42,11 +42,13 @@ export class Songrec implements SlashCommand {
 			let mes = bot.songRecs.get(interaction.user.id);
 			bot.logger.debug('past the songRecs.get');
 			embed.setDescription(mes);
-			interaction.reply({ embeds: [embed] });
+			await interaction.reply({ embeds: [embed] });
+			return true;
 		} catch (err) {
 			embed.setDescription(`Error: ${err}`);
-			interaction.reply({ embeds: [embed] });
-			return;
+			bot.logger.error(err);
+			await interaction.reply({ embeds: [embed] });
+			return false;
 		}
 	}
 }

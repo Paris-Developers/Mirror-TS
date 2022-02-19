@@ -17,7 +17,7 @@ export class Boey implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		let boey = await bot.client.users.fetch('331511682155282432');
 		const embed = new MessageEmbed()
 			.setColor('#6441a5')
@@ -28,6 +28,6 @@ export class Boey implements SlashCommand {
 			)
 			.setThumbnail(boey.displayAvatarURL());
 		interaction.reply({ embeds: [embed] });
-		return;
+		return true;
 	}
 }

@@ -73,13 +73,13 @@ export class Weather implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		if (!interaction.options.getString('city')) {
 			const embed = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setDescription('Empty message, please provide a city');
 			interaction.reply({ embeds: [embed] });
-			return;
+			return true;
 		}
 		//if it encounters an error it will run the code under the catch function
 		let jsonData;
@@ -165,7 +165,8 @@ export class Weather implements SlashCommand {
 				.setTimestamp();
 
 			//sends embed to the channel
-			interaction.reply({ embeds: [embed] });
+			await interaction.reply({ embeds: [embed] });
+			return true;
 		} catch (err) {
 			//prints the error message
 			if (jsonData.cod == '404') {
@@ -173,12 +174,14 @@ export class Weather implements SlashCommand {
 					.setColor('#FFFFFF')
 					.setDescription(`Error: City not found, try again`);
 				interaction.reply({ embeds: [embed] });
-				return;
+				return true;
 			}
+			bot.logger.error(err);
 			const embed = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setDescription(`Error: ${err}`);
-			interaction.reply({ embeds: [embed] });
+			await interaction.reply({ embeds: [embed] });
+			return false;
 		}
 	}
 }

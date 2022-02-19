@@ -30,11 +30,11 @@ export class BanIntro implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		let member = interaction.member as GuildMember;
 		if (!(interaction.channel instanceof TextChannel)) {
 			interaction.reply('Command must be used in a server');
-			return;
+			return true;
 		}
 		if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
 			interaction.reply({
@@ -42,7 +42,7 @@ export class BanIntro implements SlashCommand {
 					'This command is only for people with Administrator permissions',
 				ephemeral: true,
 			});
-			return;
+			return true;
 		}
 		let badUser = interaction.options.getUser('user');
 		const promiseMeAnUnlink = promisify(unlink);
@@ -54,20 +54,21 @@ export class BanIntro implements SlashCommand {
 				content: 'Intro successfully deleted',
 				ephemeral: true,
 			});
+			return true;
 		} catch (err: any) {
 			if (err.code == 'ENOENT') {
 				interaction.reply({
 					content: `${badUser} does not have an intro.`,
 					ephemeral: true,
 				});
-				return;
+				return true;
 			} else {
 				bot.logger.error(err);
 				interaction.reply({
 					content: 'Error detected, contact an admin for further details.',
 					ephemeral: true,
 				});
-				return;
+				return false;
 			}
 		}
 	}

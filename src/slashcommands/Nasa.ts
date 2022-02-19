@@ -25,7 +25,7 @@ export class Nasa implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		await interaction.deferReply(); // this command can take a while to respond, so we need to defer the reply.
 		let res = await fetch(
 			`https://api.nasa.gov/planetary/apod?api_key=${config.nasa_token}`
@@ -41,6 +41,7 @@ export class Nasa implements SlashCommand {
 			.setTitle(`**${jsonData.title}**`)
 			.setURL('https://apod.nasa.gov/apod/astropix.html');
 		if (jsonData.copyright) embed.setAuthor({ name: jsonData.copyright }); //checks to see if the copyright item exists, then it will include it in the author slot.
-		interaction.editReply({ embeds: [embed] }); //technically deferReply() creates the reply, so we need to edit that.
+		await interaction.editReply({ embeds: [embed] }); //technically deferReply() creates the reply, so we need to edit that.
+		return true;
 	}
 }

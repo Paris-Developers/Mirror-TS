@@ -20,8 +20,8 @@ export class Support implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
-		interaction.reply('discord.gg/uvdg2R5PAU');
-		return;
+	): Promise<boolean> {
+		await interaction.reply('discord.gg/uvdg2R5PAU');
+		return true;
 	}
 }

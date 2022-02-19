@@ -131,7 +131,7 @@ export class Poll implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
 		bot.logger.debug(options);
 		//TODO: error test for empty arguements
@@ -238,5 +238,6 @@ export class Poll implements SlashCommand {
 				`Ending collection, Collected ${total} items. ${emoteVal}`
 			);
 		});
+		return true;
 	}
 }

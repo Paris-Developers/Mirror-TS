@@ -146,7 +146,7 @@ export class Birthday implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		if (interaction.options.getSubcommand() == 'set') {
 			//TODO: Permission Check
 
@@ -165,7 +165,7 @@ export class Birthday implements SlashCommand {
 				)}-${interaction.options.getString('month')}`,
 				ephemeral: false,
 			});
-			return;
+			return true;
 		}
 		if (interaction.options.getSubcommand() == 'channel') {
 			//TODO: Permission Check
@@ -187,9 +187,9 @@ export class Birthday implements SlashCommand {
 				)}`,
 				ephemeral: false,
 			});
-			return;
+			return true;
 		}
-		return;
+		return true;
 		if (interaction.options.getSubcommand() == 'message') {
 			//TODO: Permission Check
 		}

@@ -84,7 +84,7 @@ export class Gavin implements SlashCommand {
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
 	];
-	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction): Promise<boolean> {
 		const options = interaction.options;
 		if (options.getSubcommand() == 'all') {
 			// subcommand for printing all the data
@@ -97,7 +97,7 @@ export class Gavin implements SlashCommand {
 					`GAVIN'S CURRENT PRS:\n BENCH: ${bench} LB \n SQUAT: ${squat} LB \n DEADLIFT: ${deadlift} LB \n`
 				);
 			interaction.reply({ embeds: [embed] });
-			return;
+			return true;
 		}
 		if (options.getSubcommand() == 'lift') {
 			// subcommand for displaying just one lift
@@ -110,13 +110,13 @@ export class Gavin implements SlashCommand {
 				//theoretically, this will never run because we are using slash command choices
 				bot.logger.warn(`${this.name} ran without a valid Choice selected`);
 				interaction.reply('INVALID LOOKUP');
-				return;
+				return false; // slash commands running without a valid choice selected isn't something that should happen, return this as a failed run
 			}
 			const embed = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setDescription(`GAVIN'S ${type!.toUpperCase()} PR: ${toprint}`);
 			interaction.reply({ embeds: [embed] });
-			return;
+			return true;
 		}
 		if (options.getSubcommand() == 'setlift') {
 			// we're setting data now
@@ -132,10 +132,11 @@ export class Gavin implements SlashCommand {
 					`UPDATED GAVIN'S ${type!.toUpperCase()} PR TO: ${lift}\nGOOD JOB SOLDIER`
 				);
 			interaction.reply({ embeds: [embed] });
-			return;
+			return true;
 		}
 		bot.logger.warn(`${this.name} finished without hiting a subcommand`);
 		//slash commands make it pretty easy to validate user input before the command is actually run, so theoretically this shouldn't ever run either.
 		interaction.reply('Something screwed up. This should never happen.');
+		return false; // slash commands running without a subcommand selected isn't something that should happen, return this as a failed run
 	}
 }

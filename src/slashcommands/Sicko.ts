@@ -26,12 +26,12 @@ export class Sicko implements SlashCommand {
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	): Promise<boolean> {
 		let member = interaction.member as GuildMember;
 		let state = member.voice;
 		if (!state.channel) {
 			interaction.reply('you are not in a valid voice channel!');
-			return;
+			return true;
 		}
 		const connection = joinVoiceChannel({
 			channelId: state.channelId!,
@@ -43,6 +43,6 @@ export class Sicko implements SlashCommand {
 		const mirrormp3 = createAudioResource('./music/sicko.mp3');
 		player.play(mirrormp3);
 		interaction.reply('reply lol');
-		return;
+		return true;
 	}
 }
