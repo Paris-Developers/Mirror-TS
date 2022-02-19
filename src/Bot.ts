@@ -31,8 +31,8 @@ export class Bot {
 		private token: string,
 		public client: Client,
 		public prefix: string,
-		private mode: string,
-		private test_server: string
+		public mode: string,
+		public test_server: string
 	) {
 		//initialize logger
 		let now = new Date();
@@ -61,57 +61,6 @@ export class Bot {
 			// bind the process function for each event class to its respective event
 			this.client.on(event.eventName, event.process.bind(null, this));
 		}
-	}
-
-	public async registerSlashCommands() {
-		this.logger.info('Registering slash commands');
-		if (!this.client.application?.owner) await this.client.application?.fetch(); // make sure the bot is fully fetched
-
-		if (this.mode == 'debug') {
-			let guildCommands = await this.client.guilds.cache
-				.get(this.test_server)
-				?.commands.fetch();
-			for (let [commandKey, registeredCommand] of guildCommands!) {
-				let command = this.slashCommands.find(
-					(command) => command.name === registeredCommand.name
-				);
-				if (command) continue;
-				await registeredCommand.delete();
-				this.logger.info(
-					`Deleted ${registeredCommand.name} from the guild command cache`
-				);
-			}
-		} else {
-			let commands = await this.client.application?.commands.fetch();
-			for (let [commandKey, registeredCommand] of commands!) {
-				let command = this.slashCommands.find(
-					(command) => command.name === registeredCommand.name
-				);
-				if (command) continue;
-				await registeredCommand.delete();
-				this.logger.info(
-					`Deleted ${registeredCommand.name} from the application command cache`
-				);
-			}
-		}
-
-		this.slashCommands.forEach(async (command) => {
-			if (command.registerData) {
-				//check the command has slash command data
-				let registerData = command.registerData;
-				this.logger.info(`Registering slash command ${command.name}`);
-				//guild scope commands update instantly -- globally set ones are cached for an hour. If we are debugging, use guild scope
-				if (this.mode == 'debug') {
-					const registeredCommand = await this.client.guilds.cache
-						.get(this.test_server)
-						?.commands.create(registerData);
-				} else {
-					const registeredCommand =
-						await this.client.application?.commands.create(registerData); //create it globally if we aren't debugging
-				}
-			}
-		});
-		return true;
 	}
 
 	async scheduleBirthdays() {
