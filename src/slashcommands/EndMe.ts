@@ -15,7 +15,8 @@ export class EndMe implements SlashCommand {
 		description: 'How gavin feels doing this',
 	};
 
-
+	public requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
+	
     public async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
