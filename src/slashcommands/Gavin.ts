@@ -29,7 +29,7 @@ const liftChoices = [
 	},
 ];
 let gav_records = new Enmap({ name: 'gav_records' }); //named enmaps are persistent to the disk
-
+//dirt whore
 export class Gavin implements SlashCommand {
 	name: string = 'gavin';
 	registerData: ChatInputApplicationCommandData = {
