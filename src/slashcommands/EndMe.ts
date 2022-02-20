@@ -2,6 +2,7 @@ import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
 	CacheType,
+	Permissions,
 	MessageEmbed,
 } from 'discord.js';
 import { Bot } from '../Bot';
