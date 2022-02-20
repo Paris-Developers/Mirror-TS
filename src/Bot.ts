@@ -5,14 +5,17 @@ import { permissionsCheck } from './resources/permissionsCheck';
 import { msgPermsCheck } from './resources/msgPermCheck';
 import { Events } from './events/Events';
 import { SlashCommand } from './slashcommands/SlashCommand';
-import { SlashCommands } from './slashcommands/SlashCommands';
 import { Keyword } from './keywords/Keyword';
-import { Keywords } from './keywords/Keywords';
 import { MessageCommand } from './messagecommands/MessageCommand';
-import { MessageCommands } from './messagecommands/MessageCommands';
+import {
+	importSlashCommands,
+	importMessageCommands,
+	importKeywords,
+} from './resources/dynamicImports';
 import Enmap from 'enmap';
 import cron from 'node-cron';
 import { birthdays, birthdayChannels } from './slashcommands/Birthday';
+import { registerEvents } from './resources/registerEvents';
 
 export class Bot {
 	public logger: CustomLogger;
@@ -22,9 +25,9 @@ export class Bot {
 	public msgPermsCheck = msgPermsCheck;
 
 	//data stores
-	public slashCommands: Array<SlashCommand> = SlashCommands;
-	public messageCommands: Array<MessageCommand> = MessageCommands;
-	public keywords: Array<Keyword> = Keywords;
+	public slashCommands: Array<SlashCommand> = [];
+	public messageCommands: Array<MessageCommand> = [];
+	public keywords: Array<Keyword> = [];
 	public songRecs: Enmap = new Enmap({ name: 'songs' });
 
 	constructor(
@@ -51,16 +54,13 @@ export class Bot {
 		await this.logger.initialize();
 		this.logger.info('Logging initialized');
 
-		this.registerEvents();
+		await registerEvents(this);
+
+		await importSlashCommands(this);
+		await importMessageCommands(this);
+		await importKeywords(this);
 
 		this.client.login(this.token);
-	}
-
-	registerEvents() {
-		for (let event of Events) {
-			// bind the process function for each event class to its respective event
-			this.client.on(event.eventName, event.process.bind(null, this));
-		}
 	}
 
 	async scheduleBirthdays() {
