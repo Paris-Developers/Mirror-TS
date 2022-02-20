@@ -8,7 +8,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 
 export class EndMe implements SlashCommand {
-	name: string = 'EndMe';
+	name: string = 'endme';
 	registerData: ChatInputApplicationCommandData = {
 		name: this.name,
 		description: 'How gavin feels doing this',
