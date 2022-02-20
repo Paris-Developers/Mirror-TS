@@ -1,0 +1,7 @@
+/src/Bot.ts @CPhantasm
+/src/index.ts @CPhantasm
+/src/events/EventHandler.ts @CPhantasm
+/src/slashcommands/SlashCommand.ts @CPhantasm
+/src/messagecommands/MessageCommand.ts @CPhantasm
+/src/keywords/Keyword.ts @CPhantasm
+/src/CustomLogger.ts @CPhantasm
