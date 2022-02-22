@@ -12,7 +12,7 @@ import { MessageCommand } from './messagecommands/MessageCommand';
 import { MessageCommands } from './messagecommands/MessageCommands';
 import Enmap from 'enmap';
 import cron from 'node-cron';
-import { birthdays, birthdayChannels } from './slashcommands/Birthday';
+import { bdayDates, bdayChannels, bdayTimes } from './slashcommands/Birthday';
 const { fetch } = require('discord.js');
 
 export class Bot {
@@ -106,6 +106,7 @@ export class Bot {
 		return true;
 	}
 
+	//this will probably be removed with the addition of the new bday fxns TODO!
 	async scheduleBirthdays() {
 		cron.schedule('* * * * *', async () => {
 			this.logger.debug('-----------------------------');
@@ -114,11 +115,11 @@ export class Bot {
 			let today = new Date();
 			let todaysDate = `${today.getDate()}-${today.getMonth() + 1}`;
 			this.logger.debug(todaysDate, currentTime);
-			birthdays.forEach(async (bday, userId) => {
+			bdayDates.forEach(async (bday, userId) => {
 				this.logger.debug(bday, userId);
 				let stringId = userId.toString();
 				if (todaysDate == bday) {
-					birthdayChannels.forEach(async (birthChannel, birthGuild) => {
+					bdayChannels.forEach(async (birthChannel, birthGuild) => {
 						//TODO: If bot cannot send message, crash
 						//TODO: If bot is not in server, crash
 						let guild = this.client.guilds.cache.get(birthGuild.toString())!;
