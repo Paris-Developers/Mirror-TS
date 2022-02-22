@@ -258,7 +258,6 @@ export class Birthday implements SlashCommand {
 			bdayChannels.set(`${interaction.guild!.id}`, infostring);
 			birthdayTimer(infostring, bot);
 			return;
-			//TODO start the CronJob
 		}
 		return;
 		if (interaction.options.getSubcommand() == 'message') {
