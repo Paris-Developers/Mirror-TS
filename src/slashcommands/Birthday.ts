@@ -6,6 +6,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { birthdayTimer } from '../resources/birthdayTimer';
 import { SlashCommand } from './SlashCommand';
 
 type monthIndex = { [index: string]: number };
@@ -255,6 +256,8 @@ export class Birthday implements SlashCommand {
 			let infostring = bdayChannels.ensure(`${interaction.guild!.id}`, '');
 			infostring = `${minute}-${hour}-${date}-${timezone}`; //readable splitable string that will be used in creating crons MM-HH-DATEMOD-TIMEZONE
 			bdayChannels.set(`${interaction.guild!.id}`, infostring);
+			birthdayTimer(infostring, bot);
+			return;
 			//TODO start the CronJob
 		}
 		return;

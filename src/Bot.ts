@@ -105,36 +105,4 @@ export class Bot {
 		});
 		return true;
 	}
-
-	//this will probably be removed with the addition of the new bday fxns TODO!
-	async scheduleBirthdays() {
-		cron.schedule('* * * * *', async () => {
-			this.logger.debug('-----------------------------');
-			let time = new Date();
-			let currentTime = `${time.getHours()}-${time.getMinutes()}-${time.getSeconds()}`;
-			let today = new Date();
-			let todaysDate = `${today.getDate()}-${today.getMonth() + 1}`;
-			this.logger.debug(todaysDate, currentTime);
-			bdayDates.forEach(async (bday, userId) => {
-				this.logger.debug(bday, userId);
-				let stringId = userId.toString();
-				if (todaysDate == bday) {
-					bdayChannels.forEach(async (birthChannel, birthGuild) => {
-						//TODO: If bot cannot send message, crash
-						//TODO: If bot is not in server, crash
-						let guild = this.client.guilds.cache.get(birthGuild.toString())!;
-						this.logger.debug(guild.id);
-						let bdayUser = this.client.users.cache.get(stringId);
-						this.logger.debug(bdayUser);
-						if (!(await guild.members.fetch(stringId))) return; //if the user is not a member in the guild, end
-						let channel = this.client.channels.cache.get(
-							birthChannel.toString()
-						) as TextChannel;
-						if (!channel) return; //if the channel doesnt exist, or mirror cannot see it, end
-						await channel.send('Happy Birthday');
-					});
-				}
-			});
-		});
-	}
 }
