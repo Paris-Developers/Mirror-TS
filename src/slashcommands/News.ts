@@ -10,6 +10,7 @@ import {
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
+import fetch from 'node-fetch';
 
 export class News implements SlashCommand {
 	name: string = 'news';
@@ -41,7 +42,7 @@ export class News implements SlashCommand {
 				res = await fetch(
 					`https://newsapi.org/v2/top-headlines?country=us&apiKey=${config.news_token}`
 				);
-				embed.setFooter('Top news story in the US right now');
+				embed.setFooter({ text: 'Top news story in the US right now' });
 			} else {
 				//when there is a query requested run the block behind
 				let query = '';

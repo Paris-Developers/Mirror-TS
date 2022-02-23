@@ -30,7 +30,10 @@ export class Kanye implements SlashCommand {
 		const embed = new MessageEmbed()
 			.setColor('#FFFFFF')
 			.setDescription(`**${jsonData.quote}**`)
-			.setFooter('Kanye West', 'https://imgur.com/olrP4cN.jpeg');
+			.setFooter({
+				text: 'Kanye West',
+				iconURL: 'https://imgur.com/olrP4cN.jpeg',
+			});
 		interaction.reply({ embeds: [embed] });
 	}
 }

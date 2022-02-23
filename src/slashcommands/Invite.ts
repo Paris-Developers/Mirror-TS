@@ -31,7 +31,7 @@ export class Invite implements SlashCommand {
 			.setURL(
 				'https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=0&scope=bot%20applications.commands'
 			)
-			.setFooter('Created in 2021, by Fordle#0001 and Phantasm#0001');
+			.setFooter({ text: 'Created in 2021, by Fordle#0001 and Phantasm#0001' });
 		interaction.reply({ embeds: [embed] });
 		return;
 	}

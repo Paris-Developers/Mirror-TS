@@ -42,7 +42,7 @@ export class Help implements SlashCommand {
 					inline: false,
 				}
 			)
-			.setFooter('Page 1 of 4');
+			.setFooter({ text: 'Page 1 of 4' });
 		const page2 = new MessageEmbed()
 			.setColor('#FFFFFF')
 			.setTitle(':sound: **__Voice Commands__**')
@@ -53,7 +53,7 @@ export class Help implements SlashCommand {
 					'/banintro: Allows an administrator to remove a specified users intro.\n' +
 					'/sicko: :skull:'
 			)
-			.setFooter('Page 2 of 4');
+			.setFooter({ text: 'Page 2 of 4' });
 		const page3 = new MessageEmbed()
 			.setColor('#FFFFFF')
 			.setTitle(':newspaper: **__Informative Commands__**')
@@ -64,7 +64,7 @@ export class Help implements SlashCommand {
 					'/news: WIP.\n' +
 					'/github: Links the open source code for Mirror'
 			)
-			.setFooter('Page 3 of 4');
+			.setFooter({ text: 'Page 3 of 4' });
 		const page4 = new MessageEmbed()
 			.setColor('#FFFFFF')
 			.setTitle(':bell: **__Other Commands__**')
@@ -75,7 +75,7 @@ export class Help implements SlashCommand {
 					'/birthday: Set your birthdayfor a message on your special day. \n' +
 					'/mirror: :mirror:'
 			)
-			.setFooter('Page 4 of 4');
+			.setFooter({ text: 'Page 4 of 4' });
 		// const page5 = new MessageEmbed()
 		//     .setColor('#FFFFFF');
 		//     //.setTitle()s

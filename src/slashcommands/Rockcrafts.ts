@@ -12,6 +12,7 @@ import {
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
+import fetch from 'node-fetch';
 
 //Temporary fxn will be removed later
 
