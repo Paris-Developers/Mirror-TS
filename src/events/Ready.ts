@@ -12,12 +12,7 @@ export class Ready implements EventHandler {
 		bot.client.user?.setActivity(' lofi | /help', {
 			type: 'LISTENING',
 		});
-		//bdayChannels.deleteAll();
-		//bdayDates.deleteAll();
-		//bdayTimes.deleteAll();
-
 		bdayTimes.forEach(async (info, guild) => {
-			console.log(guild.toString());
 			birthdayTimer(guild.toString(), bot);
 		});
 	}
