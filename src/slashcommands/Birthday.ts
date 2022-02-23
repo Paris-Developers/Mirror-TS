@@ -198,8 +198,7 @@ export class Birthday implements SlashCommand {
 				monthCode[interaction.options.getString('month')!]
 			}`;
 			//place the updated guild JSON in the enmap
-			bdayDates.set(`${interaction.user.id}`, userBirthday);
-			bdayDates.forEach((element) => console.log(element));
+			bdayDates.set(interaction.user.id, formattedBirthday);
 			interaction.reply({
 				content: `Successfully set your birthday to ${interaction.options.getInteger(
 					'day'
@@ -255,8 +254,9 @@ export class Birthday implements SlashCommand {
 			}
 			let infostring = bdayChannels.ensure(`${interaction.guild!.id}`, '');
 			infostring = `${minute}-${hour}-${date}-${timezone}`; //readable splitable string that will be used in creating crons MM-HH-DATEMOD-TIMEZONE
-			bdayChannels.set(`${interaction.guild!.id}`, infostring);
-			birthdayTimer(infostring, bot);
+			bdayTimes.set(`${interaction.guild!.id}`, infostring);
+			birthdayTimer(`${interaction.guild!.id}`, bot);
+			interaction.reply({ content: 'Sucessfully configured your time' });
 			return;
 		}
 		return;

@@ -51,13 +51,10 @@ export class Bot {
 	public async start(): Promise<void> {
 		await this.logger.initialize();
 		this.logger.info('Logging initialized');
-
 		await registerEvents(this);
-
 		await importSlashCommands(this);
 		await importMessageCommands(this);
 		await importKeywords(this);
-
 		this.client.login(this.token);
 	}
 }
