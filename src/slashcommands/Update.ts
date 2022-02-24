@@ -69,7 +69,6 @@ export class Update implements SlashCommand {
 				content: 'Channel must be a text channel',
 				ephemeral: true,
 			});
-		//var enmapChannel = updateChannels.ensure(interaction.guild.id, '');
 		updateChannels.set(interaction.guild.id, channel?.id);
 		interaction.reply({
 			content: `Sucessfully updated your development messages to ${channel}`,
