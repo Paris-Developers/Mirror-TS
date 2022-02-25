@@ -2,6 +2,7 @@ import { Client, Intents } from 'discord.js';
 import { Bot } from './Bot';
 //@ts-ignore:next-line
 import config from '../config.json';
+const { Player } = require('discord-player');
 
 let options = {
 	intents: [
@@ -18,5 +19,6 @@ let bot = new Bot(
 	config.mode,
 	config.test_server
 );
+const player = new Player(bot.client);
 
 bot.start();
