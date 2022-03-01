@@ -26,6 +26,7 @@ export class Rockcrafts implements SlashCommand {
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.MANAGE_MESSAGES,
 		Permissions.FLAGS.ADD_REACTIONS,
+		Permissions.FLAGS.EMBED_LINKS,
 	];
 	async run(
 		bot: Bot,
