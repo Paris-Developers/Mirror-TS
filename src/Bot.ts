@@ -1,4 +1,4 @@
-import { Client, TextChannel } from 'discord.js';
+import { Client, MessageEmbed, TextChannel } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
@@ -61,6 +61,15 @@ export class Bot {
 		await importKeywords(this);
 
 		this.client.login(this.token);
+	}
+
+	public async errorLog(channelId:string, commandName:string, errText:string): Promise<void> {
+		const embed = new MessageEmbed()
+			.setTitle(`Error in command ${commandName}`)
+			.setDescription(`Error Message: ${errText}`)
+			.setFooter({text:`Channel: ${channelId}`});
+		let channel = this.client.channels.cache.get('948246919828865086') as TextChannel;
+		await channel.send({embeds:[embed]});
 	}
 
 	async scheduleBirthdays() {
