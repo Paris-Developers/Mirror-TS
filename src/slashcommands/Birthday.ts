@@ -2,6 +2,8 @@ import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
 	CacheType,
+	GuildMember,
+	TextChannel,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
@@ -135,7 +137,7 @@ export class Birthday implements SlashCommand {
 			{
 				name: 'config',
 				description:
-					'Allows an admin to configure the time and channel to send the birthday messages',
+					'[ADMIN ONLY] Configure the time and channel to send the birthday messages',
 				type: 1,
 				required: false,
 				options: [
@@ -195,12 +197,29 @@ export class Birthday implements SlashCommand {
 			return;
 		}
 		if (interaction.options.getSubcommand() == 'config') {
-			//TODO: Verify user is an admin
-			//TODO: Permissions check
+			if (!(interaction.channel instanceof TextChannel)) {
+				interaction.reply('Command must be used in a server');
+				return;
+			}
+			let member = interaction.member as GuildMember;
+			if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
+				interaction.reply({
+					content:
+						'This command is only for people with Administrator permissions',
+					ephemeral: true,
+				});
+				return;
+			}
 
-			//CHANNEL BLOCK
 			var guildChannel = bdayChannels.ensure(interaction.guild!.id, '');
 			guildChannel = interaction.options.getChannel('channel');
+			if (guildChannel.type != 'GUILD_TEXT') {
+				interaction.reply({
+					content: 'Please enter a valid text channel',
+					ephemeral: true,
+				});
+				return;
+			}
 			bdayChannels.set(interaction.guild!.id, guildChannel.id);
 			bdayChannels.forEach((element) => console.log(element));
 
@@ -241,67 +260,3 @@ export class Birthday implements SlashCommand {
 		}
 	}
 }
-/*
-		return;
-		if (interaction.options.getSubcommand() == 'channel') {
-			//TODO: Permission Check
-			//TODO: verify user is an admin
-
-			//ensure that the enmap has stored the guild and brings in the JSON. If not create it and give it an empty JSON.
-			var guildChannel = bdayChannels.ensure(`${interaction.guild!.id}`, '');
-			//store the date of birth in numerical form
-			guildChannel = interaction.options.getChannel('channel');
-			//place the updated guild JSON in the enmap
-			bdayChannels.set(`${interaction.guild!.id}`, guildChannel.id);
-			bdayChannels.forEach((element) => console.log(element));
-			interaction.reply({
-				content: `Successfully set your birthday Channel to ${interaction.options.getChannel(
-					'channel'
-				)}`,
-				ephemeral: false,
-			});
-			return;
-		}
-		if (interaction.options.getSubcommand() == 'time') {
-			let hour = interaction.options.getInteger('hour')!;
-			if (hour > 23 || hour < 0)
-				return interaction.reply({
-					content:
-						'Invalid hour, please use military format (0-23) where 0 represents midnight.',
-					ephemeral: true,
-				});
-			var minute = interaction.options.getInteger('minute')!;
-			if (minute > 60 || minute < 0)
-				return interaction.reply({
-					content: 'Invalid minute, please provide an integer between 0 and 60',
-					ephemeral: true,
-				});
-			var timezone = interaction.options.getString('timezone')!;
-			let tzChange = timezoneCode[timezone];
-			let cst = hour + tzChange;
-			let date = 'x';
-			if (cst + tzChange >= 24) {
-				date = 'plus';
-				cst -= 24;
-			}
-			if (cst + tzChange < 0) {
-				date = 'minus';
-				cst += 24;
-			}
-			let infostring = bdayChannels.ensure(`${interaction.guild!.id}`, '');
-			infostring =  //readable splitable string that will be used in creating crons MM-HH-DATEMOD-TIMEZONE
-			bdayTimes.set(`${interaction.guild!.id}`, infostring);
-			birthdayTimer(`${interaction.guild!.id}`, bot);
-			interaction.reply({ content: 'Sucessfully configured your time' });
-			return;
-		}
-		return;
-		if (interaction.options.getSubcommand() == 'message') {
-			//TODO: Permission Check
-		}
-		if (interaction.options.getSubcommand() == 'time') {
-			//TODO, handle errors, this may have to be done in every sub command
-		}
-	}
-}
-*/
