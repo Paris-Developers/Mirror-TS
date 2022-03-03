@@ -1,5 +1,5 @@
-//Keyword: pog
-//Reacts to the keyword with JamesChamp
+//Keyword: 727
+//Reacts to the keyword with WYSI embed
 
 import { Message, Permissions, MessageEmbed } from 'discord.js';
 import { Bot } from '../Bot';
