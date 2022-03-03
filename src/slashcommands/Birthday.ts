@@ -181,7 +181,7 @@ export class Birthday implements SlashCommand {
 			//TODO: Permission Check
 
 			//ensure that the enmap has stored the user, and stores their birthday. If not create it and give it an empty string.
-			var userBirthday = bdayDates.ensure(`${interaction.user.id}`, '');
+			var userBirthday = bdayDates.ensure(interaction.user.id, '');
 			//store the date of birth in numerical form
 			let formattedBirthday = `${interaction.options.getInteger('day')}-${
 				monthCode[interaction.options.getString('month')!]

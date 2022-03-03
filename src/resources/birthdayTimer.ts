@@ -7,7 +7,6 @@ import Enmap from 'enmap';
 export let bdayCrons = new Enmap('bdayCrons');
 
 export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
-	let guildId = guild;
 	let infoString = bdayTimes.ensure(guild, '') as String;
 	console.log(infoString);
 	if (infoString == '') {
@@ -17,7 +16,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 	let cronTime = `${infoArray[0]} ${infoArray[1]} * * *`;
 	console.log(infoArray);
 
-	let task = bdayCrons.get(guildId);
+	let task = bdayCrons.get(guild);
 	if (!task) {
 	} else {
 		console.log('unscheduling cron!');
@@ -42,11 +41,10 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 			console.log(
 				`Looping, user: ${userId}, bday ${bday}, server ${guild}, current date: ${dayString}`
 			);
-			let stringID = userId.toString();
 			if (dayString == bday) {
 				//if a persons birthday matches the current date we are checking, run this!
 				let targetChannel = bot.client.channels!.cache.get(
-					bdayChannels.get(guildId)
+					bdayChannels.get(guild)
 				) as TextChannel;
 				if (!targetChannel) return;
 				let user = bot.client.users!.cache.get(userId.toString()) as User;
@@ -57,5 +55,5 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 			}
 		});
 	});
-	bdayCrons.set(guildId, task);
+	bdayCrons.set(guild, task);
 }
