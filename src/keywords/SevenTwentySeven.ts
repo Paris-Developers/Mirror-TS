@@ -8,7 +8,7 @@ import { Keyword } from './Keyword';
 export class SevenTwentySeven implements Keyword {
 	name: String = '727';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.ADD_REACTIONS,
+		Permissions.FLAGS.MANAGE_MESSAGES,
 		Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
