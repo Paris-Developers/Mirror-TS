@@ -4,7 +4,7 @@ import { Bot } from '../Bot';
 import { MessageEmbed, TextChannel, User } from 'discord.js';
 import Enmap from 'enmap';
 
-export let bdayCrons = new Enmap('bdayCrons');
+export let bdayCrons = new Enmap();
 
 export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 	//grab the stored infostring from the enmap, if empty: return

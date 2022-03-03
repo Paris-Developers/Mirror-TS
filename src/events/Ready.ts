@@ -1,7 +1,7 @@
 import { EventHandler } from './EventHandler';
 import { Bot } from '../Bot';
-import { bdayChannels, bdayDates, bdayTimes } from '../slashcommands/Birthday';
-import { birthdayTimer, bdayCrons } from '../resources/birthdayTimer';
+import { bdayTimes } from '../slashcommands/Birthday';
+import { birthdayTimer } from '../resources/birthdayTimer';
 import { registerSlashCommands } from '../resources/registerSlashCommands';
 
 export class Ready implements EventHandler {
@@ -12,7 +12,6 @@ export class Ready implements EventHandler {
 		bot.client.user?.setActivity(' lofi | /help', {
 			type: 'LISTENING',
 		});
-		bdayCrons.deleteAll();
 		bdayTimes.forEach(async (info, guild) => {
 			birthdayTimer(guild.toString(), bot);
 		});
