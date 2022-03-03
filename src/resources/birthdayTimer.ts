@@ -2,6 +2,9 @@ import { bdayDates, bdayTimes, bdayChannels } from '../slashcommands/Birthday';
 import cron from 'node-cron';
 import { Bot } from '../Bot';
 import { MessageEmbed, TextChannel, User } from 'discord.js';
+import Enmap from 'enmap';
+
+export let bdayCrons = new Enmap('bdayCrons');
 
 export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 	let guildId = guild;
@@ -14,7 +17,13 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 	let cronTime = `${infoArray[0]} ${infoArray[1]} * * *`;
 	console.log(infoArray);
 
-	cron.schedule(cronTime, async () => {
+	let task = bdayCrons.get(guildId);
+	if (!task) {
+	} else {
+		console.log('unscheduling cron!');
+		task.stop();
+	}
+	task = cron.schedule(cronTime, async () => {
 		console.log('Scheduling Cronjob');
 		/*We are now in the cronJob for a server. here is the list of the things we need to do in here or another fxn
 		- Loop through the dates
@@ -48,4 +57,5 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 			}
 		});
 	});
+	bdayCrons.set(guildId, task);
 }
