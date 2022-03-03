@@ -178,15 +178,12 @@ export class Birthday implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		if (interaction.options.getSubcommand() == 'set') {
-			//TODO: Permission Check
-
-			//ensure that the enmap has stored the user, and stores their birthday. If not create it and give it an empty string.
-			var userBirthday = bdayDates.ensure(interaction.user.id, '');
-			//store the date of birth in numerical form
+			//store the date of birth in numerical form  DD-MM
 			let formattedBirthday = `${interaction.options.getInteger('day')}-${
 				monthCode[interaction.options.getString('month')!]
 			}`;
-			//place the updated guild JSON in the enmap
+
+			//set the new birthday into the enmap
 			bdayDates.set(interaction.user.id, formattedBirthday);
 			interaction.reply({
 				content: `Successfully set your birthday to ${interaction.options.getInteger(
@@ -197,11 +194,16 @@ export class Birthday implements SlashCommand {
 			return;
 		}
 		if (interaction.options.getSubcommand() == 'config') {
+			//If the command is used in a DM, return
 			if (!(interaction.channel instanceof TextChannel)) {
 				interaction.reply('Command must be used in a server');
 				return;
 			}
+
+			//set the interaction member object so we can refer to their permissions
 			let member = interaction.member as GuildMember;
+
+			//check if the user is an administrator
 			if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
 				interaction.reply({
 					content:
@@ -211,6 +213,7 @@ export class Birthday implements SlashCommand {
 				return;
 			}
 
+			//recieve the provided channel and check if its a text channel
 			var guildChannel = bdayChannels.ensure(interaction.guild!.id, '');
 			guildChannel = interaction.options.getChannel('channel');
 			if (guildChannel.type != 'GUILD_TEXT') {
@@ -220,25 +223,34 @@ export class Birthday implements SlashCommand {
 				});
 				return;
 			}
-			bdayChannels.set(interaction.guild!.id, guildChannel.id);
-			bdayChannels.forEach((element) => console.log(element));
 
+			//set the channel in the enmap
+			bdayChannels.set(interaction.guild!.id, guildChannel.id);
+
+			//get the hour and ensure that it is valid
 			let hour = interaction.options.getInteger('hour')!;
-			if (hour > 23 || hour < 0)
+			if (hour > 23 || hour < 0){
 				return interaction.reply({
 					content:
 						'Invalid hour, please use military format (0-23) where 0 represents midnight.',
 					ephemeral: true,
 				});
+			}
+			//get the minute and ensure that it is valid
 			let minute = interaction.options.getInteger('minute')!;
-			if (minute > 60 || minute < 0)
+			if (minute > 60 || minute < 0){
 				return interaction.reply({
 					content: 'Invalid minute, please provide an integer between 0 and 60',
 					ephemeral: true,
 				});
+			}
+
+			//get the timezone and modify the time to create parity with CST
 			let timezone = interaction.options.getString('timezone')!;
 			let tzChange = timezoneCode[timezone];
 			let cst = hour + tzChange;
+
+			//if the timezone requires the bot to scan for a different day, store a modifier that will be used in the scheduler
 			let date = 'x';
 			if (cst + tzChange >= 24) {
 				date = 'plus';
@@ -248,15 +260,19 @@ export class Birthday implements SlashCommand {
 				date = 'minus';
 				cst += 24;
 			}
-			let infostring = bdayChannels.ensure(interaction.guild!.id, '');
-			infostring = `${minute}-${hour}-${date}-${timezone}`;
-			bdayTimes.set(interaction.guild!.id, infostring);
-			birthdayTimer(interaction.guild!.id, bot);
+
+			//set the infostring to be set into the scheduler, Format: MM-HH-DATEMOD-TIMEZONE
+			let infostring = `${minute}-${hour}-${date}-${timezone}`;
+			bdayTimes.set(interaction.guild!.id, infostring); //scheduler enmap
+			birthdayTimer(interaction.guild!.id, bot); //scheduler
+
+			//respond and exit
 			interaction.reply({
 				content: `Successfully configured your birthday timer to ${hour}:${minute} ${timezone.toUpperCase()} in ${interaction.options.getChannel(
 					'channel'
 				)}`,
 			});
+			return;
 		}
 	}
 }
