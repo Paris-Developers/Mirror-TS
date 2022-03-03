@@ -5,6 +5,7 @@ import {
 	GuildMember,
 	TextChannel,
 	GuildChannel,
+	MessageEmbed,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
@@ -186,12 +187,13 @@ export class Birthday implements SlashCommand {
 
 			//set the new birthday into the enmap
 			bdayDates.set(interaction.user.id, formattedBirthday);
-			interaction.reply({
-				content: `Successfully set your birthday to ${interaction.options.getInteger(
+			let monthCap = interaction.options.getString('month')!.charAt(0).toUpperCase() + interaction.options.getString('month')!.slice(1);
+			let embed = new MessageEmbed()
+				.setDescription(`Successfully set your birthday to: ${monthCap} ${interaction.options.getInteger(
 					'day'
-				)}-${interaction.options.getString('month')}`,
-				ephemeral: false,
-			});
+				)}`)
+				.setColor('#FFFFFF');
+			interaction.reply({embeds:[embed]});
 			return;
 		}
 		if (interaction.options.getSubcommand() == 'config') {
@@ -267,11 +269,16 @@ export class Birthday implements SlashCommand {
 			birthdayTimer(interaction.guild!.id, bot); //scheduler
 
 			//respond and exit
-			interaction.reply({
-				content: `Successfully configured your birthday timer to ${hour}:${minute} ${timezone.toUpperCase()} in ${interaction.options.getChannel(
+			let hourText = hour.toString();
+			let minuteText = minute.toString();
+			if(hour<10) hourText = '0' + hourText;
+			if(minute<10) minuteText = '0' + minuteText;
+			let embed = new MessageEmbed()
+				.setColor('#ffffff')
+				.setDescription(`Successfully configured your birthday timer to trigger at ${hourText}:${minuteText} \`${timezone.toUpperCase()}\` in ${interaction.options.getChannel(
 					'channel'
-				)}`,
-			});
+				)}`);
+			interaction.reply({embeds: [embed]});
 			return;
 		}
 	}
