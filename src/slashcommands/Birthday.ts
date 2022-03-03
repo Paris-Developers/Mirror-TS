@@ -4,6 +4,7 @@ import {
 	CacheType,
 	GuildMember,
 	TextChannel,
+	GuildChannel,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
@@ -214,8 +215,7 @@ export class Birthday implements SlashCommand {
 			}
 
 			//recieve the provided channel and check if its a text channel
-			var guildChannel = bdayChannels.ensure(interaction.guild!.id, '');
-			guildChannel = interaction.options.getChannel('channel');
+			var guildChannel = interaction.options.getChannel('channel') as GuildChannel;
 			if (guildChannel.type != 'GUILD_TEXT') {
 				interaction.reply({
 					content: 'Please enter a valid text channel',
