@@ -10,7 +10,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 	//grab the stored infostring from the enmap, if empty: return
 	let infoString = bdayTimes.ensure(guild, '') as String;
 	if (infoString == '') {
-		bot.logger.warn(`Embed value did not exist for guild: ${guild}.`); 
+		bot.logger.info(`Embed value did not exist for guild: ${guild}.`); 
 		return;
 	}
 	//split the infoarray to be interpreted and interpolate the cron string to be accurate
