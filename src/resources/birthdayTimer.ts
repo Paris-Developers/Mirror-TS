@@ -20,8 +20,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 
 	//if a cronJob already exists for a guild we will want to end it before scheduling a new one.
 	let task = bdayCrons.get(guild);
-	if (!task) {
-	} else {
+	if (task) {
 		bot.logger.warn('unscheduling cron!');
 		task.stop();
 	}
