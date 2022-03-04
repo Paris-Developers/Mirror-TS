@@ -197,17 +197,15 @@ export class Birthday implements SlashCommand {
 			return;
 		}
 		if (interaction.options.getSubcommand() == 'config') {
-			//If the command is used in a DM, return
-			if (!(interaction.channel instanceof TextChannel)) {
-				interaction.reply('Command must be used in a server');
-				return;
-			}
-
 			//set the interaction member object so we can refer to their permissions
 			let member = interaction.member as GuildMember;
 
 			//check if the user is an administrator
-			if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
+			if (!(interaction.channel instanceof TextChannel)) {
+				interaction.reply('Command must be used in a server');
+				return;
+			}
+			if (!member.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
 				interaction.reply({
 					content:
 						'This command is only for people with Administrator permissions',
@@ -282,4 +280,5 @@ export class Birthday implements SlashCommand {
 			return;
 		}
 	}
+	guildRequired? = true;
 }
