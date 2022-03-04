@@ -139,11 +139,11 @@ export class Poll implements SlashCommand {
 		const embed = new MessageEmbed()
 			.setColor('#FFFFFF')
 			.setTitle(`__${interaction.options.getString('title')}__`)
-			.setFooter(
-				`Poll created by ${
+			.setFooter({
+				text: `Poll created by ${
 					interaction.user.tag
-				}, open for ${interaction.options.getInteger('time')} minutes.`
-			);
+				}, open for ${interaction.options.getInteger('time')} minutes.`,
+			});
 		let emoteVal: index = {
 			'1️⃣': 0,
 			'2️⃣': 0,
