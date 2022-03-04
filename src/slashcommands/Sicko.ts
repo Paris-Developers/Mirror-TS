@@ -45,4 +45,5 @@ export class Sicko implements SlashCommand {
 		interaction.reply('reply lol');
 		return;
 	}
+	guildRequired?: boolean = true;
 }

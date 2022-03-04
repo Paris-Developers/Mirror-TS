@@ -74,4 +74,5 @@ export class Intro implements SlashCommand {
 			return;
 		}
 	}
+	guildRequired?: boolean = true;
 }

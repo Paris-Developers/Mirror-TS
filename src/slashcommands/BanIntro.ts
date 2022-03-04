@@ -71,4 +71,5 @@ export class BanIntro implements SlashCommand {
 			}
 		}
 	}
+	guildRequired?: boolean = true;
 }
