@@ -3,6 +3,7 @@ import { Bot } from '../Bot';
 import { bdayTimes } from '../slashcommands/Birthday';
 import { birthdayTimer } from '../resources/birthdayTimer';
 import { registerSlashCommands } from '../resources/registerSlashCommands';
+import { launchVoice } from '../slashcommands/DefaultVc';
 
 export class Ready implements EventHandler {
 	eventName = 'ready';
@@ -15,7 +16,6 @@ export class Ready implements EventHandler {
 		bdayTimes.forEach(async (info, guild) => {
 			birthdayTimer(guild.toString(), bot);
 		});
-		bot.launchVoice();
+		launchVoice(bot);
 	}
 }
-

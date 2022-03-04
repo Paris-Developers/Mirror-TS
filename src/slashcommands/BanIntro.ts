@@ -62,7 +62,7 @@ export class BanIntro implements SlashCommand {
 				});
 				return;
 			} else {
-				bot.logger.error(err);
+				bot.logger.error(interaction.channel.id, this.name, err);
 				interaction.reply({
 					content: 'Error detected, contact an admin for further details.',
 					ephemeral: true,

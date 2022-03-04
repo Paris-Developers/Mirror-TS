@@ -28,6 +28,8 @@ export class InteractionCreate implements EventHandler {
 				// We don't have all the permissions we need. Log and return.
 				if (!(interaction.channel instanceof TextChannel)) {
 					bot.logger.error(
+						undefined,
+						undefined,
 						`Somehow permissionsCheck returned false in a non-textchannel. Offending command: ${command.name}`
 					);
 				} else {
