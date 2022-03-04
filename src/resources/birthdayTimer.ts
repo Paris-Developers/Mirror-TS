@@ -20,7 +20,6 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 	//if a cronJob already exists for a guild we will want to end it before scheduling a new one.
 	let task = bdayCrons.get(guild);
 	if (task) {
-		bot.logger.info('unscheduling cron!');
 		task.stop();
 	}
 
@@ -38,11 +37,6 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 
 		//for every birthday in the enmap, check if it matches the current date
 		bdayDates.forEach(async (bday, userId) => {
-			bot.logger.info(
-				//TODO: remove this eventually, keep in PR for now
-				`Looping, user: ${userId}, bday ${bday}, server ${guild}, current date: ${dayString}`
-			);
-
 			//if a persons birthday matches the current date we are checking
 			if (dayString == bday) {
 				//TODO: check if the user exists in the guild
