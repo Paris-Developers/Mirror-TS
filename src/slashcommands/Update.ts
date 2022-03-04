@@ -77,4 +77,5 @@ export class Update implements SlashCommand {
 		});
 		return;
 	}
+	guildRequired?: boolean = true;
 }
