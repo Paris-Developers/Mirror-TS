@@ -13,10 +13,10 @@ import { SlashCommand } from './SlashCommand';
 import { promisify } from 'util';
 
 export class BanIntro implements SlashCommand {
-	public name = 'banintro';
+	public name = 'removeintro';
 	public registerData = {
 		name: this.name,
-		description: 'Delete someones intro theme!',
+		description: '[ADMIN ONLY] Delete someones intro theme!',
 		options: [
 			{
 				name: 'user',

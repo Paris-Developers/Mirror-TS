@@ -40,7 +40,7 @@ export class Update implements SlashCommand {
 		}
 		let member = interaction.member as GuildMember;
 		if (
-			!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR') ||
+			!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR') &&
 			member.id != config.owner
 		) {
 			interaction.reply({

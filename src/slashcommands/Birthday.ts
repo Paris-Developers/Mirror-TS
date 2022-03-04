@@ -2,10 +2,15 @@ import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
 	CacheType,
+	GuildMember,
+	TextChannel,
+	GuildChannel,
+	MessageEmbed,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { birthdayTimer } from '../resources/birthdayTimer';
 import { SlashCommand } from './SlashCommand';
 
 type monthIndex = { [index: string]: number };
@@ -73,9 +78,35 @@ const months = [
 		value: 'december',
 	},
 ];
+const timezones = [
+	{
+		name: 'EST',
+		value: 'est',
+	},
+	{
+		name: 'CST',
+		value: 'cst',
+	},
+	{
+		name: 'MST',
+		value: 'mst',
+	},
+	{
+		name: 'PST',
+		value: 'pst',
+	},
+];
+type timeIndex = { [index: string]: number };
+const timezoneCode = {
+	est: 1,
+	cst: 0,
+	gmt: -1,
+	pst: -2,
+} as timeIndex;
 
-export let birthdays = new Enmap({ name: 'birthdays' });
-export let birthdayChannels = new Enmap({ name: 'channels' });
+export let bdayDates = new Enmap({ name: 'bdayDates' });
+export let bdayChannels = new Enmap({ name: 'bdayChannels' });
+export let bdayTimes = new Enmap({ name: 'bdayTimes' });
 
 export class Birthday implements SlashCommand {
 	name: string = 'birthday';
@@ -100,14 +131,15 @@ export class Birthday implements SlashCommand {
 					{
 						name: 'day',
 						description: 'The date of your birthday',
-						type: ApplicationCommandOptionTypes.NUMBER,
+						type: ApplicationCommandOptionTypes.INTEGER,
 						required: true,
 					},
 				],
 			},
 			{
-				name: 'channel',
-				description: 'Set the channel where the birthday messages are sent to',
+				name: 'config',
+				description:
+					'[ADMIN ONLY] Configure the time and channel to send the birthday messages',
 				type: 1,
 				required: false,
 				options: [
@@ -118,25 +150,25 @@ export class Birthday implements SlashCommand {
 						required: true,
 						type: ApplicationCommandOptionTypes.CHANNEL,
 					},
-				],
-			},
-			{
-				name: 'message',
-				description: 'Edit the message used when its someones birthday',
-				type: 1,
-				required: false,
-			},
-			{
-				name: 'time',
-				description:
-					'Edit the time the birthday message is sent in your local time',
-				type: 1,
-				required: false,
-				options: [
 					{
-						name: 'time',
-						description: 'The time for the birthday message',
-						type: ApplicationCommandOptionTypes.NUMBER,
+						name: 'hour',
+						description:
+							'The hour you want to send Birthday messages in local time, military format (0-23)',
+						type: 'INTEGER',
+						required: true,
+					},
+					{
+						name: 'minute',
+						description: 'The minut you want to send Birthday messages',
+						type: 'INTEGER',
+						required: true,
+					},
+					{
+						name: 'timezone',
+						description: 'Your local timezone',
+						type: 'STRING',
+						required: true,
+						choices: timezones,
 					},
 				],
 			},
@@ -148,53 +180,106 @@ export class Birthday implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		if (interaction.options.getSubcommand() == 'set') {
-			//TODO: Permission Check
-
-			//ensure that the enmap has stored the user, and stores their birthday. If not create it and give it an empty string.
-			var userBirthday = birthdays.ensure(`${interaction.user.id}`, '');
-			//store the date of birth in numerical form
+			//store the date of birth in numerical form  DD-MM
 			let formattedBirthday = `${interaction.options.getInteger('day')}-${
 				monthCode[interaction.options.getString('month')!]
 			}`;
-			//place the updated guild JSON in the enmap
-			birthdays.set(`${interaction.user.id}`, userBirthday);
-			birthdays.forEach((element) => console.log(element));
-			interaction.reply({
-				content: `Successfully set your birthday to ${interaction.options.getInteger(
-					'day'
-				)}-${interaction.options.getString('month')}`,
-				ephemeral: false,
-			});
-			return;
-		}
-		if (interaction.options.getSubcommand() == 'channel') {
-			//TODO: Permission Check
-			//TODO: verify user is an admin
 
-			//ensure that the enmap has stored the guild and brings in the JSON. If not create it and give it an empty JSON.
-			var guildChannel = birthdayChannels.ensure(
-				`${interaction.guild!.id}`,
-				''
-			);
-			//store the date of birth in numerical form
-			guildChannel = interaction.options.getChannel('channel');
-			//place the updated guild JSON in the enmap
-			birthdayChannels.set(`${interaction.guild!.id}`, guildChannel.id);
-			birthdayChannels.forEach((element) => console.log(element));
-			interaction.reply({
-				content: `Successfully set your birthday Channel to ${interaction.options.getChannel(
-					'channel'
-				)}`,
-				ephemeral: false,
-			});
+			//set the new birthday into the enmap
+			bdayDates.set(interaction.user.id, formattedBirthday);
+			let monthCap = interaction.options.getString('month')!.charAt(0).toUpperCase() + interaction.options.getString('month')!.slice(1);
+			let embed = new MessageEmbed()
+				.setDescription(`Successfully set your birthday to: ${monthCap} ${interaction.options.getInteger(
+					'day'
+				)}`)
+				.setColor('#FFFFFF');
+			interaction.reply({embeds:[embed]});
 			return;
 		}
-		return;
-		if (interaction.options.getSubcommand() == 'message') {
-			//TODO: Permission Check
-		}
-		if (interaction.options.getSubcommand() == 'time') {
-			//TODO, handle errors, this may have to be done in every sub command
+		if (interaction.options.getSubcommand() == 'config') {
+			//If the command is used in a DM, return
+			if (!(interaction.channel instanceof TextChannel)) {
+				interaction.reply('Command must be used in a server');
+				return;
+			}
+
+			//set the interaction member object so we can refer to their permissions
+			let member = interaction.member as GuildMember;
+
+			//check if the user is an administrator
+			if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
+				interaction.reply({
+					content:
+						'This command is only for people with Administrator permissions',
+					ephemeral: true,
+				});
+				return;
+			}
+
+			//recieve the provided channel and check if its a text channel
+			var guildChannel = interaction.options.getChannel('channel') as GuildChannel;
+			if (guildChannel.type != 'GUILD_TEXT') {
+				interaction.reply({
+					content: 'Please enter a valid text channel',
+					ephemeral: true,
+				});
+				return;
+			}
+
+			//set the channel in the enmap
+			bdayChannels.set(interaction.guild!.id, guildChannel.id);
+
+			//get the hour and ensure that it is valid
+			let hour = interaction.options.getInteger('hour')!;
+			if (hour > 23 || hour < 0){
+				return interaction.reply({
+					content:
+						'Invalid hour, please use military format (0-23) where 0 represents midnight.',
+					ephemeral: true,
+				});
+			}
+			//get the minute and ensure that it is valid
+			let minute = interaction.options.getInteger('minute')!;
+			if (minute > 60 || minute < 0){
+				return interaction.reply({
+					content: 'Invalid minute, please provide an integer between 0 and 60',
+					ephemeral: true,
+				});
+			}
+
+			//get the timezone and modify the time to create parity with CST
+			let timezone = interaction.options.getString('timezone')!;
+			let tzChange = timezoneCode[timezone];
+			let cst = hour + tzChange;
+
+			//if the timezone requires the bot to scan for a different day, store a modifier that will be used in the scheduler
+			let date = 'x';
+			if (cst + tzChange >= 24) {
+				date = 'plus';
+				cst -= 24;
+			}
+			if (cst + tzChange < 0) {
+				date = 'minus';
+				cst += 24;
+			}
+
+			//set the infostring to be set into the scheduler, Format: MM-HH-DATEMOD-TIMEZONE
+			let infostring = `${minute}-${hour}-${date}-${timezone}`;
+			bdayTimes.set(interaction.guild!.id, infostring); //scheduler enmap
+			birthdayTimer(interaction.guild!.id, bot); //scheduler
+
+			//respond and exit
+			let hourText = hour.toString();
+			let minuteText = minute.toString();
+			if(hour<10) hourText = '0' + hourText;
+			if(minute<10) minuteText = '0' + minuteText;
+			let embed = new MessageEmbed()
+				.setColor('#ffffff')
+				.setDescription(`Successfully configured your birthday timer to trigger at ${hourText}:${minuteText} \`${timezone.toUpperCase()}\` in ${interaction.options.getChannel(
+					'channel'
+				)}`);
+			interaction.reply({embeds: [embed]});
+			return;
 		}
 	}
 }
