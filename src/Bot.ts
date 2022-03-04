@@ -1,9 +1,8 @@
-import { Client, TextChannel } from 'discord.js';
+import { Client, Guild, MessageEmbed, TextChannel } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
 import { msgPermsCheck } from './resources/msgPermCheck';
-import { Events } from './events/Events';
 import { SlashCommand } from './slashcommands/SlashCommand';
 import { Keyword } from './keywords/Keyword';
 import { MessageCommand } from './messagecommands/MessageCommand';
@@ -42,7 +41,7 @@ export class Bot {
 			now.getMonth() + 1
 		}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
 		let logLevel: TLogLevelName = this.mode == 'debug' ? 'debug' : 'info';
-		this.logger = new CustomLogger(logfileName, logLevel);
+		this.logger = new CustomLogger(logfileName, logLevel, this);
 
 		//fetch enmaps
 		this.songRecs.fetchEverything();

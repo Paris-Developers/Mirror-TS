@@ -6,6 +6,7 @@ import {
 	GuildMember,
 	TextChannel,
 	Guild,
+	MessageEmbed,
 } from 'discord.js';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
@@ -71,11 +72,11 @@ export class Update implements SlashCommand {
 			});
 		//var enmapChannel = updateChannels.ensure(interaction.guild.id, '');
 		updateChannels.set(interaction.guild.id, channel?.id);
-		interaction.reply({
-			content: `Sucessfully updated your development messages to ${channel}`,
-			ephemeral: false,
-		});
-		return;
+        let embed = new MessageEmbed()
+            .setColor('#ffffff')
+            .setDescription(`Sucessfully updated your development messages to ${channel}`);
+        interaction.reply({embeds:[embed]});
+        return;
 	}
 	guildRequired?: boolean = true;
 }
