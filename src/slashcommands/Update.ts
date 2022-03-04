@@ -19,7 +19,7 @@ export class Update implements SlashCommand {
 	public registerData = {
 		name: this.name,
 		description:
-			'Set the channel you wish to recieve Mirror update messages in',
+			'[ADMIN ONLY] Set the channel you wish to recieve Mirror update messages in',
 		options: [
 			{
 				name: 'channel',
@@ -72,11 +72,13 @@ export class Update implements SlashCommand {
 			});
 		//var enmapChannel = updateChannels.ensure(interaction.guild.id, '');
 		updateChannels.set(interaction.guild.id, channel?.id);
-        let embed = new MessageEmbed()
-            .setColor('#ffffff')
-            .setDescription(`Sucessfully updated your development messages to ${channel}`);
-        interaction.reply({embeds:[embed]});
-        return;
+		let embed = new MessageEmbed()
+			.setColor('#ffffff')
+			.setDescription(
+				`Sucessfully updated your development messages to ${channel}`
+			);
+		interaction.reply({ embeds: [embed] });
+		return;
 	}
 	guildRequired?: boolean = true;
 }
