@@ -10,13 +10,12 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 	//grab the stored infostring from the enmap, if empty: return
 	let infoString = bdayTimes.ensure(guild, '') as String;
 	if (infoString == '') {
-		bot.logger.info(`Embed value did not exist for guild: ${guild}.`); 
+		bot.logger.info(`Embed value did not exist for guild: ${guild}.`);
 		return;
 	}
 	//split the infoarray to be interpreted and interpolate the cron string to be accurate
 	let infoArray = infoString.split('-'); //[0]=MM [1]=HH [2]=DATEMOD [3]=Timezone for notes
 	let cronTime = `${infoArray[0]} ${infoArray[1]} * * *`;
-	console.log(infoArray);
 
 	//if a cronJob already exists for a guild we will want to end it before scheduling a new one.
 	let task = bdayCrons.get(guild);
@@ -39,7 +38,8 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 
 		//for every birthday in the enmap, check if it matches the current date
 		bdayDates.forEach(async (bday, userId) => {
-			console.log( //TODO: remove this eventually, keep in PR for now
+			bot.logger.info(
+				//TODO: remove this eventually, keep in PR for now
 				`Looping, user: ${userId}, bday ${bday}, server ${guild}, current date: ${dayString}`
 			);
 
@@ -47,7 +47,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 			if (dayString == bday) {
 				//TODO: check if the user exists in the guild
 				let birthGuild = bot.client.guilds.cache.get(guild)!;
-				if(!(await birthGuild.members.fetch(userId.toString()))) return;
+				if (!(await birthGuild.members.fetch(userId.toString()))) return;
 
 				//check if the channel exists
 				let targetChannel = bot.client.channels!.cache.get(
@@ -60,13 +60,17 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 				user = await user.fetch(true);
 
 				//create embed and send
-				const bdayEmbed = new MessageEmbed().setDescription(
-					`**:birthday: Happy Birthday <@${userId}> :tada:**`
-				).setColor(user.hexAccentColor!)
-				.setFooter({text: `${today.getMonth() + 1}-${today.getDate()}-${today.getFullYear()}`,
-			iconURL: user.displayAvatarURL()});
+				const bdayEmbed = new MessageEmbed()
+					.setDescription(`**:birthday: Happy Birthday <@${userId}> :tada:**`)
+					.setColor(user.hexAccentColor!)
+					.setFooter({
+						text: `${
+							today.getMonth() + 1
+						}-${today.getDate()}-${today.getFullYear()}`,
+						iconURL: user.displayAvatarURL(),
+					});
 				let message = await targetChannel.send({ embeds: [bdayEmbed] });
-				await message.react("🥳");
+				await message.react('🥳');
 			}
 		});
 	});
