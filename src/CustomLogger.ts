@@ -48,7 +48,6 @@ export class CustomLogger extends Logger {
 		commandName: string | undefined,
 		...args: unknown[]
 	): ILogObject {
-		//do custom error display here
 		if (commandName) {
 			const embed = new MessageEmbed()
 				.setTitle(`Error in command ${commandName}`)
