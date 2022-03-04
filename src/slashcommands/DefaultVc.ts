@@ -63,22 +63,6 @@ export class DefaultVc implements SlashCommand {
 			});
 			return;
 		}
-		if (!interaction.guild?.me?.permissionsIn(channel.id).has('SPEAK')) {
-			//TODO: verify that this does anything
-			interaction.reply({
-				content: 'I do not have permission to Speak in that VC',
-				ephemeral: true,
-			});
-			return;
-		}
-		if (!interaction.guild?.me?.permissionsIn(channel.id).has('VIEW_CHANNEL')) {
-			//TODO: verify that this does anything
-			interaction.reply({
-				content: 'I do not have permission to View that VC',
-				ephemeral: true,
-			});
-			return;
-		}
 		defaultVc.set(interaction.guild!.id, channel.id);
 		let embed = new MessageEmbed()
 			.setColor('#ffffff')
