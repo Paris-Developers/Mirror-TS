@@ -1,4 +1,4 @@
-import { Client, MessageEmbed, TextChannel } from 'discord.js';
+import { Client, Guild, MessageEmbed, TextChannel } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
@@ -14,6 +14,9 @@ import {
 } from './resources/dynamicImports';
 import Enmap from 'enmap';
 import { registerEvents } from './resources/registerEvents';
+import { defaultVc } from './slashcommands/DefaultVc';
+import { createAudioPlayer, joinVoiceChannel } from '@discordjs/voice';
+import { ConnectionVisibility } from 'discord-api-types';
 
 export class Bot {
 	public logger: CustomLogger;
@@ -65,5 +68,18 @@ export class Bot {
 			.setFooter({text:`Channel: ${channelId}`});
 		let channel = this.client.channels.cache.get('948246919828865086') as TextChannel;
 		await channel.send({embeds:[embed]});
+	}
+
+	public async launchVoice(): Promise<void> {
+		defaultVc.forEach((channel,guild) => {
+			let guildCheck = this.client.guilds.cache.get(guild.toString()) as Guild;
+			const connection = joinVoiceChannel({
+				channelId: channel,
+				guildId: guildCheck.id,
+				adapterCreator: guildCheck.voiceAdapterCreator,
+			});
+			let player = createAudioPlayer();
+			connection.subscribe(player)
+		})
 	}
 }

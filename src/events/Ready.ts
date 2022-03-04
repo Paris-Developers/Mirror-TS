@@ -15,5 +15,7 @@ export class Ready implements EventHandler {
 		bdayTimes.forEach(async (info, guild) => {
 			birthdayTimer(guild.toString(), bot);
 		});
+		bot.launchVoice();
 	}
 }
+

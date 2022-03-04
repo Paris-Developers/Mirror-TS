@@ -159,7 +159,7 @@ export class Birthday implements SlashCommand {
 					},
 					{
 						name: 'minute',
-						description: 'The minut you want to send Birthday messages',
+						description: 'The minute you want to send Birthday messages',
 						type: 'INTEGER',
 						required: true,
 					},
