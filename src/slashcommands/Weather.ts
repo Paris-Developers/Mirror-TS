@@ -169,7 +169,6 @@ export class Weather implements SlashCommand {
 		} catch (err) {
 			//prints the error message
 			if (jsonData.cod == '404') {
-				bot.errorLog(interaction.channelId,this.name,`${err}`)
 				const embed = new MessageEmbed()
 					.setColor('#FFFFFF')
 					.setDescription(`Error: City not found, try again`);
