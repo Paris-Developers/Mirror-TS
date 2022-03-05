@@ -19,7 +19,9 @@ export class Config implements SlashCommand {
 	};
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-		let embed = new MessageEmbed();
+		let embed = new MessageEmbed().setTitle(
+			`:gear: Server Settings for ${interaction.guild?.name}`
+		);
 		let lines: any[][] = [
 			['Setting', 'Description', 'Configuration'],
 			['`/update`', 'Mirror development updates', '❌'],
