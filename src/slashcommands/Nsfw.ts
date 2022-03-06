@@ -5,6 +5,9 @@ import {
 	ChatInputApplicationCommandData,
 	Permissions,
 	MessageEmbed,
+	GuildMember,
+	GuildChannel,
+	TextChannel,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
@@ -44,6 +47,19 @@ export class Nsfw implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
+		let member = interaction.member as GuildMember;
+		if (!(interaction.channel instanceof TextChannel)) {
+			interaction.reply('Command must be used in a server');
+			return;
+		}
+		if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
+			interaction.reply({
+				content:
+					'This command is only for people with Administrator permissions',
+				ephemeral: true,
+			});
+			return;
+		}
 		var setting = nsfw.ensure(interaction.guild!.id, 'off');
 		const embed = new MessageEmbed();
 		if (interaction.options.getString('toggle') == 'on') {
@@ -64,4 +80,5 @@ export class Nsfw implements SlashCommand {
 		interaction.reply({ embeds: [embed] });
 		return;
 	}
+	guildRequired?: boolean | undefined = true;
 }
