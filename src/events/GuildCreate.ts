@@ -6,6 +6,7 @@ import {
 	TextChannel,
 	Permissions,
 	GuildChannel,
+	NonThreadGuildBasedChannel,
 } from 'discord.js';
 
 export class GuildCreate implements EventHandler {
@@ -17,14 +18,14 @@ export class GuildCreate implements EventHandler {
 				'Thanks for inviting Mirror to your server! \n\n To get started with Mirror use **`/help`** for more information about commands and functionality\n\nUse **`/config`** to see what else you can do before Mirror is fully functional'
 			)
 			.setColor('#FFFFFF');
-		//Check Guild for channels
 		let channelList = await guild.channels.fetch();
-		(await channelList).forEach(async (channel) => {
-			if (channel.permissionsFor(guild.me!).has('SEND_MESSAGES')) {
-				console.log('New guild test');
-				let newChannel = channel as TextChannel;
-				return await newChannel.send({ embeds: [embed] });
+		for (let channel of channelList) {
+			if (channel[1].permissionsFor(guild.me!).has('SEND_MESSAGES')) {
+				let newChannel = channel[1] as TextChannel;
+				await newChannel.send({ embeds: [embed] });
+				break;
 			}
-		});
+		}
+		return;
 	}
 }
