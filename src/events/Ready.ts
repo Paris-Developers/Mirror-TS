@@ -1,6 +1,6 @@
 import { EventHandler } from './EventHandler';
 import { Bot } from '../Bot';
-import { bdayTimes } from '../slashcommands/Birthday';
+import { bdayTimes } from '../slashcommands/BirthdayConfig';
 import { birthdayTimer } from '../resources/birthdayTimer';
 import { registerSlashCommands } from '../resources/registerSlashCommands';
 import { launchVoice } from '../slashcommands/DefaultVc';
