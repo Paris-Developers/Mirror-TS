@@ -12,7 +12,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { promisify } from 'util';
 
-export class BanIntro implements SlashCommand {
+export class RemoveIntro implements SlashCommand {
 	public name = 'removeintro';
 	public registerData = {
 		name: this.name,
