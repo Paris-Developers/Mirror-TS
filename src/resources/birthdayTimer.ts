@@ -1,8 +1,9 @@
-import { bdayDates, bdayTimes, bdayChannels } from '../slashcommands/Birthday';
+import { bdayDates } from '../slashcommands/Birthday';
 import cron from 'node-cron';
 import { Bot } from '../Bot';
 import { MessageEmbed, TextChannel, User } from 'discord.js';
 import Enmap from 'enmap';
+import { bdayChannels, bdayTimes } from '../slashcommands/BirthdayConfig';
 
 export let bdayCrons = new Enmap();
 
