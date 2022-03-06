@@ -7,7 +7,7 @@ import {
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 
-import { bdayChannels } from './Birthday';
+import { bdayChannels } from './BirthdayConfig';
 import { defaultVc } from './DefaultVc';
 import { updateChannels } from './Update';
 
