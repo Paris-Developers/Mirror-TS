@@ -19,6 +19,6 @@ let bot = new Bot(
 	config.mode,
 	config.test_server
 );
-const player = new Player(bot.client);
+export const player = new Player(bot.client);
 
 bot.start();
