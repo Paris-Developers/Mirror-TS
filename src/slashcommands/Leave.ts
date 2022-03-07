@@ -15,14 +15,17 @@ export class Leave implements SlashCommand {
 		name: this.name,
 		description: 'Have Mirror leave your voice channel.',
 	};
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [
+		Permissions.FLAGS.SEND_MESSAGES,
+		Permissions.FLAGS.MOVE_MEMBERS,
+	];
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let mirrorVoice = interaction.guild!.me!.voice;
-			if (!mirrorVoice) {
+			if (!mirrorVoice.channel) {
 				interaction.reply({
 					content: 'Not in a voice channel',
 					ephemeral: true,
@@ -34,8 +37,9 @@ export class Leave implements SlashCommand {
 			return;
 		} catch (err) {
 			bot.logger.error(interaction.channel!.id, this.name, err);
-			interaction.editReply({
-				content: 'Error detected, contact an admin to investigate.',
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
 			});
 			return;
 		}

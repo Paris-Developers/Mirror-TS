@@ -26,8 +26,9 @@ export class Support implements SlashCommand {
 			return;
 		} catch (err) {
 			bot.logger.error(interaction.channel!.id, this.name, err);
-			interaction.editReply({
-				content: 'Error detected, contact an admin to investigate.',
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
 			});
 			return;
 		}

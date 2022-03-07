@@ -134,7 +134,6 @@ export class Poll implements SlashCommand {
 	): Promise<void> {
 		try {
 			let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
-			bot.logger.debug(options);
 			//TODO: error test for empty arguements
 
 			const embed = new MessageEmbed()
@@ -169,7 +168,6 @@ export class Poll implements SlashCommand {
 					`${progBar[0]} **0%**`,
 					false
 				);
-				bot.logger.debug(`Sucessful addition of ${arg.value}`);
 				ctr += 1;
 			}
 			let message = (await interaction.reply({
@@ -195,7 +193,6 @@ export class Poll implements SlashCommand {
 				dispose: true,
 			});
 			collector.on('collect', (reaction: MessageReaction, user: User) => {
-				bot.logger.debug(`Collected ${reaction.emoji.name} from ${user.tag}`);
 				total += 1;
 				emoteVal[reaction.emoji.name!] += 1; //saves number of votes for each emoji
 				ctr = 0;
@@ -213,7 +210,6 @@ export class Poll implements SlashCommand {
 				message.edit({ embeds: [embed] });
 			});
 			collector.on('remove', (reaction, user) => {
-				bot.logger.debug(`Removed ${reaction.emoji.name} from ${user.tag}`);
 				total = total - 1;
 				emoteVal[reaction.emoji.name!] -= 1; //saves number of votes for each emoji
 				ctr = 0;
@@ -241,8 +237,9 @@ export class Poll implements SlashCommand {
 			});
 		} catch (err) {
 			bot.logger.error(interaction.channel!.id, this.name, err);
-			interaction.editReply({
-				content: 'Error detected, contact an admin to investigate.',
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
 			});
 			return;
 		}

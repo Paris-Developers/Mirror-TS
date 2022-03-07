@@ -22,7 +22,7 @@ export class News implements SlashCommand {
 				name: 'query',
 				type: 'STRING',
 				description: 'headlines to query, space separated',
-				required: false,
+				required: true,
 			},
 		],
 	};
@@ -67,8 +67,9 @@ export class News implements SlashCommand {
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.error(interaction.channel!.id, this.name, err);
-			interaction.editReply({
-				content: 'Error detected, contact an admin to investigate.',
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
 			});
 			return;
 		}

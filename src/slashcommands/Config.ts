@@ -72,6 +72,7 @@ export class Config implements SlashCommand {
 			bot.logger.error(interaction.channel!.id, this.name, err);
 			return interaction.reply({
 				content: 'Error detected, contact an admin to investigate.',
+				ephemeral: true,
 			});
 		}
 	}
