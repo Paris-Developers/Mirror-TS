@@ -21,7 +21,15 @@ export class Support implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		interaction.reply('discord.gg/uvdg2R5PAU');
-		return;
+		try {
+			interaction.reply('discord.gg/uvdg2R5PAU');
+			return;
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
+			return;
+		}
 	}
 }

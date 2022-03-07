@@ -31,22 +31,23 @@ export class RemoveIntro implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-		if (!(interaction.channel instanceof TextChannel)) {
-			interaction.reply('Command must be used in a server');
-			return;
-		}
-		if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
-			interaction.reply({
-				content:
-					'This command is only for people with Administrator permissions',
-				ephemeral: true,
-			});
-			return;
-		}
-		let badUser = interaction.options.getUser('user');
-		const promiseMeAnUnlink = promisify(unlink);
 		try {
+			let member = interaction.member as GuildMember;
+			if (!(interaction.channel instanceof TextChannel)) {
+				interaction.reply('Command must be used in a server');
+				return;
+			}
+			if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
+				interaction.reply({
+					content:
+						'This command is only for people with Administrator permissions',
+					ephemeral: true,
+				});
+				return;
+			}
+			let badUser = interaction.options.getUser('user');
+			const promiseMeAnUnlink = promisify(unlink);
+
 			await promiseMeAnUnlink(
 				`./data/intros/${interaction.guild!.id}/${badUser!.id}.mp4`
 			);
@@ -57,12 +58,14 @@ export class RemoveIntro implements SlashCommand {
 		} catch (err: any) {
 			if (err.code == 'ENOENT') {
 				interaction.reply({
-					content: `${badUser} does not have an intro.`,
+					content: `${interaction.options.getUser(
+						'user'
+					)} does not have an intro.`,
 					ephemeral: true,
 				});
 				return;
 			} else {
-				bot.logger.error(interaction.channel.id, this.name, err);
+				bot.logger.error(interaction.channel!.id, this.name, err);
 				interaction.reply({
 					content: 'Error detected, contact an admin for further details.',
 					ephemeral: true,

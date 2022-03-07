@@ -44,8 +44,10 @@ export class Songrec implements SlashCommand {
 			embed.setDescription(mes);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			embed.setDescription(`Error: ${err}`);
-			interaction.reply({ embeds: [embed] });
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
 			return;
 		}
 	}

@@ -22,8 +22,8 @@ export class Song implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		const embed = new MessageEmbed();
 		try {
+			const embed = new MessageEmbed();
 			bot.logger.debug('Test1');
 			let mes = bot.songRecs.get(interaction.user.id);
 			let member = interaction.member as GuildMember;
@@ -31,8 +31,11 @@ export class Song implements SlashCommand {
 			embed.setDescription(mes);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			embed.setDescription(`Error: ${err}`);
-			interaction.reply({ embeds: [embed] });
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
+			return;
 		}
 	}
 }

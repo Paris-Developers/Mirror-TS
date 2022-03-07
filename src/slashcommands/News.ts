@@ -66,11 +66,11 @@ export class News implements SlashCommand {
 			embed.setThumbnail(jsonData.articles[0].urlToImage);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			//catches error
-			//add documentation and finish error testong for api related errors
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription('Error: Try calling the function again');
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
+			return;
 		}
 	}
 }

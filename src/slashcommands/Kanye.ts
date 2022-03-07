@@ -25,15 +25,23 @@ export class Kanye implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let res = await fetch(`https://api.kanye.rest/`);
-		let jsonData = await res.json();
-		const embed = new MessageEmbed()
-			.setColor('#FFFFFF')
-			.setDescription(`**${jsonData.quote}**`)
-			.setFooter({
-				text: 'Kanye West',
-				iconURL: 'https://imgur.com/olrP4cN.jpeg',
+		try {
+			let res = await fetch(`https://api.kanye.rest/`);
+			let jsonData = await res.json();
+			const embed = new MessageEmbed()
+				.setColor('#FFFFFF')
+				.setDescription(`**${jsonData.quote}**`)
+				.setFooter({
+					text: 'Kanye West',
+					iconURL: 'https://imgur.com/olrP4cN.jpeg',
+				});
+			interaction.reply({ embeds: [embed] });
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
 			});
-		interaction.reply({ embeds: [embed] });
+			return;
+		}
 	}
 }

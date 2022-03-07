@@ -62,7 +62,6 @@ export class Intro implements SlashCommand {
 			});
 			return;
 		} catch (err: any) {
-			bot.logger.warn(err.message);
 			if (err.message == 'Status code: 410') {
 				interaction.editReply(
 					'Your video is private or age restricted, please choose another'

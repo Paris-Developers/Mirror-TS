@@ -20,14 +20,25 @@ export class Leave implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let mirrorVoice = interaction.guild!.me!.voice;
-		if (!mirrorVoice) {
-			interaction.reply({ content: 'Not in a voice channel', ephemeral: true });
+		try {
+			let mirrorVoice = interaction.guild!.me!.voice;
+			if (!mirrorVoice) {
+				interaction.reply({
+					content: 'Not in a voice channel',
+					ephemeral: true,
+				});
+				return;
+			}
+			mirrorVoice.disconnect();
+			interaction.reply('Left the voice channel :wave:');
+			return;
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
 			return;
 		}
-		mirrorVoice.disconnect();
-		interaction.reply('Left the voice channel :wave:');
-		return;
 	}
 	guildRequired?: boolean = true;
 }

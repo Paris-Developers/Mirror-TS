@@ -36,43 +36,51 @@ export class DefaultVc implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-		if (
-			!(interaction.channel instanceof TextChannel) ||
-			!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')
-		) {
-			interaction.reply({
-				content:
-					'This command is only for people with Administrator permissions',
-				ephemeral: true,
+		try {
+			let member = interaction.member as GuildMember;
+			if (
+				!(interaction.channel instanceof TextChannel) ||
+				!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')
+			) {
+				interaction.reply({
+					content:
+						'This command is only for people with Administrator permissions',
+					ephemeral: true,
+				});
+				return;
+			}
+			let channel = interaction.options.getChannel('channel');
+			if (!(channel instanceof VoiceChannel)) {
+				interaction.reply({
+					content: 'Channel must be a voice channel',
+					ephemeral: true,
+				});
+				return;
+			}
+			if (!interaction.guild?.me?.permissionsIn(channel.id).has('CONNECT')) {
+				interaction.reply({
+					content: 'I do not have permission to Connect to that VC',
+					ephemeral: true,
+				});
+				return;
+			}
+			defaultVc.set(interaction.guild!.id, channel.id);
+			let embed = new MessageEmbed()
+				.setColor('#ffffff')
+				.setDescription(
+					`Sucessfully updated your default voice channel to ${channel}`
+				);
+			interaction.reply({ embeds: [embed] });
+			return;
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
 			});
 			return;
 		}
-		let channel = interaction.options.getChannel('channel');
-		if (!(channel instanceof VoiceChannel)) {
-			interaction.reply({
-				content: 'Channel must be a voice channel',
-				ephemeral: true,
-			});
-			return;
-		}
-		if (!interaction.guild?.me?.permissionsIn(channel.id).has('CONNECT')) {
-			interaction.reply({
-				content: 'I do not have permission to Connect to that VC',
-				ephemeral: true,
-			});
-			return;
-		}
-		defaultVc.set(interaction.guild!.id, channel.id);
-		let embed = new MessageEmbed()
-			.setColor('#ffffff')
-			.setDescription(
-				`Sucessfully updated your default voice channel to ${channel}`
-			);
-		interaction.reply({ embeds: [embed] });
-		return;
 	}
-	//TODO: guildRequired? = true;
+	guildRequired? = true;
 }
 
 export async function launchVoice(bot: Bot): Promise<void> {

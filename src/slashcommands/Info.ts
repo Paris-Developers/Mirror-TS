@@ -20,23 +20,31 @@ export class Info implements SlashCommand {
 		Permissions.FLAGS.EMBED_LINKS,
 	];
 	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
-		const embed = new MessageEmbed()
-			.setColor('#d4af37')
-			.setTitle(':mirror: __Mirror__ :mirror:')
-			.setThumbnail('https://i.imgur.com/xBXfVeF.png')
-			.setTimestamp()
-			.setDescription(
-				'Discord utility bot created by Ford, Zac, Leo (not really) and Gavin'
-			)
-			.addField(
-				'__Command List:__',
-				'$stock [TICKER]: Displays todays trading value and more for specified ticker \n$weather [city]: displays current weather for specified city \n$info: you are here! \n$test: :smile:'
-			)
-			.setFooter({
-				text: 'Created by Fordle#0001',
-				iconURL: 'https://i.imgur.com/Cq4Sbwq.jpg?1',
-			});
+		try {
+			const embed = new MessageEmbed()
+				.setColor('#d4af37')
+				.setTitle(':mirror: __Mirror__ :mirror:')
+				.setThumbnail('https://i.imgur.com/xBXfVeF.png')
+				.setTimestamp()
+				.setDescription(
+					'Discord utility bot created by Ford, Zac, Leo (not really) and Gavin'
+				)
+				.addField(
+					'__Command List:__',
+					'$stock [TICKER]: Displays todays trading value and more for specified ticker \n$weather [city]: displays current weather for specified city \n$info: you are here! \n$test: :smile:'
+				)
+				.setFooter({
+					text: 'Created by Fordle#0001',
+					iconURL: 'https://i.imgur.com/Cq4Sbwq.jpg?1',
+				});
 
-		interaction.reply({ embeds: [embed] });
+			interaction.reply({ embeds: [embed] });
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
+			return;
+		}
 	}
 }

@@ -108,24 +108,32 @@ export class Birthday implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		//store the date of birth in numerical form  DD-MM
-		let formattedBirthday = `${interaction.options.getInteger('day')}-${
-			monthCode[interaction.options.getString('month')!]
-		}`;
+		try {
+			//store the date of birth in numerical form  DD-MM
+			let formattedBirthday = `${interaction.options.getInteger('day')}-${
+				monthCode[interaction.options.getString('month')!]
+			}`;
 
-		//set the new birthday into the enmap
-		bdayDates.set(interaction.user.id, formattedBirthday);
-		let monthCap =
-			interaction.options.getString('month')!.charAt(0).toUpperCase() +
-			interaction.options.getString('month')!.slice(1);
-		let embed = new MessageEmbed()
-			.setDescription(
-				`Successfully set your birthday to: ${monthCap} ${interaction.options.getInteger(
-					'day'
-				)}`
-			)
-			.setColor('#FFFFFF');
-		interaction.reply({ embeds: [embed] });
-		return;
+			//set the new birthday into the enmap
+			bdayDates.set(interaction.user.id, formattedBirthday);
+			let monthCap =
+				interaction.options.getString('month')!.charAt(0).toUpperCase() +
+				interaction.options.getString('month')!.slice(1);
+			let embed = new MessageEmbed()
+				.setDescription(
+					`Successfully set your birthday to: ${monthCap} ${interaction.options.getInteger(
+						'day'
+					)}`
+				)
+				.setColor('#FFFFFF');
+			interaction.reply({ embeds: [embed] });
+			return;
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
+			return;
+		}
 	}
 }

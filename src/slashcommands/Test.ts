@@ -16,6 +16,14 @@ export class Test implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		interaction.reply(`Hello ${interaction.user.username}`);
+		try {
+			interaction.reply(`Hello ${interaction.user.username}`);
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
+			return;
+		}
 	}
 }

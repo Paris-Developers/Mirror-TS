@@ -27,23 +27,31 @@ export class Sicko implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-		let state = member.voice;
-		if (!state.channel) {
-			interaction.reply('you are not in a valid voice channel!');
+		try {
+			let member = interaction.member as GuildMember;
+			let state = member.voice;
+			if (!state.channel) {
+				interaction.reply('you are not in a valid voice channel!');
+				return;
+			}
+			const connection = joinVoiceChannel({
+				channelId: state.channelId!,
+				guildId: interaction.guildId!,
+				adapterCreator: interaction.guild!.voiceAdapterCreator,
+			});
+			let player = createAudioPlayer();
+			connection.subscribe(player);
+			const mirrormp3 = createAudioResource('./music/sicko.mp3');
+			player.play(mirrormp3);
+			interaction.reply('reply lol');
+			return;
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
 			return;
 		}
-		const connection = joinVoiceChannel({
-			channelId: state.channelId!,
-			guildId: interaction.guildId!,
-			adapterCreator: interaction.guild!.voiceAdapterCreator,
-		});
-		let player = createAudioPlayer();
-		connection.subscribe(player);
-		const mirrormp3 = createAudioResource('./music/sicko.mp3');
-		player.play(mirrormp3);
-		interaction.reply('reply lol');
-		return;
 	}
 	guildRequired?: boolean = true;
 }
