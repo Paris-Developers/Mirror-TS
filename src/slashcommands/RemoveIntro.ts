@@ -12,11 +12,11 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { promisify } from 'util';
 
-export class BanIntro implements SlashCommand {
-	public name = 'banintro';
+export class RemoveIntro implements SlashCommand {
+	public name = 'removeintro';
 	public registerData = {
 		name: this.name,
-		description: 'Delete someones intro theme!',
+		description: '[ADMIN ONLY] Delete someones intro theme!',
 		options: [
 			{
 				name: 'user',
@@ -62,7 +62,7 @@ export class BanIntro implements SlashCommand {
 				});
 				return;
 			} else {
-				bot.logger.error(err);
+				bot.logger.error(interaction.channel.id, this.name, err);
 				interaction.reply({
 					content: 'Error detected, contact an admin for further details.',
 					ephemeral: true,
@@ -71,4 +71,5 @@ export class BanIntro implements SlashCommand {
 			}
 		}
 	}
+	guildRequired?: boolean = true;
 }

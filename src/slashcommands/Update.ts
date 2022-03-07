@@ -6,6 +6,7 @@ import {
 	GuildMember,
 	TextChannel,
 	Guild,
+	MessageEmbed,
 } from 'discord.js';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
@@ -18,7 +19,7 @@ export class Update implements SlashCommand {
 	public registerData = {
 		name: this.name,
 		description:
-			'Set the channel you wish to recieve Mirror update messages in',
+			'[ADMIN ONLY] Set the channel you wish to recieve Mirror update messages in',
 		options: [
 			{
 				name: 'channel',
@@ -40,7 +41,7 @@ export class Update implements SlashCommand {
 		}
 		let member = interaction.member as GuildMember;
 		if (
-			!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR') ||
+			!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR') &&
 			member.id != config.owner
 		) {
 			interaction.reply({
@@ -71,10 +72,13 @@ export class Update implements SlashCommand {
 			});
 		//var enmapChannel = updateChannels.ensure(interaction.guild.id, '');
 		updateChannels.set(interaction.guild.id, channel?.id);
-		interaction.reply({
-			content: `Sucessfully updated your development messages to ${channel}`,
-			ephemeral: false,
-		});
+		let embed = new MessageEmbed()
+			.setColor('#ffffff')
+			.setDescription(
+				`Sucessfully updated your development messages to ${channel}`
+			);
+		interaction.reply({ embeds: [embed] });
 		return;
 	}
+	guildRequired?: boolean = true;
 }
