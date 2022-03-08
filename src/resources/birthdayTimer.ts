@@ -42,7 +42,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 			if (dayString == bday) {
 				//TODO: check if the user exists in the guild
 				let birthGuild = bot.client.guilds.cache.get(guild)!;
-				if (!(await birthGuild.members.fetch(userId.toString()))) return;
+				if (!birthGuild.members.cache.get(userId.toString())) return;
 
 				//check if the channel exists
 				let targetChannel = bot.client.channels!.cache.get(
