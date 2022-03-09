@@ -18,7 +18,7 @@ export class SilenceMember implements SlashCommand {
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description:
-			'[ADMIN ONLY] Silence a member from using guild specific commands.',
+			'[ADMIN ONLY] Silence a member from using Intros or Setting their birthday.',
 		options: [
 			{
 				name: 'user',
