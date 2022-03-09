@@ -4,6 +4,7 @@ import mkdirp from 'mkdirp';
 import path from 'path';
 import { Bot } from './Bot';
 import { MessageEmbed, TextChannel } from 'discord.js';
+import config from '../config.json';
 
 export class CustomLogger extends Logger {
 	constructor(
@@ -54,7 +55,7 @@ export class CustomLogger extends Logger {
 				.setDescription(`Error Message: ${args.join(' ')}`)
 				.setFooter({ text: `Channel: ${channelId}` });
 			let channel = this.bot.client.channels.cache.get(
-				'948246919828865086'
+				config.error_channel
 			) as TextChannel;
 			channel.send({ embeds: [embed] });
 		}
