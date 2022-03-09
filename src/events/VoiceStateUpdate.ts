@@ -22,7 +22,7 @@ export class VoiceStateUpdate implements EventHandler {
 		if (oldState.channelId == newState.channelId) return; //if the new channel and the old channel are the same, end
 		if (newState.serverMute == true || newState.serverDeaf == true) return; //if the user is server muted or server deafened, end
 		let userArray = silencedUsers.ensure(newState.guild!.id, []);
-		if (userArray.includes(newState.member!.id)) return;
+		if (userArray.includes(newState.member!.id)) return; //if the user is silenced, end
 		let connection = getVoiceConnection(newState.guild.id);
 		if (!connection) {
 			connection = joinVoiceChannel({
