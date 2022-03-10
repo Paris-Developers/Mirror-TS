@@ -18,7 +18,7 @@ export class ManagerRole implements SlashCommand {
 	name: string = 'managerrole';
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
-		description: '[MANAGER ONLY] Add or remove a role as a manager',
+		description: '[MANAGER] Add or remove a role as a manager',
 		options: [
 			{
 				name: 'role',

@@ -12,6 +12,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { managerCheck } from '../resources/managerCheck';
 import { SlashCommand } from './SlashCommand';
 
 export let defaultVc = new Enmap('defaultVc');
@@ -21,7 +22,7 @@ export class DefaultVc implements SlashCommand {
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description:
-			'[ADMIN ONLY] Set a default voice channel for Mirror to join upon restart, will not play a sound',
+			'[MANAGER] Set a default voice channel for Mirror to join upon restart, will not play a sound',
 		options: [
 			{
 				name: 'channel',
@@ -36,17 +37,13 @@ export class DefaultVc implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-		if (
-			!(interaction.channel instanceof TextChannel) ||
-			!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')
-		) {
-			interaction.reply({
+		//check if the user is a Manager or Admin
+		if (!(await managerCheck(interaction.guild!, interaction.user))) {
+			return interaction.reply({
 				content:
-					'This command is only for people with Administrator permissions',
+					'This command can only be used by designated managers or admininstrators',
 				ephemeral: true,
 			});
-			return;
 		}
 		let channel = interaction.options.getChannel('channel');
 		if (!(channel instanceof VoiceChannel)) {

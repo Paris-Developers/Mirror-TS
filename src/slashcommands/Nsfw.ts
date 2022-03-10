@@ -12,6 +12,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { managerCheck } from '../resources/managerCheck';
 import { SlashCommand } from './SlashCommand';
 
 const choices = [
@@ -47,18 +48,13 @@ export class Nsfw implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-		if (!(interaction.channel instanceof TextChannel)) {
-			interaction.reply('Command must be used in a server');
-			return;
-		}
-		if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
-			interaction.reply({
+		//check if the user is a Manager or Admin
+		if (!(await managerCheck(interaction.guild!, interaction.user))) {
+			return interaction.reply({
 				content:
-					'This command is only for people with Administrator permissions',
+					'This command can only be used by designated managers or admininstrators',
 				ephemeral: true,
 			});
-			return;
 		}
 		var setting = nsfw.ensure(interaction.guild!.id, 'off');
 		const embed = new MessageEmbed();

@@ -42,7 +42,7 @@ export class BirthdayConfig implements SlashCommand {
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description:
-			'[ADMIN ONLY] Configure the time and channel to send the birthday messages',
+			'[MANAGER] Configure the time and channel to send the birthday messages',
 		options: [
 			{
 				name: 'channel',

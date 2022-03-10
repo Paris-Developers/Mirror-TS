@@ -16,7 +16,7 @@ export class RemoveIntro implements SlashCommand {
 	public name = 'removeintro';
 	public registerData = {
 		name: this.name,
-		description: '[ADMIN ONLY] Delete someones intro theme!',
+		description: '[MANAGER] Delete someones intro theme!',
 		options: [
 			{
 				name: 'user',
