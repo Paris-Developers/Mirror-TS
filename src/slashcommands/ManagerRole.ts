@@ -56,6 +56,7 @@ export class ManagerRole implements SlashCommand {
 			managerRoles.set(interaction.guild!.id, roleArray);
 			return interaction.reply({
 				content: `Successfully removed ${role} as a Mirror Manager`,
+				ephemeral: true,
 			});
 		}
 
@@ -71,6 +72,7 @@ export class ManagerRole implements SlashCommand {
 		managerRoles.set(interaction.guild!.id, roleArray);
 		return interaction.reply({
 			content: `Successfully added ${role} as a Mirror Manager`,
+			ephemeral: true,
 		});
 	}
 	guildRequired?: boolean | undefined = true;
