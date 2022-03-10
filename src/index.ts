@@ -26,7 +26,7 @@ export const playOptions: PlayerOptions = {
 	leaveOnStop: false,
 };
 
-export const player = new Player(bot.client, playOptions);
+export const player = new Player(bot.client);
 
 player.on('error', (queue, error) => {
 	bot.logger.info(

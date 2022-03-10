@@ -38,9 +38,7 @@ export class PlayTwo implements SlashCommand {
 				requestedBy: interaction.user,
 				searchEngine: QueryType.AUTO,
 			})
-			.catch(() => {
-				console.log('he');
-			});
+			.catch(() => {});
 		if (!searchResult || !searchResult.tracks.length)
 			return void interaction.editReply('no results were found');
 
@@ -63,6 +61,9 @@ export class PlayTwo implements SlashCommand {
 			? queue.addTracks(searchResult.tracks)
 			: queue.addTrack(searchResult.tracks[0]);
 		if (!queue.playing) await queue.play();
+		interaction.editReply(
+			`Currently playing: **\`${searchResult.tracks[0].title}\`** by **\`${searchResult.tracks[0].author}\`**`
+		);
 	}
 	guildRequired?: boolean | undefined;
 }
