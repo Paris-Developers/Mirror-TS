@@ -77,23 +77,12 @@ export class BirthdayConfig implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		if (await !managerCheck(interaction.guild!, interaction.user)) {
-			return interaction.reply({ content: 'we are in boys' });
-		}
-		let member = interaction.member as GuildMember;
-
-		//check if the user is an administrator
-		if (!(interaction.channel instanceof TextChannel)) {
-			interaction.reply('Command must be used in a server');
-			return;
-		}
-		if (!member.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
-			interaction.reply({
+		//check if the user is a Manager or Admin
+		if (!(await managerCheck(interaction.guild!, interaction.user))) {
+			return interaction.reply({
 				content:
-					'This command is only for people with Administrator permissions',
-				ephemeral: true,
+					'This command can only be used by designated managers or admininstrators',
 			});
-			return;
 		}
 
 		//recieve the provided channel and check if its a text channel

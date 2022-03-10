@@ -8,10 +8,8 @@ export async function managerCheck(guild: Guild, user: User): Promise<boolean> {
 	for (let role of roleArray) {
 		console.log(role);
 		if (member?.roles.cache.has(role)) {
-			console.log('has role');
 			return true;
 		}
 	}
-	console.log('nada');
 	return false;
 }
