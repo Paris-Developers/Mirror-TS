@@ -36,15 +36,6 @@ export class Update implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		//check if the user is a Manager or Admin
-		if (!(await managerCheck(interaction.guild!, interaction.user))) {
-			return interaction.reply({
-				content:
-					'This command can only be used by designated managers or admininstrators',
-				ephemeral: true,
-			});
-		}
-
 		let channel = interaction.options.getChannel('channel');
 		if (
 			!interaction.guild?.me
@@ -75,4 +66,5 @@ export class Update implements SlashCommand {
 		return;
 	}
 	guildRequired?: boolean = true;
+	managerRequired?: boolean | undefined = true;
 }

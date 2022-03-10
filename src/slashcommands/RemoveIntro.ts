@@ -32,13 +32,6 @@ export class RemoveIntro implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		if (!(await managerCheck(interaction.guild!, interaction.user))) {
-			return interaction.reply({
-				content:
-					'This command can only be used by designated managers or admininstrators',
-				ephemeral: true,
-			});
-		}
 		let badUser = interaction.options.getUser('user');
 		const promiseMeAnUnlink = promisify(unlink);
 		try {
@@ -67,4 +60,5 @@ export class RemoveIntro implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean = true;
+	managerRequired?: boolean | undefined = true;
 }

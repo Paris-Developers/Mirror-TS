@@ -49,14 +49,6 @@ export class Nsfw implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		//check if the user is a Manager or Admin
-		if (!(await managerCheck(interaction.guild!, interaction.user))) {
-			return interaction.reply({
-				content:
-					'This command can only be used by designated managers or admininstrators',
-				ephemeral: true,
-			});
-		}
 		var setting = nsfw.ensure(interaction.guild!.id, 'off');
 		const embed = new MessageEmbed();
 		if (interaction.options.getString('toggle') == 'on') {
@@ -78,4 +70,5 @@ export class Nsfw implements SlashCommand {
 		return;
 	}
 	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }

@@ -77,15 +77,6 @@ export class BirthdayConfig implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		//check if the user is a Manager or Admin
-		if (!(await managerCheck(interaction.guild!, interaction.user))) {
-			return interaction.reply({
-				content:
-					'This command can only be used by designated managers or admininstrators',
-				ephemeral: true,
-			});
-		}
-
 		//recieve the provided channel and check if its a text channel
 		var guildChannel = interaction.options.getChannel(
 			'channel'
@@ -156,4 +147,5 @@ export class BirthdayConfig implements SlashCommand {
 		return;
 	}
 	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }

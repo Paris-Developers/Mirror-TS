@@ -37,14 +37,6 @@ export class DefaultVc implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		//check if the user is a Manager or Admin
-		if (!(await managerCheck(interaction.guild!, interaction.user))) {
-			return interaction.reply({
-				content:
-					'This command can only be used by designated managers or admininstrators',
-				ephemeral: true,
-			});
-		}
 		let channel = interaction.options.getChannel('channel');
 		if (!(channel instanceof VoiceChannel)) {
 			interaction.reply({
@@ -69,7 +61,8 @@ export class DefaultVc implements SlashCommand {
 		interaction.reply({ embeds: [embed] });
 		return;
 	}
-	//TODO: guildRequired? = true;
+	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }
 
 export async function launchVoice(bot: Bot): Promise<void> {
