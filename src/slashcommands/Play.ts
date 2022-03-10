@@ -3,6 +3,7 @@ import {
 	CommandInteraction,
 	CacheType,
 	GuildMember,
+	MessageEmbed,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
@@ -10,8 +11,8 @@ import { SlashCommand } from './SlashCommand';
 import { player, playOptions } from '../index';
 import { QueryType } from 'discord-player';
 
-export class PlayTwo implements SlashCommand {
-	name: string = 'playtwo';
+export class Play implements SlashCommand {
+	name: string = 'play';
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description: 'Play a song in the voice channel.',
@@ -61,9 +62,14 @@ export class PlayTwo implements SlashCommand {
 			? queue.addTracks(searchResult.tracks)
 			: queue.addTrack(searchResult.tracks[0]);
 		if (!queue.playing) await queue.play();
-		interaction.editReply(
-			`Currently playing: **\`${searchResult.tracks[0].title}\`** by **\`${searchResult.tracks[0].author}\`**`
-		);
+		let track = searchResult.tracks[0];
+		let trackString = `Now playing | **${track.title}**, by *${track.author}* (${track.duration})`;
+		const embed = new MessageEmbed().setDescription(trackString).setFooter({
+			text: `Requested by ${track.requestedBy.tag}`,
+			iconURL: track.requestedBy.avatarURL()!,
+		});
+		return interaction.reply({ embeds: [embed] });
 	}
-	guildRequired?: boolean | undefined;
+	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined;
 }
