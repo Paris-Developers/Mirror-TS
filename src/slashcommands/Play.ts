@@ -18,8 +18,8 @@ export class Play implements SlashCommand {
 		description: 'Play a song in the voice channel.',
 		options: [
 			{
-				name: 'song',
-				description: 'the song you want to queue',
+				name: 'query',
+				description: 'The song or playlist you want to queue',
 				type: ApplicationCommandOptionTypes.STRING,
 				required: true,
 			},
@@ -30,10 +30,10 @@ export class Play implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		interaction.deferReply();
+		await interaction.deferReply();
 		const guild = bot.client.guilds.cache.get(interaction.guild!.id);
 		const channel = guild?.channels.cache.get(interaction.channelId);
-		const query = interaction.options.getString('song')!;
+		const query = interaction.options.getString('query')!;
 		const searchResult = await player
 			.search(query, {
 				requestedBy: interaction.user,
@@ -53,24 +53,44 @@ export class Play implements SlashCommand {
 			void player.deleteQueue(guild!.id);
 			return void interaction.editReply('Could not join your voice channel');
 		}
-		await interaction.editReply({
-			content: `⏱ | Loading your ${
-				searchResult.playlist ? 'playlist' : 'track'
-			}...`,
-		});
+		const embed = new MessageEmbed().setColor('BLUE');
+		if (searchResult.playlist) {
+			embed
+				.setTitle(
+					`Queuing playlist: ${searchResult.playlist.title} by ${searchResult.playlist.author.name}`
+				)
+				.setThumbnail(searchResult.playlist.thumbnail)
+				.setURL(searchResult.playlist.url);
+		}
+		embed
+			.setDescription(
+				`Loading Song: **${searchResult.tracks[0].title}** by, *${searchResult.tracks[0].author}*`
+			)
+			.setFooter({
+				text: `Requested by ${searchResult.tracks[0].requestedBy.tag}`,
+				iconURL: searchResult.tracks[0].requestedBy.avatarURL()!,
+			});
+		await interaction.editReply({ embeds: [embed] });
+
 		searchResult.playlist
 			? queue.addTracks(searchResult.tracks)
 			: queue.addTrack(searchResult.tracks[0]);
-		if (!queue.playing) await queue.play();
 		let track = searchResult.tracks[0];
-		let trackString = `Now playing | **${track.title}**, by *${track.author}* (${track.duration})`;
-		const embed = new MessageEmbed().setDescription(trackString).setFooter({
-			text: `Requested by ${track.requestedBy.tag}`,
-			iconURL: track.requestedBy.avatarURL()!,
-		});
-		//interaction.editReply('test');
+		if (!queue.playing) {
+			embed.setDescription(
+				`Playing first: **${track.title}**, by *${track.author}* (${track.duration})`
+			);
+			await queue.play();
+		} else {
+			searchResult.playlist
+				? embed.setDescription('Playlist added to the queue!')
+				: embed.setDescription(
+						`**${track.title}**, by *${track.author}* (${track.duration}) added to the queue!`
+				  );
+		}
 		interaction.editReply({ embeds: [embed] });
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
 }
+``;
