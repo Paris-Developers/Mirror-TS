@@ -8,7 +8,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 
 export class Skip implements SlashCommand {
-	name: string = 'string;';
+	name: string = 'skip';
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description: 'Skip the current song in the queue',

@@ -8,7 +8,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 
 export class Resume implements SlashCommand {
-	name: string = 'Resume;';
+	name: string = 'resume';
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description: 'Pause the music player',
