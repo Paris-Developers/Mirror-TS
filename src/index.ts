@@ -2,7 +2,7 @@ import { Client, Intents } from 'discord.js';
 import { Bot } from './Bot';
 //@ts-ignore:next-line
 import config from '../config.json';
-const { Player } = require('discord-player');
+import { PlayerOptions, Player } from 'discord-player';
 
 let options = {
 	intents: [
@@ -19,9 +19,18 @@ let bot = new Bot(
 	config.mode,
 	config.test_server
 );
-export const player = new Player(bot.client, {
-	leaveOnStop: false,
-	leaveOnEmpty: false,
+
+let playOptions: PlayerOptions = {
 	leaveOnEnd: false,
+	leaveOnEmpty: false,
+	leaveOnStop: false,
+};
+export const player = new Player(bot.client, playOptions);
+
+player.on('error', (queue, error) => {
+	bot.logger.info(
+		`[${queue.guild.name}] Error emitted from the queue: ${error.message}`
+	);
 });
+
 bot.start();
