@@ -28,12 +28,12 @@ export class VoiceStateUpdate implements EventHandler {
 				adapterCreator: newState.guild.voiceAdapterCreator,
 			});
 		}
-		let player = createAudioPlayer();
-		connection.subscribe(player);
+		let audioPlayer = createAudioPlayer();
+		connection.subscribe(audioPlayer);
 		const intro = createAudioResource(
 			`./data/intros/${newState.guild.id}/${newState.member!.id}.mp4`
 		);
-		player.play(intro);
+		audioPlayer.play(intro);
 		return;
 	}
 }

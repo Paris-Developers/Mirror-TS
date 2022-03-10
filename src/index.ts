@@ -20,5 +20,11 @@ let bot = new Bot(
 	config.test_server
 );
 export const player = new Player(bot.client);
+player.on(
+	'queueEnd',
+	(queue: { metadata: { send: (arg0: string) => void } }) => {
+		let troll = 'nothing happens here!';
+	}
+);
 
 bot.start();
