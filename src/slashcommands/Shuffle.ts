@@ -14,10 +14,13 @@ export class Shuffle implements SlashCommand {
 		description: 'Shuffle the music queue',
 	};
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(
+		bot: Bot,
+		interaction: CommandInteraction<CacheType>
+	): Promise<void> {
 		let queue = player.getQueue(interaction.guild!.id);
-		if (!queue) return interaction.reply('There is no queue');
-		queue.shuffle();
+		if (!queue || !queue.playing) return interaction.reply('There is no queue');
+		await queue.shuffle();
 		return interaction.reply('queue might have been shuffled');
 	}
 	guildRequired?: boolean | undefined = true;
