@@ -9,6 +9,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { managerCheck } from '../resources/managerCheck';
 import { SlashCommand } from './SlashCommand';
 
 export const managerRoles = new Enmap('managerRoles');
@@ -17,7 +18,7 @@ export class ManagerRole implements SlashCommand {
 	name: string = 'managerrole';
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
-		description: '[ADMIN ONLY] Add or remove a role as a manager',
+		description: '[MANAGER ONLY] Add or remove a role as a manager',
 		options: [
 			{
 				name: 'role',
@@ -28,23 +29,26 @@ export class ManagerRole implements SlashCommand {
 		],
 	};
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-		//check if the user is an administrator
-		if (!(interaction.channel instanceof TextChannel)) {
-			return interaction.reply({
-				content: 'Command must be used in a server',
-				ephemeral: true,
-			});
-		}
-		let member = interaction.member as GuildMember;
-		if (!member.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
+	async run(
+		bot: Bot,
+		interaction: CommandInteraction<CacheType>
+	): Promise<void> {
+		//check if the user is a Manager or Admin
+		if (!(await managerCheck(interaction.guild!, interaction.user))) {
 			return interaction.reply({
 				content:
-					'This command is only for people with Administrator permissions',
+					'This command can only be used by designated managers or admininstrators',
 				ephemeral: true,
 			});
 		}
 		let role = interaction.options.getRole('role') as Role;
+		if (role.managed) {
+			return interaction.reply({
+				content:
+					'Cannot set externally managed roles, or bot roles as Mirror Managers',
+				ephemeral: true,
+			});
+		}
 		let roleArray = managerRoles.ensure(interaction.guild!.id, []);
 		if (roleArray.includes(role.id)) {
 			let ptr = roleArray.indexOf(role.id);

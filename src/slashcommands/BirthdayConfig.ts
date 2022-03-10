@@ -82,6 +82,7 @@ export class BirthdayConfig implements SlashCommand {
 			return interaction.reply({
 				content:
 					'This command can only be used by designated managers or admininstrators',
+				ephemeral: true,
 			});
 		}
 
