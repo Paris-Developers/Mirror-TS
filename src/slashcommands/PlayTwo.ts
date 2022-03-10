@@ -7,8 +7,8 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
-import { player } from '../index';
-import { QueryType, Track } from 'discord-player';
+import { player, playOptions } from '../index';
+import { QueryType } from 'discord-player';
 
 export class PlayTwo implements SlashCommand {
 	name: string = 'playtwo';
@@ -44,7 +44,7 @@ export class PlayTwo implements SlashCommand {
 		if (!searchResult || !searchResult.tracks.length)
 			return void interaction.editReply('no results were found');
 
-		const queue = await player.createQueue(guild!, {});
+		const queue = await player.createQueue(guild!, playOptions);
 		const member =
 			guild?.members.cache.get(interaction.user.id) ??
 			(await guild?.members.fetch(interaction.user.id));
