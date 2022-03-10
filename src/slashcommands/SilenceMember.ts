@@ -84,4 +84,5 @@ export class SilenceMember implements SlashCommand {
 		});
 	}
 	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }
