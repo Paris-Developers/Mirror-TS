@@ -12,6 +12,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { birthdayTimer } from '../resources/birthdayTimer';
 import Enmap from 'enmap';
+import { managerCheck } from '../resources/managerCheck';
 
 const timezones = [
 	{ name: 'GMT', value: 'gmt' },
@@ -76,6 +77,9 @@ export class BirthdayConfig implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
+		if (await !managerCheck(interaction.guild!, interaction.user)) {
+			return interaction.reply({ content: 'we are in boys' });
+		}
 		let member = interaction.member as GuildMember;
 
 		//check if the user is an administrator
