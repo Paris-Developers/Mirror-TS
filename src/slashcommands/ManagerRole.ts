@@ -33,7 +33,6 @@ export class ManagerRole implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		//check if the user is a Manager or Admin
 		let role = interaction.options.getRole('role') as Role;
 		if (role.managed) {
 			return interaction.reply({
