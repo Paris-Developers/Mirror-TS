@@ -78,7 +78,7 @@ export class DefaultVc implements SlashCommand {
 export async function launchVoice(bot: Bot): Promise<void> {
 	defaultVc.forEach((channel, guild) => {
 		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
-		if (!guildCheck) return; //TODO: maybe delete the guild from the enmap?
+		if (!guildCheck) return defaultVc.delete(guild);
 		const connection = joinVoiceChannel({
 			channelId: channel,
 			guildId: guildCheck.id,
