@@ -69,6 +69,13 @@ export class SilenceMember implements SlashCommand {
 			});
 		}
 
+		if (userArray.length > 100) {
+			return interaction.reply({
+				content:
+					'Servers are limited to 100 members silenced. Please unsilence somemembers before silencing more.  If this is not possible please contact a developeer for more options',
+				ephemeral: true,
+			});
+		}
 		userArray.push(badUser?.id);
 		silencedUsers.set(interaction.guild!.id, userArray);
 		return interaction.reply({
