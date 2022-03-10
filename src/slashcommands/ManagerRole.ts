@@ -58,6 +58,15 @@ export class ManagerRole implements SlashCommand {
 				content: `Successfully removed ${role} as a Mirror Manager`,
 			});
 		}
+
+		//I fully expect us to never need this but if someone is just needlessly adding we should stop it
+		if (roleArray.length > 15) {
+			return interaction.reply({
+				content:
+					'Mirror limits servers to 15 manager roles. Please remove manager roles before adding more. If this is not possible contact a developer for more options',
+				ephemeral: true,
+			});
+		}
 		roleArray.push(role.id);
 		managerRoles.set(interaction.guild!.id, roleArray);
 		return interaction.reply({
