@@ -32,7 +32,8 @@ export class Nsfw implements SlashCommand {
 	name: string = 'nsfw';
 	registerData: ChatInputApplicationCommandData = {
 		name: this.name,
-		description: 'Check your current NSFW setting, or toggle it ON or OFF',
+		description:
+			'[MANAGER] Check your current NSFW setting, or toggle it ON or OFF',
 		options: [
 			{
 				name: 'toggle',

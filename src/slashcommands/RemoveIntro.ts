@@ -11,6 +11,7 @@ import { unlink } from 'fs';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { promisify } from 'util';
+import { managerCheck } from '../resources/managerCheck';
 
 export class RemoveIntro implements SlashCommand {
 	public name = 'removeintro';
@@ -31,18 +32,12 @@ export class RemoveIntro implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-		if (!(interaction.channel instanceof TextChannel)) {
-			interaction.reply('Command must be used in a server');
-			return;
-		}
-		if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
-			interaction.reply({
+		if (!(await managerCheck(interaction.guild!, interaction.user))) {
+			return interaction.reply({
 				content:
-					'This command is only for people with Administrator permissions',
+					'This command can only be used by designated managers or admininstrators',
 				ephemeral: true,
 			});
-			return;
 		}
 		let badUser = interaction.options.getUser('user');
 		const promiseMeAnUnlink = promisify(unlink);
@@ -62,7 +57,7 @@ export class RemoveIntro implements SlashCommand {
 				});
 				return;
 			} else {
-				bot.logger.error(interaction.channel.id, this.name, err);
+				bot.logger.error(interaction.channel!.id, this.name, err);
 				interaction.reply({
 					content: 'Error detected, contact an admin for further details.',
 					ephemeral: true,
