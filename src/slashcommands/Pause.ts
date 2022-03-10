@@ -23,6 +23,6 @@ export class Pause implements SlashCommand {
 		queue.setPaused(true);
 		return interaction.reply('Track might have been paused');
 	}
-	guildRequired?: boolean | undefined;
+	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
 }

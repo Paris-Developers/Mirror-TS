@@ -23,6 +23,6 @@ export class Resume implements SlashCommand {
 		queue.setPaused(false);
 		return interaction.reply('Track might have been resumed');
 	}
-	guildRequired?: boolean | undefined;
+	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
 }

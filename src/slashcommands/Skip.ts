@@ -23,6 +23,6 @@ export class Skip implements SlashCommand {
 		await queue.skip();
 		return interaction.reply('Track might have been skipped');
 	}
-	guildRequired?: boolean | undefined;
+	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
 }
