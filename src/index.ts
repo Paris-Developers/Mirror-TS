@@ -19,12 +19,9 @@ let bot = new Bot(
 	config.mode,
 	config.test_server
 );
-export const player = new Player(bot.client);
-player.on(
-	'queueEnd',
-	(queue: { metadata: { send: (arg0: string) => void } }) => {
-		let troll = 'nothing happens here!';
-	}
-);
-
+export const player = new Player(bot.client, {
+	leaveOnStop: false,
+	leaveOnEmpty: false,
+	leaveOnEnd: false,
+});
 bot.start();
