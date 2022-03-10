@@ -21,7 +21,7 @@ export class Skip implements SlashCommand {
 		let queue = player.getQueue(interaction.guild!.id);
 		if (!queue || !queue.playing) return interaction.reply('There is no queue');
 		await queue.skip();
-		return interaction.reply('Track might have been skipped');
+		return void interaction.reply('Track might have been skipped');
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;

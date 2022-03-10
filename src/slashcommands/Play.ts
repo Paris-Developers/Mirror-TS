@@ -68,7 +68,8 @@ export class Play implements SlashCommand {
 			text: `Requested by ${track.requestedBy.tag}`,
 			iconURL: track.requestedBy.avatarURL()!,
 		});
-		return interaction.reply({ embeds: [embed] });
+		//interaction.editReply('test');
+		interaction.editReply({ embeds: [embed] });
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
