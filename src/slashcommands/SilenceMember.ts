@@ -48,15 +48,7 @@ export class SilenceMember implements SlashCommand {
 				ephemeral: true,
 			});
 		}
-		let badMember = interaction.guild!.members.cache.get(badUser!.id); //need to pull member object for .permissionsIn()
-		if (badMember!.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
-			return interaction.reply({
-				content: 'Administrators cannot be silenced',
-				ephemeral: true,
-			});
-		}
 		let userArray = silencedUsers.ensure(interaction.guild!.id, []);
-		console.log(userArray);
 
 		//if the user is already silenced, we want to unsilence them
 		if (userArray.includes(badUser!.id)) {
@@ -68,6 +60,15 @@ export class SilenceMember implements SlashCommand {
 				ephemeral: true,
 			});
 		}
+
+		let badMember = interaction.guild!.members.cache.get(badUser!.id); //need to pull member object for .permissionsIn()
+		if (badMember!.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
+			return interaction.reply({
+				content: 'Administrators cannot be silenced',
+				ephemeral: true,
+			});
+		}
+
 		userArray.push(badUser?.id);
 		silencedUsers.set(interaction.guild!.id, userArray);
 		return interaction.reply({
