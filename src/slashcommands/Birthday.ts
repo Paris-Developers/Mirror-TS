@@ -1,10 +1,6 @@
 import {
-	ChatInputApplicationCommandData,
 	CommandInteraction,
 	CacheType,
-	GuildMember,
-	TextChannel,
-	GuildChannel,
 	MessageEmbed,
 	ApplicationCommandDataResolvable,
 } from 'discord.js';

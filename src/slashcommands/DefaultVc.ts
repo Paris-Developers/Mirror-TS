@@ -12,7 +12,6 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
-import { managerCheck } from '../resources/managerCheck';
 import { SlashCommand } from './SlashCommand';
 
 export let defaultVc = new Enmap('defaultVc');

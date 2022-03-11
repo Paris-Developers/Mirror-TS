@@ -12,7 +12,6 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { birthdayTimer } from '../resources/birthdayTimer';
 import Enmap from 'enmap';
-import { managerCheck } from '../resources/managerCheck';
 
 const timezones = [
 	{ name: 'GMT', value: 'gmt' },

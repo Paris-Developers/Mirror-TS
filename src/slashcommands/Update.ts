@@ -11,7 +11,6 @@ import {
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import Enmap from 'enmap';
-import { managerCheck } from '../resources/managerCheck';
 
 export let updateChannels = new Enmap({ name: 'updateChannels' });
 

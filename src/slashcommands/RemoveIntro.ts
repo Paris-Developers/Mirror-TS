@@ -11,7 +11,6 @@ import { unlink } from 'fs';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { promisify } from 'util';
-import { managerCheck } from '../resources/managerCheck';
 
 export class RemoveIntro implements SlashCommand {
 	public name = 'removeintro';
