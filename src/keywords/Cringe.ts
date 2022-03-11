@@ -18,7 +18,7 @@ import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class Cringe implements Keyword {
-	name: String = 'cringe';
+	name: string = 'cringe';
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
@@ -28,7 +28,15 @@ export class Cringe implements Keyword {
 		message: Message<boolean>,
 		args: String[]
 	): Promise<void> {
-		let num = Math.floor(Math.random() * cringeDict.length);
-		message.reply(cringeDict[num]);
+		try {
+			let num = Math.floor(Math.random() * cringeDict.length);
+			message.reply(cringeDict[num]);
+		} catch (err) {
+			bot.logger.error(message.channel!.id, this.name, err);
+			message.reply({
+				content: 'Error: contact a developer to investigate',
+			});
+			return;
+		}
 	}
 }

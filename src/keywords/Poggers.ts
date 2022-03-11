@@ -6,7 +6,7 @@ import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class Poggers implements Keyword {
-	name: String = 'poggers';
+	name: string = 'poggers';
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.ADD_REACTIONS,
 		Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
@@ -16,6 +16,14 @@ export class Poggers implements Keyword {
 		message: Message<boolean>,
 		args: String[]
 	): Promise<void> {
-		message.react(':JamesChamp:791190997236842506');
+		try {
+			message.react(':JamesChamp:791190997236842506');
+		} catch (err) {
+			bot.logger.error(message.channel!.id, this.name, err);
+			message.reply({
+				content: 'Error: contact a developer to investigate',
+			});
+			return;
+		}
 	}
 }

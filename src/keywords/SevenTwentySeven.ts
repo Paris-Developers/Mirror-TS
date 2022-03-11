@@ -6,7 +6,7 @@ import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class SevenTwentySeven implements Keyword {
-	name: String = '727';
+	name: string = '727';
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.MANAGE_MESSAGES,
 		Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
@@ -18,11 +18,19 @@ export class SevenTwentySeven implements Keyword {
 		message: Message<boolean>,
 		args: String[]
 	): Promise<void> {
-		await message.delete();
-		let embed = new MessageEmbed()
-			.setColor('#ff66aa')
-			.setImage('https://c.tenor.com/zbPLwrk_K44AAAAC/wysi.gif')
-			.setTitle('**__WHEN YOU FUCKING SEE IT__**');
-		message.channel.send({ embeds: [embed] });
+		try {
+			await message.delete();
+			let embed = new MessageEmbed()
+				.setColor('#ff66aa')
+				.setImage('https://c.tenor.com/zbPLwrk_K44AAAAC/wysi.gif')
+				.setTitle('**__WHEN YOU FUCKING SEE IT__**');
+			message.channel.send({ embeds: [embed] });
+		} catch (err) {
+			bot.logger.error(message.channel!.id, this.name, err);
+			message.reply({
+				content: 'Error: contact a developer to investigate',
+			});
+			return;
+		}
 	}
 }
