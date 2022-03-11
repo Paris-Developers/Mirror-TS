@@ -26,14 +26,22 @@ export class fuckimissheralready implements MessageCommand {
 		message: Message<boolean>,
 		args: string[]
 	): Promise<void> {
-		await message.delete();
-		if (nsfw.get(message.guild!.id) != 'on') return;
-		let res = await fetch(`https://nekos.best/api/v1/cry`);
-		let jsonData = await res.json();
-		let embed = new MessageEmbed()
-			.setColor('#0071b6')
-			.setImage(jsonData.url)
-			.setFooter({ text: 'I feel you bro' });
-		message.channel.send({ embeds: [embed] });
+		try {
+			await message.delete();
+			if (nsfw.get(message.guild!.id) != 'on') return;
+			let res = await fetch(`https://nekos.best/api/v1/cry`);
+			let jsonData = await res.json();
+			let embed = new MessageEmbed()
+				.setColor('#0071b6')
+				.setImage(jsonData.url)
+				.setFooter({ text: 'I feel you bro' });
+			message.channel.send({ embeds: [embed] });
+		} catch (err) {
+			bot.logger.error(message.channel!.id, this.name, err);
+			message.reply({
+				content: 'Error: contact a developer to investigate',
+			});
+			return;
+		}
 	}
 }
