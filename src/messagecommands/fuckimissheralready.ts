@@ -10,6 +10,7 @@ import { Message, Permissions, MessageEmbed } from 'discord.js';
 import { Bot } from '../Bot';
 import { MessageCommand } from './MessageCommand';
 import fetch from 'node-fetch';
+import { nsfw } from '../slashcommands/Nsfw';
 
 //update? Still in love, I just want to hold her close
 
@@ -26,6 +27,7 @@ export class fuckimissheralready implements MessageCommand {
 		args: string[]
 	): Promise<void> {
 		await message.delete();
+		if (nsfw.get(message.guild!.id) != 'on') return;
 		let res = await fetch(`https://nekos.best/api/v1/cry`);
 		let jsonData = await res.json();
 		let embed = new MessageEmbed()
