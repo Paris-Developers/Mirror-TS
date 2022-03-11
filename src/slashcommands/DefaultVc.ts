@@ -66,6 +66,7 @@ export class DefaultVc implements SlashCommand {
 }
 
 export async function launchVoice(bot: Bot): Promise<void> {
+	return;
 	defaultVc.forEach((channel, guild) => {
 		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
 		if (!guildCheck) return defaultVc.delete(guild);
