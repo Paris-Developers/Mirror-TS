@@ -40,7 +40,9 @@ export class Queue implements SlashCommand {
 		}
 		let footerText = `${Math.round(
 			queue.totalTime / 1000 / 60 / 60 - 0.5
-		)}:${Math.round(((queue.totalTime / 1000 / 60 / 60) % 1) * 60)}`;
+		)} hour(s) ${Math.round(
+			((queue.totalTime / 1000 / 60 / 60) % 1) * 60
+		)} minutes`;
 		const embed = new MessageEmbed()
 			.setTitle(`Music queue for ${interaction.guild!.name}`)
 			.addFields(

@@ -2,6 +2,7 @@ import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
 	CacheType,
+	MessageEmbed,
 } from 'discord.js';
 import { player } from '..';
 import { Bot } from '../Bot';
@@ -18,10 +19,15 @@ export class Pause implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
+		const embed = new MessageEmbed().setColor('BLUE');
 		let queue = player.getQueue(interaction.guild!.id);
-		if (!queue || !queue.playing) return interaction.reply('There is no queue');
+		if (!queue || !queue.playing) {
+			embed.setDescription('There is no music playing!');
+			return interaction.reply({ embeds: [embed], ephemeral: true });
+		}
 		queue.setPaused(true);
-		return interaction.reply('Track might have been paused');
+		embed.setDescription(`Music was paused by ${interaction.user}`);
+		return interaction.reply({ embeds: [embed] });
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
