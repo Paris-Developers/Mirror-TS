@@ -70,15 +70,17 @@ export class Intro implements SlashCommand {
 			});
 			return;
 		} catch (err: any) {
-			bot.logger.warn(err.message);
 			if (err.message == 'Status code: 410') {
-				interaction.editReply(
+				interaction.reply(
 					'Your video is private or age restricted, please choose another'
 				);
 				return;
 			}
 			bot.logger.error(interaction.channel!.id, this.name, err);
-			interaction.editReply('Error detected, contact an admin to investigate.');
+			interaction.reply({
+				content: 'Error detected, contact an admin to investigate.',
+				ephemeral: true,
+			});
 			return;
 		}
 	}

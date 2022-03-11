@@ -74,16 +74,17 @@ export class Weather implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		if (!interaction.options.getString('city')) {
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription('Empty message, please provide a city');
-			interaction.reply({ embeds: [embed] });
-			return;
-		}
-		//if it encounters an error it will run the code under the catch function
-		let jsonData;
 		try {
+			if (!interaction.options.getString('city')) {
+				const embed = new MessageEmbed()
+					.setColor('#FFFFFF')
+					.setDescription('Empty message, please provide a city');
+				interaction.reply({ embeds: [embed] });
+				return;
+			}
+			//if it encounters an error it will run the code under the catch function
+			let jsonData;
+
 			let query = interaction.options.getString('state') //if we have a state lets add it to the string
 				? `${interaction.options.getString(
 						'city'
@@ -94,7 +95,13 @@ export class Weather implements SlashCommand {
 				`http://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${config.weather_token}`
 			);
 			jsonData = await res.json();
-
+			if (jsonData.cod == '404') {
+				const embed = new MessageEmbed()
+					.setColor('#FFFFFF')
+					.setDescription(`Error: City not found, try again`);
+				interaction.reply({ embeds: [embed] });
+				return;
+			}
 			//define current weather coniditions
 			let condition = jsonData.weather[0].main;
 
@@ -167,18 +174,12 @@ export class Weather implements SlashCommand {
 			//sends embed to the channel
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			//prints the error message
-			if (jsonData.cod == '404') {
-				const embed = new MessageEmbed()
-					.setColor('#FFFFFF')
-					.setDescription(`Error: City not found, try again`);
-				interaction.reply({ embeds: [embed] });
-				return;
-			}
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription(`Error: ${err}`);
-			interaction.reply({ embeds: [embed] });
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
+			});
+			return;
 		}
 	}
 }

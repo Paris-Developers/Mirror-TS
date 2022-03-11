@@ -11,7 +11,6 @@ import { unlink } from 'fs';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { promisify } from 'util';
-import { managerCheck } from '../resources/managerCheck';
 
 export class RemoveIntro implements SlashCommand {
 	public name = 'removeintro';
@@ -32,9 +31,10 @@ export class RemoveIntro implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let badUser = interaction.options.getUser('user');
-		const promiseMeAnUnlink = promisify(unlink);
 		try {
+			let badUser = interaction.options.getUser('user');
+			const promiseMeAnUnlink = promisify(unlink);
+
 			await promiseMeAnUnlink(
 				`./data/intros/${interaction.guild!.id}/${badUser!.id}.mp4`
 			);
@@ -45,7 +45,9 @@ export class RemoveIntro implements SlashCommand {
 		} catch (err: any) {
 			if (err.code == 'ENOENT') {
 				interaction.reply({
-					content: `${badUser} does not have an intro.`,
+					content: `${interaction.options.getUser(
+						'user'
+					)} does not have an intro.`,
 					ephemeral: true,
 				});
 				return;
