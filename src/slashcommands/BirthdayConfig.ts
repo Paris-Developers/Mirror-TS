@@ -12,6 +12,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { birthdayTimer } from '../resources/birthdayTimer';
 import Enmap from 'enmap';
+import { managerCheck } from '../resources/managerCheck';
 
 const timezones = [
 	{ name: 'GMT', value: 'gmt' },
@@ -41,7 +42,7 @@ export class BirthdayConfig implements SlashCommand {
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description:
-			'[ADMIN ONLY] Configure the time and channel to send the birthday messages',
+			'[MANAGER] Configure the time and channel to send the birthday messages',
 		options: [
 			{
 				name: 'channel',
@@ -76,22 +77,6 @@ export class BirthdayConfig implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-
-		//check if the user is an administrator
-		if (!(interaction.channel instanceof TextChannel)) {
-			interaction.reply('Command must be used in a server');
-			return;
-		}
-		if (!member.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
-			interaction.reply({
-				content:
-					'This command is only for people with Administrator permissions',
-				ephemeral: true,
-			});
-			return;
-		}
-
 		//recieve the provided channel and check if its a text channel
 		var guildChannel = interaction.options.getChannel(
 			'channel'
@@ -162,4 +147,5 @@ export class BirthdayConfig implements SlashCommand {
 		return;
 	}
 	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }

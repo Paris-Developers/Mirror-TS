@@ -12,6 +12,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { managerCheck } from '../resources/managerCheck';
 import { SlashCommand } from './SlashCommand';
 
 const choices = [
@@ -31,7 +32,8 @@ export class Nsfw implements SlashCommand {
 	name: string = 'nsfw';
 	registerData: ChatInputApplicationCommandData = {
 		name: this.name,
-		description: 'Check your current NSFW setting, or toggle it ON or OFF',
+		description:
+			'[MANAGER] Check your current NSFW setting, or toggle it ON or OFF',
 		options: [
 			{
 				name: 'toggle',
@@ -47,19 +49,6 @@ export class Nsfw implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-		if (!(interaction.channel instanceof TextChannel)) {
-			interaction.reply('Command must be used in a server');
-			return;
-		}
-		if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
-			interaction.reply({
-				content:
-					'This command is only for people with Administrator permissions',
-				ephemeral: true,
-			});
-			return;
-		}
 		var setting = nsfw.ensure(interaction.guild!.id, 'off');
 		const embed = new MessageEmbed();
 		if (interaction.options.getString('toggle') == 'on') {
@@ -81,4 +70,5 @@ export class Nsfw implements SlashCommand {
 		return;
 	}
 	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }

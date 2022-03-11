@@ -11,6 +11,7 @@ import {
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import Enmap from 'enmap';
+import { managerCheck } from '../resources/managerCheck';
 
 export let updateChannels = new Enmap({ name: 'updateChannels' });
 
@@ -19,7 +20,7 @@ export class Update implements SlashCommand {
 	public registerData = {
 		name: this.name,
 		description:
-			'[ADMIN ONLY] Set the channel you wish to recieve Mirror update messages in',
+			'[MANAGER] Set the channel you wish to recieve Mirror update messages in',
 		options: [
 			{
 				name: 'channel',
@@ -35,22 +36,6 @@ export class Update implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		if (!(interaction.channel instanceof TextChannel)) {
-			interaction.reply('Command must be used in a server');
-			return;
-		}
-		let member = interaction.member as GuildMember;
-		if (
-			!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR') &&
-			member.id != config.owner
-		) {
-			interaction.reply({
-				content:
-					'This command is only for people with Administrator permissions',
-				ephemeral: true,
-			});
-			return;
-		}
 		let channel = interaction.options.getChannel('channel');
 		if (
 			!interaction.guild?.me
@@ -81,4 +66,5 @@ export class Update implements SlashCommand {
 		return;
 	}
 	guildRequired?: boolean = true;
+	managerRequired?: boolean | undefined = true;
 }
