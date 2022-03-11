@@ -16,7 +16,7 @@ export class Cum implements MessageCommand {
 		message: Message<boolean>,
 		args: string[]
 	): Promise<void> {
-		if(nsfw.get(message.guild!.id) != 'on') return;
+		if (nsfw.get(message.guild!.id) != 'on') return;
 		let rand = Math.round(100 * Math.random());
 		if (rand == 69) {
 			message.reply('You are the scrumple king');
