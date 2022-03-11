@@ -2,7 +2,6 @@ import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
 	CacheType,
-	GuildMember,
 	MessageEmbed,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
@@ -32,7 +31,6 @@ export class Play implements SlashCommand {
 	): Promise<void> {
 		await interaction.deferReply();
 		const guild = bot.client.guilds.cache.get(interaction.guild!.id);
-		const channel = guild?.channels.cache.get(interaction.channelId);
 		const query = interaction.options.getString('query')!;
 		const searchResult = await player
 			.search(query, {
