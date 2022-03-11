@@ -1,0 +1,10 @@
+/src/Bot.ts @CPhantasm
+/src/index.ts @CPhantasm @FordFriedel
+/src/events/EventHandler.ts @CPhantasm
+/src/slashcommands/SlashCommand.ts @CPhantasm
+/src/messagecommands/MessageCommand.ts @CPhantasm
+/src/keywords/Keyword.ts @CPhantasm
+/src/CustomLogger.ts @CPhantasm
+/src/slashcommands/Poll.ts @FordFriedel
+/src/slashcommands/Birthday.ts @FordFriedel
+/src/slashcommands/Intro.ts @FordFriedel

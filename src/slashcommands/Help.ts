@@ -21,6 +21,8 @@ export class Help implements SlashCommand {
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
+		Permissions.FLAGS.MANAGE_MESSAGES,
+		Permissions.FLAGS.ADD_REACTIONS,
 	];
 	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
 		//TODO: Add permission checks

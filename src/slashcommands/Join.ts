@@ -44,4 +44,5 @@ export class Join implements SlashCommand {
 		interaction.reply({ content: 'success', ephemeral: true }); //hides the reply to anyone but the user
 		return;
 	}
+	guildRequired?: boolean = true;
 }

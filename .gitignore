@@ -7,6 +7,3 @@ mirror.flp
 logs/
 built/
 .prettierrc
-/src/keywords/Keywords.ts
-/src/slashcommands/SlashCommands.ts
-/src/messagecommands/MessageCommands.ts

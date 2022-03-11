@@ -29,4 +29,5 @@ export class Leave implements SlashCommand {
 		interaction.reply('Left the voice channel :wave:');
 		return;
 	}
+	guildRequired?: boolean = true;
 }

@@ -37,6 +37,8 @@ export class MessageCreate implements EventHandler {
 				// We don't have all the permissions we need. Log and return.
 				if (!(message.channel instanceof TextChannel)) {
 					bot.logger.error(
+						undefined,
+						undefined,
 						`Somehow permissionsCheck returned false in a non-textchannel. Offending command: ${command.name}`
 					);
 				} else {

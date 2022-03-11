@@ -1,5 +1,6 @@
 import { CommandInteraction, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
+import { managerCheck } from '../resources/managerCheck';
 import { EventHandler } from './EventHandler';
 
 export class InteractionCreate implements EventHandler {
@@ -16,6 +17,23 @@ export class InteractionCreate implements EventHandler {
 		//we didn't find it, exit
 		if (!command) return;
 
+		//if the command needs to be run in a server setting
+		if (command.guildRequired) {
+			//If the command is used in anything but a server, return
+			if (!(interaction.channel instanceof TextChannel)) {
+				interaction.reply('Command must be used in a server');
+				return;
+			}
+		}
+		if (command.managerRequired) {
+			if (!(await managerCheck(interaction))) {
+				return interaction.reply({
+					content:
+						'This command can only be used by designated managers or admininstrators',
+					ephemeral: true,
+				});
+			}
+		}
 		//if the command requires permissions
 		if (command.requiredPermissions) {
 			if (
@@ -28,6 +46,8 @@ export class InteractionCreate implements EventHandler {
 				// We don't have all the permissions we need. Log and return.
 				if (!(interaction.channel instanceof TextChannel)) {
 					bot.logger.error(
+						undefined,
+						undefined,
 						`Somehow permissionsCheck returned false in a non-textchannel. Offending command: ${command.name}`
 					);
 				} else {
