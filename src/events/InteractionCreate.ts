@@ -1,5 +1,6 @@
 import { CommandInteraction, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
+import { managerCheck } from '../resources/managerCheck';
 import { EventHandler } from './EventHandler';
 
 export class InteractionCreate implements EventHandler {
@@ -24,7 +25,15 @@ export class InteractionCreate implements EventHandler {
 				return;
 			}
 		}
-
+		if (command.managerRequired) {
+			if (!(await managerCheck(interaction))) {
+				return interaction.reply({
+					content:
+						'This command can only be used by designated managers or admininstrators',
+					ephemeral: true,
+				});
+			}
+		}
 		//if the command requires permissions
 		if (command.requiredPermissions) {
 			if (

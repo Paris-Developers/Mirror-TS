@@ -4,6 +4,7 @@ import { Bot } from '../Bot';
 import { MessageEmbed, TextChannel, User } from 'discord.js';
 import Enmap from 'enmap';
 import { bdayChannels, bdayTimes } from '../slashcommands/BirthdayConfig';
+import { silencedUsers } from '../slashcommands/SilenceMember';
 
 export let bdayCrons = new Enmap();
 
@@ -42,7 +43,11 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 			if (dayString == bday) {
 				//TODO: check if the user exists in the guild
 				let birthGuild = bot.client.guilds.cache.get(guild)!;
-				if (!(await birthGuild.members.fetch(userId.toString()))) return;
+				if (!birthGuild.members.cache.get(userId.toString())) return;
+
+				//check if the user is silenced into the guild
+				let userArray = silencedUsers.ensure(birthGuild.id, []);
+				if (userArray.includes(userId)) return;
 
 				//check if the channel exists
 				let targetChannel = bot.client.channels!.cache.get(

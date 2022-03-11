@@ -11,6 +11,7 @@ import { bdayChannels } from './BirthdayConfig';
 import { defaultVc } from './DefaultVc';
 import { updateChannels } from './Update';
 import { nsfw } from './Nsfw';
+import { managerRoles } from './ManagerRole';
 
 export class Config implements SlashCommand {
 	name: string = 'config';
@@ -49,6 +50,17 @@ export class Config implements SlashCommand {
 		if (nsfwToggle == 'on') {
 			lines[4][2] = '✅';
 		}
+		let managerArray = managerRoles.ensure(interaction.guild!.id, []);
+		let managerString = '';
+		if (managerArray.length == 0) {
+			managerString = 'Add Mirror Managers with `/managerroles`';
+		} else {
+			for (let role of managerArray) {
+				let getRole = interaction.guild?.roles.cache.get(role);
+				managerString = managerString + `${getRole}` + ', ';
+			}
+			managerString = managerString.slice(0, -2);
+		}
 		embed.addFields(
 			{
 				name: lines[0][0],
@@ -64,6 +76,11 @@ export class Config implements SlashCommand {
 				name: lines[0][2],
 				value: `${lines[1][2]}\n${lines[2][2]}\n${lines[3][2]}\n${lines[4][2]}`,
 				inline: true,
+			},
+			{
+				name: 'Mirror Manager Roles',
+				value: managerString,
+				inline: false,
 			}
 		);
 		return interaction.reply({ embeds: [embed] });

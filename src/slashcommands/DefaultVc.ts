@@ -12,6 +12,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { managerCheck } from '../resources/managerCheck';
 import { SlashCommand } from './SlashCommand';
 
 export let defaultVc = new Enmap('defaultVc');
@@ -21,7 +22,7 @@ export class DefaultVc implements SlashCommand {
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description:
-			'[ADMIN ONLY] Set a default voice channel for Mirror to join upon restart, will not play a sound',
+			'[MANAGER] Set a default voice channel for Mirror to join upon restart, will not play a sound',
 		options: [
 			{
 				name: 'channel',
@@ -36,18 +37,6 @@ export class DefaultVc implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-		if (
-			!(interaction.channel instanceof TextChannel) ||
-			!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')
-		) {
-			interaction.reply({
-				content:
-					'This command is only for people with Administrator permissions',
-				ephemeral: true,
-			});
-			return;
-		}
 		let channel = interaction.options.getChannel('channel');
 		if (!(channel instanceof VoiceChannel)) {
 			interaction.reply({
@@ -72,12 +61,14 @@ export class DefaultVc implements SlashCommand {
 		interaction.reply({ embeds: [embed] });
 		return;
 	}
-	//TODO: guildRequired? = true;
+	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }
 
 export async function launchVoice(bot: Bot): Promise<void> {
 	defaultVc.forEach((channel, guild) => {
 		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
+		if (!guildCheck) return defaultVc.delete(guild);
 		const connection = joinVoiceChannel({
 			channelId: channel,
 			guildId: guildCheck.id,
