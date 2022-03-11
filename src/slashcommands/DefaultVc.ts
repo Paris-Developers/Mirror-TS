@@ -12,6 +12,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { managerCheck } from '../resources/managerCheck';
 import { SlashCommand } from './SlashCommand';
 
 export let defaultVc = new Enmap('defaultVc');
@@ -21,7 +22,7 @@ export class DefaultVc implements SlashCommand {
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description:
-			'[ADMIN ONLY] Set a default voice channel for Mirror to join upon restart, will not play a sound',
+			'[MANAGER] Set a default voice channel for Mirror to join upon restart, will not play a sound',
 		options: [
 			{
 				name: 'channel',
@@ -81,12 +82,14 @@ export class DefaultVc implements SlashCommand {
 			return;
 		}
 	}
-	guildRequired? = true;
+	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }
 
 export async function launchVoice(bot: Bot): Promise<void> {
 	defaultVc.forEach((channel, guild) => {
 		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
+		if (!guildCheck) return defaultVc.delete(guild);
 		const connection = joinVoiceChannel({
 			channelId: channel,
 			guildId: guildCheck.id,

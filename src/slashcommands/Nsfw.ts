@@ -12,6 +12,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { managerCheck } from '../resources/managerCheck';
 import { SlashCommand } from './SlashCommand';
 
 const choices = [
@@ -31,7 +32,8 @@ export class Nsfw implements SlashCommand {
 	name: string = 'nsfw';
 	registerData: ChatInputApplicationCommandData = {
 		name: this.name,
-		description: 'Check your current NSFW setting, or toggle it ON or OFF',
+		description:
+			'[MANAGER] Check your current NSFW setting, or toggle it ON or OFF',
 		options: [
 			{
 				name: 'toggle',
@@ -90,4 +92,5 @@ export class Nsfw implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }

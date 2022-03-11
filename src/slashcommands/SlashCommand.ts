@@ -15,4 +15,6 @@ export interface SlashCommand {
 	run(bot: Bot, interaction: CommandInteraction): Promise<void>;
 	//if the command needs to be run inside a guild
 	guildRequired?: boolean;
+	//if the command needs to be run by a manager or admin
+	managerRequired?: boolean;
 }

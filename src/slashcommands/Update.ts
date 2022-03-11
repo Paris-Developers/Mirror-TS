@@ -11,6 +11,7 @@ import {
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import Enmap from 'enmap';
+import { managerCheck } from '../resources/managerCheck';
 
 export let updateChannels = new Enmap({ name: 'updateChannels' });
 
@@ -19,7 +20,7 @@ export class Update implements SlashCommand {
 	public registerData = {
 		name: this.name,
 		description:
-			'[ADMIN ONLY] Set the channel you wish to recieve Mirror update messages in',
+			'[MANAGER] Set the channel you wish to recieve Mirror update messages in',
 		options: [
 			{
 				name: 'channel',
@@ -90,4 +91,5 @@ export class Update implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean = true;
+	managerRequired?: boolean | undefined = true;
 }

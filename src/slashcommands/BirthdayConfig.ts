@@ -12,6 +12,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { birthdayTimer } from '../resources/birthdayTimer';
 import Enmap from 'enmap';
+import { managerCheck } from '../resources/managerCheck';
 
 const timezones = [
 	{ name: 'GMT', value: 'gmt' },
@@ -41,7 +42,7 @@ export class BirthdayConfig implements SlashCommand {
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
 		description:
-			'[ADMIN ONLY] Configure the time and channel to send the birthday messages',
+			'[MANAGER] Configure the time and channel to send the birthday messages',
 		options: [
 			{
 				name: 'channel',
@@ -170,4 +171,5 @@ export class BirthdayConfig implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined = true;
 }

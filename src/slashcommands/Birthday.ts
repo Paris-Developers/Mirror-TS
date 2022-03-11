@@ -11,6 +11,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { silencedUsers } from './SilenceMember';
 import { SlashCommand } from './SlashCommand';
 
 type monthIndex = { [index: string]: number };
@@ -109,6 +110,14 @@ export class Birthday implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
+			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
+			if (userArray.includes(interaction.user.id)) {
+				return interaction.reply({
+					content: 'Silenced users cannot use this command',
+					ephemeral: true,
+				});
+			}
+
 			//store the date of birth in numerical form  DD-MM
 			let formattedBirthday = `${interaction.options.getInteger('day')}-${
 				monthCode[interaction.options.getString('month')!]

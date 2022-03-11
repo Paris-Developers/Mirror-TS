@@ -10,6 +10,7 @@ import ytdl from 'ytdl-core';
 import mkdirp from 'mkdirp';
 import { SlashCommand } from './SlashCommand';
 import { Bot } from '../Bot';
+import { silencedUsers } from './SilenceMember';
 
 interface Format {
 	approxDurationMs: number;
@@ -35,6 +36,13 @@ export class Intro implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
+			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
+			if (userArray.includes(interaction.user.id)) {
+				return interaction.reply({
+					content: 'Silenced users cannot use this command',
+					ephemeral: true,
+				});
+			}
 			await interaction.deferReply({ ephemeral: true });
 			const url = interaction.options.getString('video');
 			//TODO: validate the correct videos.

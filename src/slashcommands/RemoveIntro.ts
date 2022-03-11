@@ -11,12 +11,13 @@ import { unlink } from 'fs';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { promisify } from 'util';
+import { managerCheck } from '../resources/managerCheck';
 
 export class RemoveIntro implements SlashCommand {
 	public name = 'removeintro';
 	public registerData = {
 		name: this.name,
-		description: '[ADMIN ONLY] Delete someones intro theme!',
+		description: '[MANAGER] Delete someones intro theme!',
 		options: [
 			{
 				name: 'user',
@@ -32,19 +33,6 @@ export class RemoveIntro implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			let member = interaction.member as GuildMember;
-			if (!(interaction.channel instanceof TextChannel)) {
-				interaction.reply('Command must be used in a server');
-				return;
-			}
-			if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
-				interaction.reply({
-					content:
-						'This command is only for people with Administrator permissions',
-					ephemeral: true,
-				});
-				return;
-			}
 			let badUser = interaction.options.getUser('user');
 			const promiseMeAnUnlink = promisify(unlink);
 
@@ -75,4 +63,5 @@ export class RemoveIntro implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean = true;
+	managerRequired?: boolean | undefined = true;
 }
