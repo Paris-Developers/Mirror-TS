@@ -53,7 +53,7 @@ export class CustomLogger extends Logger {
 			var errorChannel: AnyChannel;
 
 			const embed = new MessageEmbed()
-				.setTitle(`Error in command: /${commandName}`)
+				.setTitle(`Error in command: __${commandName.toUpperCase()}__`)
 				.setColor('RED');
 			if (channelId) {
 				errorChannel = this.bot.client.channels.cache.get(
