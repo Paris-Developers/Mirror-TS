@@ -30,17 +30,6 @@ export class SilenceMember implements SlashCommand {
 	};
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-		let member = interaction.member as GuildMember;
-		if (!(interaction.channel instanceof TextChannel)) {
-			return interaction.reply('Command must be used in a server');
-		}
-		if (!member.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
-			return interaction.reply({
-				content:
-					'This command is only for people with Administrator permissions',
-				ephemeral: true,
-			});
-		}
 		let badUser = interaction.options.getUser('user');
 		if (badUser?.bot) {
 			return interaction.reply({
@@ -49,7 +38,6 @@ export class SilenceMember implements SlashCommand {
 			});
 		}
 		let userArray = silencedUsers.ensure(interaction.guild!.id, []);
-
 		//if the user is already silenced, we want to unsilence them
 		if (userArray.includes(badUser!.id)) {
 			let ptr = userArray.indexOf(badUser!.id);
@@ -62,7 +50,7 @@ export class SilenceMember implements SlashCommand {
 		}
 
 		let badMember = interaction.guild!.members.cache.get(badUser!.id); //need to pull member object for .permissionsIn()
-		if (badMember!.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
+		if (badMember!.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')) {
 			return interaction.reply({
 				content: 'Administrators cannot be silenced',
 				ephemeral: true,
