@@ -133,8 +133,8 @@ export class Birthday implements SlashCommand {
 			});
 		}
 
-
-		if (interaction.options.getInteger('day')! > dayCap[interaction.options.getString('month')!] || interaction.options.getInteger('day')! < 0){
+		//check day integer to be greater than 0, less than amount days in month
+		if (interaction.options.getInteger('day')! > dayCap[interaction.options.getString('month')!] || interaction.options.getInteger('day')! < 1){
 			return interaction.reply({
 				content: 'Please enter a valid date',
 				ephemeral: true
