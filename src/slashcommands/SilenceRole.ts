@@ -1,9 +1,10 @@
-import { ApplicationCommandDataResolvable, CommandInteraction, CacheType, Role, MessageEmbed } from "discord.js";
+import { ApplicationCommandDataResolvable, CommandInteraction, CacheType, Role, MessageEmbed, Interaction } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import Enmap from "enmap";
 import { Bot } from "../Bot";
 import { SlashCommand } from "./SlashCommand";
 import { managerRoles } from "./ManagerRole";
+import { silencedUsers } from "./SilenceMember";
 
 export const silencedRole = new Enmap('SilencedRole');
 
@@ -22,6 +23,7 @@ export class SilenceRole implements SlashCommand {
     requiredPermissions: bigint[] = [];
     run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
         try{
+            //TODO if someone attempts to set the same role that is already set, remove it
             let badRole = interaction.options.getRole('role') as Role;
             if(badRole?.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')){
                 return interaction.reply({content: 'Roles with administrator permissions cannot be silenced!'});
@@ -56,4 +58,16 @@ export class SilenceRole implements SlashCommand {
     guildRequired?: boolean | undefined = true;
     managerRequired?: boolean | undefined = true;
     
+}
+
+export async function silenceCheck(interaction: Interaction): Promise<boolean> {
+    let member = interaction.guild!.members.cache.get(interaction.user.id);
+    if (member?.permissions.toArray().includes('ADMINISTRATOR')) return false;
+    let silenced = silencedRole.get(interaction.guild!.id);
+    if(member?.roles.cache.has(silenced)) return true;
+    silenced = silencedUsers.get(interaction.guild!.id);
+    for(let user of silenced){
+        if(user == member!.id) return true;
+    }
+    return false;
 }
