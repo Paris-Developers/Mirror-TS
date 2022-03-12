@@ -57,7 +57,7 @@ export class Poll implements SlashCommand {
 			{
 				name: 'time',
 				type: 'INTEGER',
-				description: 'How many minutes you want the poll open',
+				description: 'How many minutes you want the poll open, max: 3600',
 				required: true,
 			},
 			{
@@ -133,6 +133,10 @@ export class Poll implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
+			let minutes = interaction.options.getInteger('time')!;
+			if(minutes > 3600 || minutes<1){
+				return interaction.reply({content: 'Please enter a positive minute below 3600', ephemeral: true})
+			}
 			let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
 			//TODO: error test for empty arguements
 
