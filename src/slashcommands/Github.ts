@@ -21,7 +21,7 @@ export class Github implements SlashCommand {
 		try {
 			const embed = new MessageEmbed()
 				.setColor('#FFFFFF')
-				.setTitle(':lock: __Mirror-JS Codebase and Privacy__')
+				.setTitle(':lock: __Mirror-TS Codebase and Privacy__')
 				.setDescription(
 					'Mirror scans all messages in a server by default, but does not store them.\n\nIf you want to prevent Mirror from scanning messages, reinvite it without the "read messages" permissions in the Oauth portal. \n\nInterested in our open source code? Visit our [github](https://github.com/paris-developers/Mirror-TS)\n\nStill have questions? Join our [support server](https://discord.gg/uvdg2R5PAU)'
 				);
