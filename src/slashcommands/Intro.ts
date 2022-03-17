@@ -70,6 +70,10 @@ export class Intro implements SlashCommand {
 			});
 			return;
 		} catch (err: any) {
+			if (err == 'Error: Not a YouTube domain') {
+				interaction.editReply('Please enter a valid youtube link');
+				return;
+			}
 			if (err.message == 'Status code: 410') {
 				interaction.editReply(
 					'Your video is private or age restricted, please choose another'
