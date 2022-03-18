@@ -127,6 +127,16 @@ export class Stock implements SlashCommand {
 			interaction.reply({ embeds: embedList });
 			return;
 		} catch (err) {
+			if (err instanceof Object) {
+				const test = Object.getOwnPropertyDescriptor(err, 'type');
+				if (test?.value == 'invalid-json') {
+					interaction.reply({
+						content: 'Invalid ticker symbol.',
+						ephemeral: true,
+					});
+					return;
+				}
+			}
 			bot.logger.error(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
