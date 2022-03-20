@@ -22,7 +22,7 @@ export class News implements SlashCommand {
 				name: 'query',
 				type: 'STRING',
 				description: 'headlines to query, space separated',
-				required: false,
+				required: true,
 			},
 		],
 	};
@@ -66,11 +66,12 @@ export class News implements SlashCommand {
 			embed.setThumbnail(jsonData.articles[0].urlToImage);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			//catches error
-			//add documentation and finish error testong for api related errors
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription('Error: Try calling the function again');
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
+			});
+			return;
 		}
 	}
 }

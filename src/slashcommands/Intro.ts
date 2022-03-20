@@ -70,7 +70,10 @@ export class Intro implements SlashCommand {
 			});
 			return;
 		} catch (err: any) {
-			bot.logger.warn(err.message);
+			if (err == 'Error: Not a YouTube domain') {
+				interaction.editReply('Please enter a valid youtube link');
+				return;
+			}
 			if (err.message == 'Status code: 410') {
 				interaction.editReply(
 					'Your video is private or age restricted, please choose another'
@@ -78,7 +81,9 @@ export class Intro implements SlashCommand {
 				return;
 			}
 			bot.logger.error(interaction.channel!.id, this.name, err);
-			interaction.editReply('Error detected, contact an admin to investigate.');
+			interaction.editReply({
+				content: 'Error detected, contact an admin to investigate.',
+			});
 			return;
 		}
 	}

@@ -85,57 +85,66 @@ export class Gavin implements SlashCommand {
 		Permissions.FLAGS.EMBED_LINKS,
 	];
 	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
-		const options = interaction.options;
-		if (options.getSubcommand() == 'all') {
-			// subcommand for printing all the data
-			let bench = gav_records.ensure('bench', 365);
-			let squat = gav_records.ensure('squat', 445);
-			let deadlift = gav_records.ensure('deadlift', 605);
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription(
-					`GAVIN'S CURRENT PRS:\n BENCH: ${bench} LB \n SQUAT: ${squat} LB \n DEADLIFT: ${deadlift} LB \n`
-				);
-			interaction.reply({ embeds: [embed] });
-			return;
-		}
-		if (options.getSubcommand() == 'lift') {
-			// subcommand for displaying just one lift
-			let toprint;
-			let type = options.getString('lifttype');
-			if (type == 'bench') toprint = gav_records.ensure('bench', 365);
-			if (type == 'squat') toprint = gav_records.ensure('squat', 445);
-			if (type == 'deadlift') toprint = gav_records.ensure('deadlift', 605);
-			if (!toprint) {
-				//theoretically, this will never run because we are using slash command choices
-				bot.logger.warn(`${this.name} ran without a valid Choice selected`);
-				interaction.reply('INVALID LOOKUP');
+		try {
+			const options = interaction.options;
+			if (options.getSubcommand() == 'all') {
+				// subcommand for printing all the data
+				let bench = gav_records.ensure('bench', 365);
+				let squat = gav_records.ensure('squat', 445);
+				let deadlift = gav_records.ensure('deadlift', 605);
+				const embed = new MessageEmbed()
+					.setColor('#FFFFFF')
+					.setDescription(
+						`GAVIN'S CURRENT PRS:\n BENCH: ${bench} LB \n SQUAT: ${squat} LB \n DEADLIFT: ${deadlift} LB \n`
+					);
+				interaction.reply({ embeds: [embed] });
 				return;
 			}
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription(`GAVIN'S ${type!.toUpperCase()} PR: ${toprint}`);
-			interaction.reply({ embeds: [embed] });
-			return;
-		}
-		if (options.getSubcommand() == 'setlift') {
-			// we're setting data now
-			let type = options.getString('lifttype'); // key to set to
-			let lift = options.getNumber('lift'); // the data to set
-			if (type == 'bench') gav_records.set('bench', lift);
-			if (type == 'squat') gav_records.set('squat', lift);
-			if (type == 'deadlift') gav_records.set('deadlift', lift);
+			if (options.getSubcommand() == 'lift') {
+				// subcommand for displaying just one lift
+				let toprint;
+				let type = options.getString('lifttype');
+				if (type == 'bench') toprint = gav_records.ensure('bench', 365);
+				if (type == 'squat') toprint = gav_records.ensure('squat', 445);
+				if (type == 'deadlift') toprint = gav_records.ensure('deadlift', 605);
+				if (!toprint) {
+					//theoretically, this will never run because we are using slash command choices
+					bot.logger.warn(`${this.name} ran without a valid Choice selected`);
+					interaction.reply('INVALID LOOKUP');
+					return;
+				}
+				const embed = new MessageEmbed()
+					.setColor('#FFFFFF')
+					.setDescription(`GAVIN'S ${type!.toUpperCase()} PR: ${toprint}`);
+				interaction.reply({ embeds: [embed] });
+				return;
+			}
+			if (options.getSubcommand() == 'setlift') {
+				// we're setting data now
+				let type = options.getString('lifttype'); // key to set to
+				let lift = options.getNumber('lift'); // the data to set
+				if (type == 'bench') gav_records.set('bench', lift);
+				if (type == 'squat') gav_records.set('squat', lift);
+				if (type == 'deadlift') gav_records.set('deadlift', lift);
 
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription(
-					`UPDATED GAVIN'S ${type!.toUpperCase()} PR TO: ${lift}\nGOOD JOB SOLDIER`
-				);
-			interaction.reply({ embeds: [embed] });
+				const embed = new MessageEmbed()
+					.setColor('#FFFFFF')
+					.setDescription(
+						`UPDATED GAVIN'S ${type!.toUpperCase()} PR TO: ${lift}\nGOOD JOB SOLDIER`
+					);
+				interaction.reply({ embeds: [embed] });
+				return;
+			}
+			bot.logger.warn(`${this.name} finished without hiting a subcommand`);
+			//slash commands make it pretty easy to validate user input before the command is actually run, so theoretically this shouldn't ever run either.
+			interaction.reply('Something screwed up. This should never happen.');
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
+			});
 			return;
 		}
-		bot.logger.warn(`${this.name} finished without hiting a subcommand`);
-		//slash commands make it pretty easy to validate user input before the command is actually run, so theoretically this shouldn't ever run either.
-		interaction.reply('Something screwed up. This should never happen.');
 	}
 }

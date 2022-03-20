@@ -23,18 +23,26 @@ export class Superidol implements MessageCommand {
 		message: Message<boolean>,
 		args: string[]
 	): Promise<void> {
-		let state = message.member!.voice;
-		await message.delete();
-		if (!state.channelId) return;
-		let channel = message.channel as TextChannel;
-		const connection = joinVoiceChannel({
-			channelId: state.channelId,
-			guildId: channel.guild.id,
-			adapterCreator: channel.guild.voiceAdapterCreator,
-		});
-		let player = createAudioPlayer();
-		connection.subscribe(player);
-		const superidolmp3 = createAudioResource('./music/superidol.mp3');
-		player.play(superidolmp3);
+		try {
+			let state = message.member!.voice;
+			await message.delete();
+			if (!state.channelId) return;
+			let channel = message.channel as TextChannel;
+			const connection = joinVoiceChannel({
+				channelId: state.channelId,
+				guildId: channel.guild.id,
+				adapterCreator: channel.guild.voiceAdapterCreator,
+			});
+			let player = createAudioPlayer();
+			connection.subscribe(player);
+			const superidolmp3 = createAudioResource('./music/superidol.mp3');
+			player.play(superidolmp3);
+		} catch (err) {
+			bot.logger.error(message.channel!.id, this.name, err);
+			message.reply({
+				content: 'Error: contact a developer to investigate',
+			});
+			return;
+		}
 	}
 }

@@ -25,10 +25,19 @@ export class Kawaii implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		//fetches the nekos.best api
-		let res = await fetch(`https://nekos.best/api/v1/wink`);
-		let jsonData = await res.json();
-		let embed = new MessageEmbed().setColor('#0071b6').setImage(jsonData.url);
-		interaction.reply({ embeds: [embed] });
+		try {
+			//fetches the nekos.best api
+			let res = await fetch(`https://nekos.best/api/v1/wink`);
+			let jsonData = await res.json();
+			let embed = new MessageEmbed().setColor('#0071b6').setImage(jsonData.url);
+			interaction.reply({ embeds: [embed] });
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
+			});
+			return;
+		}
 	}
 }
