@@ -131,6 +131,13 @@ export class Birthday implements SlashCommand {
 				});
 			}
 
+            if (interaction.options.getInteger('day')! > dayCap[interaction.options.getString('month')!] || interaction.options.getInteger('day')! < 1){
+                return interaction.reply({
+                    content: 'Please enter a valid date',
+                    ephemeral: true
+                })
+            }
+
 			//store the date of birth in numerical form  DD-MM
 			let formattedBirthday = `${interaction.options.getInteger('day')}-${
 				monthCode[interaction.options.getString('month')!]
