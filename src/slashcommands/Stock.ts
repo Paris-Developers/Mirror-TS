@@ -35,25 +35,25 @@ export class Stock implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		//tests to see if the command was passed in with arguements
-		if (!interaction.options.getString('tickers')) {
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription('Please provide a valid ticker(s)');
-			interaction.reply({ embeds: [embed] });
-			return;
-		}
-		//splits the entry text into separate arguements
-		let args = interaction.options.getString('tickers')!.split(' ');
-		if (args.length > 10) {
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription('Please provide 10 or fewer stocks to call');
-			interaction.reply({ embeds: [embed] });
-			return;
-		}
-		//trys the code as normal but if it encounters an error it will run the code under the catch function
 		try {
+			//tests to see if the command was passed in with arguements
+			if (!interaction.options.getString('tickers')) {
+				const embed = new MessageEmbed()
+					.setColor('#FFFFFF')
+					.setDescription('Please provide a valid ticker(s)');
+				interaction.reply({ embeds: [embed] });
+				return;
+			}
+			//splits the entry text into separate arguements
+			let args = interaction.options.getString('tickers')!.split(' ');
+			if (args.length > 10) {
+				const embed = new MessageEmbed()
+					.setColor('#FFFFFF')
+					.setDescription('Please provide 10 or fewer stocks to call');
+				interaction.reply({ embeds: [embed] });
+				return;
+			}
+			//trys the code as normal but if it encounters an error it will run the code under the catch function
 			const embedList = [];
 			let ctr = 0;
 			for (let ticker of args) {
@@ -127,11 +127,22 @@ export class Stock implements SlashCommand {
 			interaction.reply({ embeds: embedList });
 			return;
 		} catch (err) {
-			//sends an error message if the json is invalid
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setDescription(`Error: ${err}`);
-			interaction.reply({ embeds: [embed] });
+			if (err instanceof Object) {
+				const test = Object.getOwnPropertyDescriptor(err, 'type');
+				if (test?.value == 'invalid-json') {
+					interaction.reply({
+						content: 'Invalid ticker symbol.',
+						ephemeral: true,
+					});
+					return;
+				}
+			}
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
+			});
+			return;
 		}
 	}
 }

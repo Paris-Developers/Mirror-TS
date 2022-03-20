@@ -3,7 +3,8 @@ import { appendFile } from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
 import { Bot } from './Bot';
-import { MessageEmbed, TextChannel } from 'discord.js';
+import { AnyChannel, MessageEmbed, TextChannel } from 'discord.js';
+import config from '../config.json';
 
 export class CustomLogger extends Logger {
 	constructor(
@@ -49,12 +50,27 @@ export class CustomLogger extends Logger {
 		...args: unknown[]
 	): ILogObject {
 		if (commandName) {
+			var errorChannel: AnyChannel;
+
 			const embed = new MessageEmbed()
-				.setTitle(`Error in command ${commandName}`)
-				.setDescription(`Error Message: ${args.join(' ')}`)
-				.setFooter({ text: `Channel: ${channelId}` });
+				.setTitle(`Error in command: __${commandName.toUpperCase()}__`)
+				.setColor('RED');
+			if (channelId) {
+				errorChannel = this.bot.client.channels.cache.get(
+					channelId
+				) as AnyChannel;
+				embed.setDescription(
+					`Error Message: ${args.join(' ')}\n\n Channel: ${errorChannel}`
+				);
+			} else {
+				embed
+					.setFooter({
+						text: `Channel: ${channelId} (may not have been recieved)`,
+					})
+					.setDescription(`Error Message: ${args.join(' ')}`);
+			}
 			let channel = this.bot.client.channels.cache.get(
-				'948246919828865086'
+				config.error_channel
 			) as TextChannel;
 			channel.send({ embeds: [embed] });
 		}

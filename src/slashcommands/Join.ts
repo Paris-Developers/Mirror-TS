@@ -26,23 +26,32 @@ export class Join implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		let member = interaction.member as GuildMember;
-		let state = member.voice;
-		if (!state.channel) {
-			interaction.reply('you are not in a valid voice channel!');
+		try {
+			let member = interaction.member as GuildMember;
+			let state = member.voice;
+			if (!state.channel) {
+				interaction.reply('you are not in a valid voice channel!');
+				return;
+			}
+			const connection = joinVoiceChannel({
+				channelId: state.channelId!,
+				guildId: interaction.guildId!,
+				adapterCreator: interaction.guild!.voiceAdapterCreator,
+			});
+			let player = createAudioPlayer();
+			connection.subscribe(player);
+			const mirrormp3 = createAudioResource('./music/mirror.mp3');
+			player.play(mirrormp3);
+			interaction.reply({ content: 'success', ephemeral: true }); //hides the reply to anyone but the user
+			return;
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
+			});
 			return;
 		}
-		const connection = joinVoiceChannel({
-			channelId: state.channelId!,
-			guildId: interaction.guildId!,
-			adapterCreator: interaction.guild!.voiceAdapterCreator,
-		});
-		let player = createAudioPlayer();
-		connection.subscribe(player);
-		const mirrormp3 = createAudioResource('./music/mirror.mp3');
-		player.play(mirrormp3);
-		interaction.reply({ content: 'success', ephemeral: true }); //hides the reply to anyone but the user
-		return;
 	}
 	guildRequired?: boolean = true;
 }

@@ -12,6 +12,14 @@ export class KeywordTest implements Keyword {
 		message: Message<boolean>,
 		args: String[]
 	): Promise<void> {
-		message.reply(`Hello keyword user: ${message.author.username}`);
+		try {
+			message.reply(`Hello keyword user: ${message.author.username}`);
+		} catch (err) {
+			bot.logger.error(message.channel!.id, this.name, err);
+			message.reply({
+				content: 'Error: contact a developer to investigate',
+			});
+			return;
+		}
 	}
 }

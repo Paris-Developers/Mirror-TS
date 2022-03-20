@@ -16,12 +16,20 @@ export class Cum implements MessageCommand {
 		message: Message<boolean>,
 		args: string[]
 	): Promise<void> {
-		if(nsfw.get(message.guild!.id) != 'on') return;
-		let rand = Math.round(100 * Math.random());
-		if (rand == 69) {
-			message.reply('You are the scrumple king');
+		try {
+			if (nsfw.get(message.guild!.id) != 'on') return;
+			let rand = Math.round(100 * Math.random());
+			if (rand == 69) {
+				message.reply('You are the scrumple king');
+				return;
+			}
+			message.channel.send('Absolutely nothing');
+		} catch (err) {
+			bot.logger.error(message.channel!.id, this.name, err);
+			message.reply({
+				content: 'Error: contact a developer to investigate',
+			});
 			return;
 		}
-		message.channel.send('Absolutely nothing');
 	}
 }

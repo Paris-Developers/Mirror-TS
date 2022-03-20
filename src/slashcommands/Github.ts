@@ -18,13 +18,22 @@ export class Github implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		const embed = new MessageEmbed()
-			.setColor('#FFFFFF')
-			.setTitle(':lock: __Mirror-JS Codebase and Privacy__')
-			.setDescription(
-				'Mirror scans all messages in a server by default, but does not store them.\n\nIf you want to prevent Mirror from scanning messages, reinvite it without the "read messages" permissions in the Oauth portal. \n\nInterested in our open source code? Visit our [github](https://github.com/paris-developers/Mirror-TS)\n\nStill have questions? Join our [support server](https://discord.gg/uvdg2R5PAU)'
-			);
-		interaction.reply({ embeds: [embed] });
-		return;
+		try {
+			const embed = new MessageEmbed()
+				.setColor('#FFFFFF')
+				.setTitle(':lock: __Mirror-TS Codebase and Privacy__')
+				.setDescription(
+					'Mirror scans all messages in a server by default, but does not store them.\n\nIf you want to prevent Mirror from scanning messages, reinvite it without the "read messages" permissions in the Oauth portal. \n\nInterested in our open source code? Visit our [github](https://github.com/paris-developers/Mirror-TS)\n\nStill have questions? Join our [support server](https://discord.gg/uvdg2R5PAU)'
+				);
+			interaction.reply({ embeds: [embed] });
+			return;
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
+			});
+			return;
+		}
 	}
 }
