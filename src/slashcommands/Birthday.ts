@@ -25,6 +25,22 @@ const monthCode = {
 	november: 11,
 	december: 12,
 } as monthIndex;
+
+const dayCap = {	
+	january: 31,
+	february: 29,
+	march: 31,
+	april: 30,
+	may: 31,
+	june: 30,
+	july: 31,
+	august: 31,
+	september: 30,
+	october: 31,
+	november: 30,
+	december: 31,
+} as monthIndex;
+
 const months = [
 	{
 		name: 'January',
@@ -101,6 +117,7 @@ export class Birthday implements SlashCommand {
 		],
 	};
 	requiredPermissions: bigint[] = [];
+	
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
