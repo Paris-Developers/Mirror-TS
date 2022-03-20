@@ -18,8 +18,8 @@ export class Queue implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		let queue = player.getQueue(interaction.guild!.id);
-		if (!queue || !queue.playing) return interaction.reply('There is no queue');
-		let trackString = '';
+		if (!queue || !queue.playing || queue.tracks.length == 0)
+			return interaction.reply('There is no queue');
 		let ptr = 1;
 		let titleString = '';
 		let artistString = '';
