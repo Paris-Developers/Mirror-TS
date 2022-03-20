@@ -169,4 +169,4 @@ export class Birthday implements SlashCommand {
             return;
         }
     }
-}
+} 
