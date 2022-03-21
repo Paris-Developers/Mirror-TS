@@ -8,7 +8,7 @@ import { player } from '..';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 
-export class NewPlaying implements SlashCommand {
+export class NowPlaying implements SlashCommand {
 	name: string = 'nowplaying';
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
