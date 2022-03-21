@@ -27,7 +27,7 @@ export class ClearQueue implements SlashCommand {
 			}
 			queue.clear();
 			embed.setDescription(`Queue has been cleared by ${interaction.user}`);
-			return interaction.reply('Queue has been successfully cleared');
+			return interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.error(interaction.channel!.id, this.name, err);
 			return interaction.reply({
