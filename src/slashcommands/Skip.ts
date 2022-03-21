@@ -19,15 +19,23 @@ export class Skip implements SlashCommand {
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
-		const embed = new MessageEmbed().setColor('BLUE');
-		let queue = player.getQueue(interaction.guild!.id);
-		if (!queue || !queue.playing) {
-			embed.setDescription('There is no music playing!');
-			return interaction.reply({ embeds: [embed], ephemeral: true });
+		try {
+			const embed = new MessageEmbed().setColor('BLUE');
+			let queue = player.getQueue(interaction.guild!.id);
+			if (!queue || !queue.playing) {
+				embed.setDescription('There is no music playing!');
+				return interaction.reply({ embeds: [embed], ephemeral: true });
+			}
+			await queue.skip();
+			embed.setDescription(`Track skipped by ${interaction.user}`);
+			return void interaction.reply('Track might have been skipped');
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			return interaction.reply({
+				content: 'Error detected, contact an admin to investigate.',
+				ephemeral: true,
+			});
 		}
-		await queue.skip();
-		embed.setDescription(`Track skipped by ${interaction.user}`);
-		return void interaction.reply('Track might have been skipped');
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;

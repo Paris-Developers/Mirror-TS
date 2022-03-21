@@ -15,10 +15,19 @@ export class ClearQueue implements SlashCommand {
 	};
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-		let queue = player.getQueue(interaction.guild!.id);
-		if (!queue || !queue.playing) return interaction.reply('There is no queue');
-		queue.clear();
-		return interaction.reply('Queue has been successfully cleared');
+		try {
+			let queue = player.getQueue(interaction.guild!.id);
+			if (!queue || !queue.playing)
+				return interaction.reply('There is no queue');
+			queue.clear();
+			return interaction.reply('Queue has been successfully cleared');
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
+			return interaction.reply({
+				content: 'Error detected, contact an admin to investigate.',
+				ephemeral: true,
+			});
+		}
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
