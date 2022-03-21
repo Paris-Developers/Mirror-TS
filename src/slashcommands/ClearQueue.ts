@@ -2,6 +2,7 @@ import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
 	CacheType,
+	MessageEmbed,
 } from 'discord.js';
 import { player } from '..';
 import { Bot } from '../Bot';
@@ -16,10 +17,16 @@ export class ClearQueue implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
+			const embed = new MessageEmbed().setColor('BLUE');
 			let queue = player.getQueue(interaction.guild!.id);
-			if (!queue || !queue.playing)
-				return interaction.reply('There is no queue');
+			if (!queue || !queue.playing) {
+				embed.setDescription(
+					'There are no songs in the queue or the player is not playing'
+				);
+				return interaction.reply({ embeds: [embed], ephemeral: true });
+			}
 			queue.clear();
+			embed.setDescription(`Queue has been cleared by ${interaction.user}`);
 			return interaction.reply('Queue has been successfully cleared');
 		} catch (err) {
 			bot.logger.error(interaction.channel!.id, this.name, err);
