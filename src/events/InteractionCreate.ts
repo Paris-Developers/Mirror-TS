@@ -1,6 +1,7 @@
 import { CommandInteraction, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
+import { silenceCheck } from '../slashcommands/SilenceRole';
 import { EventHandler } from './EventHandler';
 
 export class InteractionCreate implements EventHandler {
@@ -30,6 +31,15 @@ export class InteractionCreate implements EventHandler {
 				return interaction.reply({
 					content:
 						'This command can only be used by designated managers or admininstrators',
+					ephemeral: true,
+				});
+			}
+		}
+		if(command.blockSilenced) {
+			if(await silenceCheck(interaction)){				
+				return interaction.reply({
+					content:
+						'This command cannot be used by silenced members',
 					ephemeral: true,
 				});
 			}

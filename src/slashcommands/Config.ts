@@ -11,6 +11,7 @@ import { defaultVc } from './DefaultVc';
 import { updateChannels } from './Update';
 import { nsfw } from './Nsfw';
 import { managerRoles } from './ManagerRole';
+import { silencedRole } from './SilenceRole'
 
 export class Config implements SlashCommand {
 	name: string = 'config';
@@ -35,6 +36,7 @@ export class Config implements SlashCommand {
 			let defaultVoice = defaultVc.get(interaction.guild!.id);
 			let update = updateChannels.get(interaction.guild!.id);
 			let nsfwToggle = nsfw.get(interaction.guild!.id);
+			let silence = silencedRole.get(interaction.guild!.id);
 			if (update) {
 				update = bot.client.channels.cache.get(update);
 				lines[1][2] = update;
@@ -61,6 +63,11 @@ export class Config implements SlashCommand {
 				}
 				managerString = managerString.slice(0, -2);
 			}
+			let silenceString = 'To prevent someone interacting with Introthemes, Birthday Command or Music\n`/silencerole` or `/silencemember`';
+			if(silence){
+				let getRole = interaction.guild?.roles.cache.get(silence);
+				silenceString = `${getRole}`;
+			}
 			embed.addFields(
 				{
 					name: lines[0][0],
@@ -81,7 +88,13 @@ export class Config implements SlashCommand {
 					name: 'Mirror Manager Roles',
 					value: managerString,
 					inline: false,
+				},
+				{
+					name: 'Silenced Role',
+					value: silenceString,
+					inline: false
 				}
+				
 			);
 			return interaction.reply({ embeds: [embed] });
 		} catch (err) {
