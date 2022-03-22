@@ -25,6 +25,7 @@ export class SilenceRole implements SlashCommand {
         try{
             //TODO if someone attempts to set the same role that is already set, remove it
             let badRole = interaction.options.getRole('role') as Role;
+            
             if(badRole?.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')){
                 return interaction.reply({content: 'Roles with administrator permissions cannot be silenced!'});
             }
@@ -35,6 +36,10 @@ export class SilenceRole implements SlashCommand {
                 }
             }
             let currentRole =  silencedRole.get(interaction.guild!.id) as string;
+            if(badRole.id == currentRole) {
+                silencedRole.delete(interaction.guild!.id);
+                return interaction.reply({content: `Removed ${badRole} as silenced role`})
+            }
             silencedRole.set(interaction.guild!.id, badRole?.id);
             if(currentRole && currentRole != badRole.id){
                 let getRole = interaction.guild?.roles.cache.get(currentRole);
@@ -57,7 +62,6 @@ export class SilenceRole implements SlashCommand {
     }
     guildRequired?: boolean | undefined = true;
     managerRequired?: boolean | undefined = true;
-    
 }
 
 export async function silenceCheck(interaction: Interaction): Promise<boolean> {
