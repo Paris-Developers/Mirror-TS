@@ -86,7 +86,7 @@ export class SilenceRole implements SlashCommand {
 	managerRequired?: boolean | undefined = true;
 }
 
-export async function silenceCheck(interaction: Interaction): Promise<boolean> {
+export function silenceCheck(interaction: Interaction): boolean {
 	let member = interaction.guild!.members.cache.get(interaction.user.id);
 	if (member?.permissions.toArray().includes('ADMINISTRATOR')) return false;
 	let silenced = silencedRole.get(interaction.guild!.id);
