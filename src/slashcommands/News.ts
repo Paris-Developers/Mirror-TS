@@ -66,7 +66,7 @@ export class News implements SlashCommand {
 			embed.setThumbnail(jsonData.articles[0].urlToImage);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

@@ -111,7 +111,7 @@ export class Help implements SlashCommand {
 				reaction.users.remove(user.id); //remove the emoji so the user doesn't have to remove it themselves
 			});
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

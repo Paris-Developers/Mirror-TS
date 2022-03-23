@@ -16,7 +16,7 @@ export class Mirror implements Keyword {
 		try {
 			message.react('👀');
 		} catch (err) {
-			bot.logger.error(message.channel!.id, this.name, err);
+			bot.logger.commandError(message.channel!.id, this.name, err);
 			message.reply({
 				content: 'Error: contact a developer to investigate',
 			});

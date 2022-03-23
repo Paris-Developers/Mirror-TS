@@ -36,7 +36,7 @@ export class Leave implements SlashCommand {
 			interaction.reply('Left the voice channel :wave:');
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

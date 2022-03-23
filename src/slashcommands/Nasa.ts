@@ -44,7 +44,7 @@ export class Nasa implements SlashCommand {
 			if (jsonData.copyright) embed.setAuthor({ name: jsonData.copyright }); //checks to see if the copyright item exists, then it will include it in the author slot.
 			interaction.editReply({ embeds: [embed] }); //technically deferReply() creates the reply, so we need to edit that.
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
