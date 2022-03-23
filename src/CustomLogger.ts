@@ -44,9 +44,9 @@ export class CustomLogger extends Logger {
 		});
 	}
 
-	error(
-		channelId: string | undefined,
-		commandName: string | undefined,
+	commandError(
+		channelId: string,
+		commandName: string,
 		...args: unknown[]
 	): ILogObject {
 		if (commandName) {

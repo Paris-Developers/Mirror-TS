@@ -26,7 +26,7 @@ const monthCode = {
 	december: 12,
 } as monthIndex;
 
-const dayCap = {	
+const dayCap = {
 	january: 31,
 	february: 29,
 	march: 31,
@@ -117,7 +117,7 @@ export class Birthday implements SlashCommand {
 		],
 	};
 	requiredPermissions: bigint[] = [];
-	
+
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
@@ -131,12 +131,16 @@ export class Birthday implements SlashCommand {
 				});
 			}
 
-            if (interaction.options.getInteger('day')! > dayCap[interaction.options.getString('month')!] || interaction.options.getInteger('day')! < 1){
-                return interaction.reply({
-                    content: 'Please enter a valid date',
-                    ephemeral: true
-                })
-            }
+			if (
+				interaction.options.getInteger('day')! >
+					dayCap[interaction.options.getString('month')!] ||
+				interaction.options.getInteger('day')! < 1
+			) {
+				return interaction.reply({
+					content: 'Please enter a valid date',
+					ephemeral: true,
+				});
+			}
 
 			//store the date of birth in numerical form  DD-MM
 			let formattedBirthday = `${interaction.options.getInteger('day')}-${
@@ -158,7 +162,7 @@ export class Birthday implements SlashCommand {
 			interaction.reply({ embeds: [embed] });
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

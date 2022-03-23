@@ -80,7 +80,7 @@ export class Intro implements SlashCommand {
 				);
 				return;
 			}
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.editReply({
 				content: 'Error detected, contact an admin to investigate.',
 			});

@@ -19,7 +19,7 @@ export class Poggers implements Keyword {
 		try {
 			message.react(':JamesChamp:791190997236842506');
 		} catch (err) {
-			bot.logger.error(message.channel!.id, this.name, err);
+			bot.logger.commandError(message.channel!.id, this.name, err);
 			message.reply({
 				content: 'Error: contact a developer to investigate',
 			});

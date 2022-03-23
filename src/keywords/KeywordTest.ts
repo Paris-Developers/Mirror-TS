@@ -15,7 +15,7 @@ export class KeywordTest implements Keyword {
 		try {
 			message.reply(`Hello keyword user: ${message.author.username}`);
 		} catch (err) {
-			bot.logger.error(message.channel!.id, this.name, err);
+			bot.logger.commandError(message.channel!.id, this.name, err);
 			message.reply({
 				content: 'Error: contact a developer to investigate',
 			});
