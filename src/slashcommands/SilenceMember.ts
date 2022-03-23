@@ -9,25 +9,23 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export const silencedUsers = new Enmap('silencedUsers');
 
 export class SilenceMember implements SlashCommand {
 	name: string = 'silencemember';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description:
-			'[ADMIN ONLY] Silence a member from using Intros or Setting their birthday.',
-		options: [
-			{
-				name: 'user',
-				description: 'The user to silence/unsilence',
-				required: true,
-				type: ApplicationCommandOptionTypes.USER,
-			},
-		],
-	};
+	description: string =
+		'[ADMIN ONLY] Silence a member from using Intros or Setting their birthday.';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'user',
+			'The user to silence/unsilence',
+			ApplicationCommandOptionTypes.USER,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {

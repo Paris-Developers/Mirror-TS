@@ -9,14 +9,13 @@ import {
 } from 'discord.js';
 import fetch from 'node-fetch';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export class Kawaii implements SlashCommand {
 	name: string = 'kawaii';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Get a cute catgirl',
-	};
+	description: string = 'Get a cute catgirl';
+	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,

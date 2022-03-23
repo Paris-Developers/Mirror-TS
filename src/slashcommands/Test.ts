@@ -3,13 +3,12 @@
 import { Bot } from '../Bot';
 import { Permissions, CommandInteraction, CacheType } from 'discord.js';
 import { SlashCommand } from './SlashCommand';
+import { Option, Subcommand } from './Option';
 
 export class Test implements SlashCommand {
 	public name = 'test';
-	public registerData = {
-		name: this.name,
-		description: 'Replies with your name!',
-	};
+	description: string = 'Replies with your name!';
+	options: (Option | Subcommand)[] = [];
 	public requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
 
 	public async run(

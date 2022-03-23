@@ -12,25 +12,23 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export let defaultVc = new Enmap('defaultVc');
 
 export class DefaultVc implements SlashCommand {
 	name: string = 'defaultvc';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description:
-			'[MANAGER] Set a default voice channel for Mirror to join upon restart, will not play a sound',
-		options: [
-			{
-				name: 'channel',
-				type: ApplicationCommandOptionTypes.CHANNEL,
-				description: 'The channel you wish to designate as the default',
-				required: true,
-			},
-		],
-	};
+	description =
+		'[MANAGER] Set a default voice channel for Mirror to join upon restart, will not play a sound';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'channel',
+			'The channel you wish to designate as the default',
+			ApplicationCommandOptionTypes.CHANNEL,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,

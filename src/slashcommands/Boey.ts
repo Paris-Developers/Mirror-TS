@@ -9,10 +9,8 @@ import { SlashCommand } from './SlashCommand';
 
 export class Boey implements SlashCommand {
 	name: string = 'boey';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Sends Boeys stream information!',
-	};
+	description: string = 'Sends Boeys stream information!';
+	options = [];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,

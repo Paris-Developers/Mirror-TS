@@ -7,6 +7,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { Option } from './Option';
 import { silencedUsers } from './SilenceMember';
 import { SlashCommand } from './SlashCommand';
 
@@ -96,28 +97,25 @@ export let bdayDates = new Enmap({ name: 'bdayDates' });
 
 export class Birthday implements SlashCommand {
 	name: string = 'birthday';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description:
-			'Set your birthday to recieve a Birthday message on your birthday!',
-		options: [
-			{
-				name: 'month',
-				description: 'Your birth month',
-				type: ApplicationCommandOptionTypes.STRING,
-				required: true,
-				choices: months,
-			},
-			{
-				name: 'day',
-				description: 'The date of your birthday',
-				type: ApplicationCommandOptionTypes.INTEGER,
-				required: true,
-			},
-		],
-	};
+	description =
+		'Set your birthday to recieve a Birthday message on your birthday!';
+	options = [
+		new Option(
+			'month',
+			'Your Birth Month',
+			ApplicationCommandOptionTypes.STRING,
+			true,
+			'may',
+			months
+		),
+		new Option(
+			'day',
+			'The date of your birthday',
+			ApplicationCommandOptionTypes.INTEGER,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [];
-
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>

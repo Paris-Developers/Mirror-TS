@@ -13,14 +13,13 @@ import {
 	Permissions,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export class Join implements SlashCommand {
 	name: string = 'join';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Have Mirror join your voice channel',
-	};
+	description: string = 'Have Mirror join your voice channel';
+	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
 	async run(
 		bot: Bot,

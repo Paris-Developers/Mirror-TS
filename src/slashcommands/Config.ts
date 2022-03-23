@@ -15,10 +15,8 @@ import { silencedRole } from './SilenceRole';
 
 export class Config implements SlashCommand {
 	name: string = 'config';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: 'See the configuration settings for this server',
-	};
+	description = 'See the configuration settings for this server';
+	options = [];
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
