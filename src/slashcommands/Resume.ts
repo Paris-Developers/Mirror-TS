@@ -39,4 +39,5 @@ export class Resume implements SlashCommand {
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
+	blockSilenced?: boolean | undefined = true;
 }
