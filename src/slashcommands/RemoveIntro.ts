@@ -11,21 +11,19 @@ import { unlink } from 'fs';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { promisify } from 'util';
+import { Option, Subcommand } from './Option';
 
 export class RemoveIntro implements SlashCommand {
 	public name = 'removeintro';
-	public registerData = {
-		name: this.name,
-		description: '[MANAGER] Delete someones intro theme!',
-		options: [
-			{
-				name: 'user',
-				description: 'Member to remove intro',
-				type: 6,
-				required: true,
-			},
-		],
-	};
+	description: string = '[MANAGER] Delete someones intro theme!';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'user',
+			'Member to remove intro',
+			ApplicationCommandOptionTypes.USER,
+			true
+		),
+	];
 	public requiredPermissions = [];
 	async run(
 		bot: Bot,

@@ -13,6 +13,7 @@ import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
+import { Option } from './Option';
 
 const choices = [
 	{
@@ -29,20 +30,18 @@ export let nsfw = new Enmap({ name: 'nsfw' });
 
 export class Nsfw implements SlashCommand {
 	name: string = 'nsfw';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description:
-			'[MANAGER] Check your current NSFW setting, or toggle it ON or OFF',
-		options: [
-			{
-				name: 'toggle',
-				description: 'Switch your servers NSFW status to ON or OFF',
-				type: ApplicationCommandOptionTypes.STRING,
-				required: false,
-				choices: choices,
-			},
-		],
-	};
+	description: string =
+		'[MANAGER] Check your current NSFW setting, or toggle it ON or OFF';
+	options = [
+		new Option(
+			'toggle',
+			'Switch your servers NSFW status to ON or OFF',
+			ApplicationCommandOptionTypes.STRING,
+			false,
+			'off',
+			choices
+		),
+	];
 	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
 	async run(
 		bot: Bot,

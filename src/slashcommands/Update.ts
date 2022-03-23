@@ -7,28 +7,28 @@ import {
 	TextChannel,
 	Guild,
 	MessageEmbed,
+	Options,
 } from 'discord.js';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import Enmap from 'enmap';
+import { Option, Subcommand } from './Option';
+import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 
 export let updateChannels = new Enmap({ name: 'updateChannels' });
 
 export class Update implements SlashCommand {
 	public name = 'update';
-	public registerData = {
-		name: this.name,
-		description:
-			'[MANAGER] Set the channel you wish to recieve Mirror update messages in',
-		options: [
-			{
-				name: 'channel',
-				description: 'The channel you wish to recieve update messages',
-				type: 7,
-				required: true,
-			},
-		],
-	};
+	description: string =
+		'[MANAGER] Set the channel you wish to recieve Mirror update messages in';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'channel',
+			'The channel you wish to recieve update messages',
+			ApplicationCommandOptionTypes.CHANNEL,
+			true
+		),
+	];
 	public requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
 
 	public async run(

@@ -11,14 +11,12 @@ import { defaultVc } from './DefaultVc';
 import { updateChannels } from './Update';
 import { nsfw } from './Nsfw';
 import { managerRoles } from './ManagerRole';
-import { silencedRole } from './SilenceRole'
+import { silencedRole } from './SilenceRole';
 
 export class Config implements SlashCommand {
 	name: string = 'config';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: 'See the configuration settings for this server',
-	};
+	description = 'See the configuration settings for this server';
+	options = [];
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
@@ -63,8 +61,9 @@ export class Config implements SlashCommand {
 				}
 				managerString = managerString.slice(0, -2);
 			}
-			let silenceString = 'To prevent someone interacting with Introthemes, Birthday Command or Music\n`/silencerole` or `/silencemember`';
-			if(silence){
+			let silenceString =
+				'To prevent someone interacting with Introthemes, Birthday Command or Music\n`/silencerole` or `/silencemember`';
+			if (silence) {
 				let getRole = interaction.guild?.roles.cache.get(silence);
 				silenceString = `${getRole}`;
 			}
@@ -92,9 +91,8 @@ export class Config implements SlashCommand {
 				{
 					name: 'Silenced Role',
 					value: silenceString,
-					inline: false
+					inline: false,
 				}
-				
 			);
 			return interaction.reply({ embeds: [embed] });
 		} catch (err) {

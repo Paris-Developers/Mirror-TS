@@ -13,6 +13,8 @@ import { SlashCommand } from './SlashCommand';
 import fetch from 'node-fetch';
 import { find } from 'geo-tz';
 import config from '../../config.json';
+import { Option, Subcommand } from './Option';
+import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 
 type emojiConverter = { [index: string]: string };
 const weatherEmoji = {
@@ -48,24 +50,21 @@ const cardinalDir = {
 
 export class Weather implements SlashCommand {
 	name: string = 'weather';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Weather data',
-		options: [
-			{
-				name: 'city',
-				type: 'STRING',
-				description: 'City to query',
-				required: true,
-			},
-			{
-				name: 'state',
-				type: 'STRING',
-				description: 'Two letter state code',
-				required: false,
-			},
-		],
-	};
+	description: string = 'Weather data';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'city',
+			'City to query',
+			ApplicationCommandOptionTypes.STRING,
+			true
+		),
+		new Option(
+			'state',
+			'Two letter state code',
+			ApplicationCommandOptionTypes.STRING,
+			false
+		),
+	];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,

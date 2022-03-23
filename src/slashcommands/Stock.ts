@@ -12,21 +12,20 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import fetch from 'node-fetch';
+import { Option, Subcommand } from './Option';
+import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 
 export class Stock implements SlashCommand {
 	name: string = 'stock';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Stock ticker data',
-		options: [
-			{
-				name: 'tickers',
-				type: 'STRING',
-				description: 'tickers to query, space separated',
-				required: true,
-			},
-		],
-	};
+	description: string = 'Stock ticker data';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'tickers',
+			'tickers to query, space separated',
+			ApplicationCommandOptionTypes.STRING,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,

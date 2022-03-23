@@ -14,10 +14,8 @@ import { SlashCommand } from './SlashCommand';
 
 export class Help implements SlashCommand {
 	name: string = 'help';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Information about the bot.',
-	};
+	description: string = 'Information about the bot';
+	options = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,

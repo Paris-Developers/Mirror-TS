@@ -4,11 +4,13 @@ import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
 } from 'discord.js';
+import { Option, Subcommand } from './Option';
 
 export interface SlashCommand {
 	//name of the slash command as discord will register it. Must be all lowercase.
 	name: string;
-	registerData: ApplicationCommandDataResolvable;
+	description: string;
+	options: Array<Option | Subcommand>;
 	//an array of Permissions.FLAGS
 	requiredPermissions: Array<bigint>;
 	//function that will run on command execution

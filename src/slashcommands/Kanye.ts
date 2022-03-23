@@ -13,10 +13,8 @@ import { SlashCommand } from './SlashCommand';
 
 export class Kanye implements SlashCommand {
 	name: string = 'kanye';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Kanye',
-	};
+	description: string = 'Kanye';
+	options = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,

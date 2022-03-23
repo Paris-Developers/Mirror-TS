@@ -3,25 +3,6 @@ import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
 
-let promisedReaddir = promisify(fs.readdir);
-
-export async function importSlashCommands(bot: Bot) {
-	let files = await promisedReaddir(`${__dirname}/../events/`);
-	for (let file of files) {
-		if (!file.endsWith('.js')) continue;
-		// if it's the base class or the old class holder file, ignore it
-		if (file == 'EventHandler.js' || file == 'Events.js') continue;
-		// get all the exports from the file
-		let module = await import(`${__dirname}/../events/${file}`);
-		// make a new object using the exported class
-		let command = new module[path.parse(file).name]();
-		let commandName = command.name;
-		bot.logger.info(`Attempting to load slash command ${commandName}`);
-		// push the new object to our array
-		bot.slashCommands.push(command);
-	}
-}
-
 async function deleteCommandsFromGuild(
 	bot: Bot,
 	guildId: string,
@@ -77,12 +58,16 @@ export async function registerSlashCommands(bot: Bot): Promise<boolean> {
 	}
 
 	bot.slashCommands.forEach(async (command) => {
-		if (!command.registerData) {
-			bot.logger.warn(`SlashCommand ${command.name} has no valid registerData`);
-			return;
+		let JsonOptionData = [];
+		for (let option of command.options) {
+			JsonOptionData.push(option.toJson());
 		}
-		//check the command has slash command data
-		let registerData = command.registerData;
+
+		let registerData = {
+			name: command.name,
+			description: command.description,
+			options: JsonOptionData,
+		};
 		bot.logger.info(`Registering slash command ${command.name}`);
 		//guild scope commands update instantly -- globally set ones are cached for an hour. If we are debugging, use guild scope
 		if (bot.mode == 'debug') {

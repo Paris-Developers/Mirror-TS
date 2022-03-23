@@ -12,24 +12,22 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { managerRoles } from './ManagerRole';
 import { silencedUsers } from './SilenceMember';
+import { Option, Subcommand } from './Option';
 
 export const silencedRole = new Enmap('SilencedRole');
 
 export class SilenceRole implements SlashCommand {
 	name: string = 'silencerole';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description:
-			'[MANAGER] Set a role from using Birthday, Intro, or Music commands.',
-		options: [
-			{
-				name: 'role',
-				description: 'The role to silence.',
-				type: ApplicationCommandOptionTypes.ROLE,
-				required: true,
-			},
-		],
-	};
+	description: string =
+		'[MANAGER] Set a role from using Birthday, Intro, or Music commands.';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'role',
+			'The role to silence',
+			ApplicationCommandOptionTypes.ROLE,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {

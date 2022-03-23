@@ -11,13 +11,12 @@ import fetch from 'node-fetch';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
+import { Option, Subcommand } from './Option';
 
 export class Nasa implements SlashCommand {
 	name: string = 'nasa';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Get daily astronomy pictures',
-	};
+	description: string = 'Get daily astronomy pictures';
+	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
