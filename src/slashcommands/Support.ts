@@ -24,7 +24,7 @@ export class Support implements SlashCommand {
 			interaction.reply('discord.gg/uvdg2R5PAU');
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

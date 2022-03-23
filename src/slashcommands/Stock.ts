@@ -136,7 +136,7 @@ export class Stock implements SlashCommand {
 					return;
 				}
 			}
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

@@ -18,7 +18,7 @@ export class Test implements SlashCommand {
 		try {
 			interaction.reply(`Hello ${interaction.user.username}`);
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

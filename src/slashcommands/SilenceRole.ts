@@ -73,7 +73,7 @@ export class SilenceRole implements SlashCommand {
 				);
 			return interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			return interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

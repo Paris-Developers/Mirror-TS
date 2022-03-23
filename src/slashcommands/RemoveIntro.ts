@@ -50,7 +50,7 @@ export class RemoveIntro implements SlashCommand {
 				});
 				return;
 			} else {
-				bot.logger.error(interaction.channel!.id, this.name, err);
+				bot.logger.commandError(interaction.channel!.id, this.name, err);
 				interaction.reply({
 					content: 'Error detected, contact an admin for further details.',
 					ephemeral: true,

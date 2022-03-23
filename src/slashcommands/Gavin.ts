@@ -125,7 +125,7 @@ export class Gavin implements SlashCommand {
 			//slash commands make it pretty easy to validate user input before the command is actually run, so theoretically this shouldn't ever run either.
 			interaction.reply('Something screwed up. This should never happen.');
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

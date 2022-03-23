@@ -96,7 +96,7 @@ export class Config implements SlashCommand {
 			);
 			return interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			return interaction.reply({
 				content: 'Error detected, contact an admin to investigate.',
 				ephemeral: true,

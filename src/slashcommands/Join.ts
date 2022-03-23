@@ -44,7 +44,7 @@ export class Join implements SlashCommand {
 			interaction.reply({ content: 'success', ephemeral: true }); //hides the reply to anyone but the user
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

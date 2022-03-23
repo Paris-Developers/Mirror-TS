@@ -31,7 +31,7 @@ export class Kawaii implements SlashCommand {
 			let embed = new MessageEmbed().setColor('#0071b6').setImage(jsonData.url);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
