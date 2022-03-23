@@ -17,4 +17,6 @@ export interface SlashCommand {
 	guildRequired?: boolean;
 	//if the command needs to be run by a manager or admin
 	managerRequired?: boolean;
+	//if the command blocks silenced users/roles set true
+	blockSilenced?: boolean;
 }
