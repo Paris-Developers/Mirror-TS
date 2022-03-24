@@ -35,6 +35,11 @@ export class CreateTimer implements SlashCommand{
             type: ApplicationCommandOptionTypes.STRING,
             choices: messageOptions,
         },{
+            name: 'query',
+            description: 'The content (if needed) for your bot to search for',
+            required: false,
+            type: ApplicationCommandOptionTypes.STRING,
+        },{
             name: 'scheduleoptions',
             description: 'How frequently you want to recieve the timers message',
             required: true,
@@ -71,8 +76,26 @@ export class CreateTimer implements SlashCommand{
         //check hours
         //check minutes
         //check perms in channel
-        
+
+        let minute = interaction.options.getInteger('minute');
+        //TODO: check if between 0-59
+
+        let hour = interaction.options.getInteger('hour');
+        //TODO: Check if between 0-24
+
+        let query = interaction.options.getString('query');
+
+        let channel = interaction.options.getChannel('channel');
+        //TODO: Check Perms
+        //TODO: Check if channel is a text channel
+
+        let scheduleOptions = interaction.options.getString('scheduleoptions');
+        let timezone = 'timezone';
+
         //TODO handle the specific syntax for the timer they are requesting
+        if(interaction.options.getString('messageOptions')=='weather'){
+
+        }
         
         //TODO show them an example embed in the current channel,
         //if they find this satisfactory, allow them to approve and continue configuration
