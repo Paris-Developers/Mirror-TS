@@ -17,7 +17,7 @@ export class Poggers implements Keyword {
 		args: String[]
 	): Promise<void> {
 		try {
-			message.react(':JamesChamp:791190997236842506');
+			message.react(':JamesChamp:956572430778912858');
 		} catch (err) {
 			bot.logger.commandError(message.channel!.id, this.name, err);
 			message.reply({
