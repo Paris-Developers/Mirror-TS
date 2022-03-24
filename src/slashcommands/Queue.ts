@@ -4,6 +4,7 @@ import {
 	CacheType,
 	Message,
 	MessageEmbed,
+	GuildMember,
 } from 'discord.js';
 import { player } from '..';
 import { Bot } from '../Bot';
@@ -18,6 +19,28 @@ export class Queue implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
+			const embed = new MessageEmbed().setColor('BLUE');
+
+			let member = interaction.member as GuildMember;
+			let state = member.voice;
+
+			//if user is not connected
+			if (!state) {
+				embed.setDescription('You are not connected to a voice channel!');
+				return interaction.reply({embeds: [embed], ephemeral:true})
+			}
+
+			//if mirror is not connected to voice
+			if (!interaction.guild!.me?.voice) {
+				embed.setDescription('Mirror is not connected to a voice channel, use `/join`');
+				return interaction.reply({embeds: [embed], ephemeral:true})
+			}
+
+			//if the user is not connected to the correct voice, end
+			if (interaction.guild!.me?.voice.channel!.id != state.channel!.id) {
+				embed.setDescription('Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call');
+				return interaction.reply({embeds: [embed], ephemeral:true})
+			}
 			let queue = player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing || queue.tracks.length == 0)
 				return interaction.reply('There is no queue');
@@ -44,7 +67,7 @@ export class Queue implements SlashCommand {
 			)} hour(s) ${Math.round(
 				((queue.totalTime / 1000 / 60 / 60) % 1) * 60
 			)} minutes`;
-			const embed = new MessageEmbed()
+			embed
 				.setTitle(`Music queue for ${interaction.guild!.name}`)
 				.addFields(
 					{
