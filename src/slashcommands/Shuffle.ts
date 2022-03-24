@@ -21,6 +21,7 @@ export class Shuffle implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
+			
 			const embed = new MessageEmbed().setColor('BLUE');
 
 			let member = interaction.member as GuildMember;
@@ -51,7 +52,7 @@ export class Shuffle implements SlashCommand {
 			}
 			await queue.shuffle();
 			embed.setDescription(`Queue has been shuffled by ${interaction.user}`);
-			return interaction.reply('queue might have been shuffled');
+			return interaction.reply({embeds: [embed]});
 		} catch (err) {
 			bot.logger.error(interaction.channel!.id, this.name, err);
 			return interaction.reply({

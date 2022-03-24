@@ -42,8 +42,10 @@ export class NowPlaying implements SlashCommand {
 			}
 			
 			let queue = player.getQueue(interaction.guild!.id);
-			if (!queue || !queue.playing)
-				return interaction.reply('There is no queue');
+			if (!queue || !queue.playing){
+				embed.setDescription('There is no queue!');
+				return interaction.reply({embeds: [embed], ephemeral:true});
+			}
 			let track = queue.nowPlaying();
 			let trackString = `Now playing | **${track.title}**, by *${track.author}* (${track.duration})`;
 			embed.setDescription(trackString).setFooter({
