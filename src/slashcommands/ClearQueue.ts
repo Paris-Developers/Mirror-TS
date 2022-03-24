@@ -3,6 +3,7 @@ import {
 	CommandInteraction,
 	CacheType,
 	MessageEmbed,
+	GuildMember,
 } from 'discord.js';
 import { player } from '..';
 import { Bot } from '../Bot';
@@ -18,6 +19,16 @@ export class ClearQueue implements SlashCommand {
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			const embed = new MessageEmbed().setColor('BLUE');
+
+			let member = interaction.member as GuildMember;
+			let state = member.voice;
+			if (!state) {
+			}
+			if (!interaction.guild!.me?.voice) {
+			}
+			if (interaction.guild!.me?.voice.channel!.id != state.channel!.id) {
+			}
+
 			let queue = player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
 				embed.setDescription(
@@ -38,4 +49,5 @@ export class ClearQueue implements SlashCommand {
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
+	blockSilenced?: boolean | undefined = true;
 }

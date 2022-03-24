@@ -38,4 +38,5 @@ export class Shuffle implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean | undefined = true;
+	blockSilenced?: boolean | undefined = true;
 }

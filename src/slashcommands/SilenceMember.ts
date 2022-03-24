@@ -30,58 +30,54 @@ export class SilenceMember implements SlashCommand {
 	};
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-		let member = interaction.member as GuildMember;
-		if (!(interaction.channel instanceof TextChannel)) {
-			return interaction.reply('Command must be used in a server');
-		}
-		if (!member.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
-			return interaction.reply({
-				content:
-					'This command is only for people with Administrator permissions',
-				ephemeral: true,
-			});
-		}
-		let badUser = interaction.options.getUser('user');
-		if (badUser?.bot) {
-			return interaction.reply({
-				content: 'Bots cannot be silenced',
-				ephemeral: true,
-			});
-		}
-		let userArray = silencedUsers.ensure(interaction.guild!.id, []);
+		try{
+			let badUser = interaction.options.getUser('user');
+			if (badUser?.bot) {
+				return interaction.reply({
+					content: 'Bots cannot be silenced',
+					ephemeral: true,
+				});
+			}
+			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
+			//if the user is already silenced, we want to unsilence them
+			if (userArray.includes(badUser!.id)) {
+				let ptr = userArray.indexOf(badUser!.id);
+				userArray.splice(ptr);
+				silencedUsers.set(interaction.guild!.id, userArray);
+				return interaction.reply({
+					content: `Successfully unsilenced ${badUser}`,
+					ephemeral: true,
+				});
+			}
 
-		//if the user is already silenced, we want to unsilence them
-		if (userArray.includes(badUser!.id)) {
-			let ptr = userArray.indexOf(badUser!.id);
-			userArray.splice(ptr);
+			let badMember = interaction.guild!.members.cache.get(badUser!.id); //need to pull member object for .permissionsIn()
+			if (badMember!.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')) {
+				return interaction.reply({
+					content: 'Administrators cannot be silenced',
+					ephemeral: true,
+				});
+			}
+
+			if (userArray.length > 100) {
+				return interaction.reply({
+					content:
+						'Servers are limited to 100 members silenced. Please unsilence somemembers before silencing more.  If this is not possible please contact a developeer for more options',
+					ephemeral: true,
+				});
+			}
+			userArray.push(badUser?.id);
 			silencedUsers.set(interaction.guild!.id, userArray);
 			return interaction.reply({
-				content: `Successfully unsilenced ${badUser}`,
+				content: `Successfully silenced ${badUser}`,
 				ephemeral: true,
 			});
-		}
-
-		let badMember = interaction.guild!.members.cache.get(badUser!.id); //need to pull member object for .permissionsIn()
-		if (badMember!.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
+		} catch (err) {
+			bot.logger.error(interaction.channel!.id, this.name, err);
 			return interaction.reply({
-				content: 'Administrators cannot be silenced',
+				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
 			});
 		}
-
-		if (userArray.length > 100) {
-			return interaction.reply({
-				content:
-					'Servers are limited to 100 members silenced. Please unsilence somemembers before silencing more.  If this is not possible please contact a developeer for more options',
-				ephemeral: true,
-			});
-		}
-		userArray.push(badUser?.id);
-		silencedUsers.set(interaction.guild!.id, userArray);
-		return interaction.reply({
-			content: `Successfully silenced ${badUser}`,
-			ephemeral: true,
-		});
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined = true;
