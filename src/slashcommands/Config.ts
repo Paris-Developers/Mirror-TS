@@ -53,7 +53,7 @@ export class Config implements SlashCommand {
 			let managerArray = managerRoles.ensure(interaction.guild!.id, []);
 			let managerString = '';
 			if (managerArray.length == 0) {
-				managerString = 'Add Mirror Managers with `/managerroles`';
+				managerString = 'Add Mirror Managers with `/managerrole`';
 			} else {
 				for (let role of managerArray) {
 					let getRole = interaction.guild?.roles.cache.get(role);
