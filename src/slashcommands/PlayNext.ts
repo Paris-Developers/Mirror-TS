@@ -111,11 +111,12 @@ export class PlayNext implements SlashCommand {
 			}
 			interaction.editReply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
-			return interaction.reply({
-				content: 'Error detected, contact an admin to investigate.',
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
 			});
+			return;
 		}
 	}
 	guildRequired?: boolean | undefined = true;
