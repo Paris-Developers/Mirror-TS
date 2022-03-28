@@ -11,11 +11,11 @@ import { SlashCommand } from './SlashCommand';
 
 export class NowPlaying implements SlashCommand {
 	name: string = 'nowplaying';
-	description = '';
+	description = 'Get the current song';
 	options = [];
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
-		description: 'Get the current song',
+		description: this.description,
 	};
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {

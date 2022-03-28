@@ -14,7 +14,7 @@ import { Option, Subcommand } from './Option';
 
 export class Play implements SlashCommand {
 	name: string = 'play';
-	description = '';
+	description = 'Play a song in the voice channel.';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'query',
@@ -25,7 +25,7 @@ export class Play implements SlashCommand {
 	];
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
-		description: 'Play a song in the voice channel.',
+		description: this.description,
 	};
 	requiredPermissions: bigint[] = [];
 	async run(

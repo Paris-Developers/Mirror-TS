@@ -12,11 +12,11 @@ import { SlashCommand } from './SlashCommand';
 
 export class Queue implements SlashCommand {
 	name: string = 'queue';
-	description: string = '';
+	description: string = 'View the music queue';
 	options = [];
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
-		description: 'View the music queue',
+		description: this.description,
 	};
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {

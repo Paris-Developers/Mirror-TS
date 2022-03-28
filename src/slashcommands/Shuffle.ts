@@ -11,11 +11,11 @@ import { SlashCommand } from './SlashCommand';
 
 export class Shuffle implements SlashCommand {
 	name: string = 'shuffle';
-	description: string = '';
+	description: string = 'Shuffle the music queue';
 	options = [];
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
-		description: 'Shuffle the music queue',
+		description: this.description,
 	};
 	requiredPermissions: bigint[] = [];
 	async run(

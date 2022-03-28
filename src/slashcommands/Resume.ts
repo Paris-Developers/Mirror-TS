@@ -11,11 +11,11 @@ import { SlashCommand } from './SlashCommand';
 
 export class Resume implements SlashCommand {
 	name: string = 'resume';
-	description = '';
+	description = 'Pause the music player';
 	options = [];
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
-		description: 'Pause the music player',
+		description: this.description,
 	};
 	requiredPermissions: bigint[] = [];
 	async run(

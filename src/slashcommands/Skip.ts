@@ -12,11 +12,11 @@ import { SlashCommand } from './SlashCommand';
 
 export class Skip implements SlashCommand {
 	name: string = 'skip';
-	description = '';
+	description = 'Skip the current song in the queue';
 	options = [];
 	registerData: ApplicationCommandDataResolvable = {
 		name: this.name,
-		description: 'Skip the current song in the queue',
+		description: this.description,
 		options: [
 			{
 				name: 'number',
