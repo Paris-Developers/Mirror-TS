@@ -35,7 +35,7 @@ export class Shuffle implements SlashCommand {
 			}
 
 			//if mirror is not connected to voice
-			if (!interaction.guild!.me?.voice) {
+			if (!interaction.guild!.me?.voice.channel) {
 				embed.setDescription(
 					'Mirror is not connected to a voice channel, use `/join`'
 				);

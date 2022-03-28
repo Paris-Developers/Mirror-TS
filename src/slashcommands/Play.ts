@@ -47,7 +47,6 @@ export class Play implements SlashCommand {
 
 			//if mirror is not connected to voice
 			if (!interaction.guild!.me?.voice.channel) {
-				console.log('test');
 				const connection = joinVoiceChannel({
 					channelId: state.id!,
 					guildId: interaction.guildId!,
