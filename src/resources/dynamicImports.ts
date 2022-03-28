@@ -11,8 +11,8 @@ export async function importSlashCommands(bot: Bot) {
 	for (let file of files) {
 		// if it's not a javascript file, ignore it
 		if (!file.endsWith('.js')) continue;
-		// if it's the base class or the old class holder file, ignore it
-		if (file == 'SlashCommand.js' || file == 'SlashCommands.js') continue;
+		// if it's the base classes, ignore it
+		if (file == 'SlashCommand.js' || file == 'Option.js') continue;
 		// get all the exports from the file
 		let module = await import(`${__dirname}/../slashcommands/${file}`);
 		// make a new object using the exported class

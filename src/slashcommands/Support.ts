@@ -5,14 +5,13 @@ import {
 	Permissions,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export class Support implements SlashCommand {
 	name: string = 'support';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Join Mirrors public support server',
-	};
+	description: string = 'Join Mirrors public support server';
+	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
@@ -25,7 +24,7 @@ export class Support implements SlashCommand {
 			interaction.reply('discord.gg/uvdg2R5PAU');
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

@@ -17,9 +17,9 @@ export class Fortbush implements Keyword {
 		args: String[]
 	): Promise<void> {
 		try {
-			message.react(':FortBush:816549663812485151');
+			message.react(':FortBush:956572430711808090');
 		} catch (err) {
-			bot.logger.error(message.channel!.id, this.name, err);
+			bot.logger.commandError(message.channel!.id, this.name, err);
 			message.reply({
 				content: 'Error: contact a developer to investigate',
 			});

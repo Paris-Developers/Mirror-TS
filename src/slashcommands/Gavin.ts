@@ -7,9 +7,12 @@ import {
 	CommandInteraction,
 	Permissions,
 	MessageEmbed,
+	Options,
 } from 'discord.js';
+import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 //If you add choices to a slash command's options, they will be the only thing a user can select/input.
@@ -32,54 +35,37 @@ let gav_records = new Enmap({ name: 'gav_records' }); //named enmaps are persist
 //dirt whore
 export class Gavin implements SlashCommand {
 	name: string = 'gavin';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Lift data',
-		options: [
-			{
-				name: 'all',
-				description: 'print all of the lift data',
-				type: 1,
-				required: false,
-			},
-			{
-				name: 'lift',
-				description: "show a specific lift's data",
-				type: 1,
-				required: false,
-				options: [
-					{
-						name: 'lifttype',
-						type: 'STRING',
-						description: 'the lift to display',
-						required: true,
-						choices: liftChoices,
-					},
-				],
-			},
-			{
-				name: 'setlift',
-				description: "set a specific lift's data",
-				type: 1,
-				required: false,
-				options: [
-					{
-						name: 'lifttype',
-						type: 'STRING',
-						description: 'the lift to set',
-						required: true,
-						choices: liftChoices,
-					},
-					{
-						name: 'lift',
-						type: 'NUMBER',
-						description: 'the lift record',
-						required: true,
-					},
-				],
-			},
-		],
-	};
+	description: string = 'Lift data';
+	options: (Option | Subcommand)[] = [
+		new Subcommand('all', 'print all of the lift data'),
+		new Subcommand('lift', "show a specific lift's data", [
+			new Option(
+				'lifttype',
+				'the lift to display',
+				ApplicationCommandOptionTypes.STRING,
+				true,
+				'deadlift',
+				liftChoices
+			),
+		]),
+		new Subcommand('setlift', "set a specific lift's data", [
+			new Option(
+				'lifttype',
+				'the lift to set',
+				ApplicationCommandOptionTypes.STRING,
+				true,
+				'deadlift',
+				liftChoices
+			),
+			new Option(
+				'lift',
+				'the lift record',
+				ApplicationCommandOptionTypes.NUMBER,
+				true,
+				1
+			),
+		]),
+	];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
@@ -139,7 +125,7 @@ export class Gavin implements SlashCommand {
 			//slash commands make it pretty easy to validate user input before the command is actually run, so theoretically this shouldn't ever run either.
 			interaction.reply('Something screwed up. This should never happen.');
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

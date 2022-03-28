@@ -9,10 +9,8 @@ import { SlashCommand } from './SlashCommand';
 
 export class Github implements SlashCommand {
 	name: string = 'github';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'information about our github and user privacy',
-	};
+	description: string = 'information about our github and user privacy';
+	options = [];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
@@ -28,7 +26,7 @@ export class Github implements SlashCommand {
 			interaction.reply({ embeds: [embed] });
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

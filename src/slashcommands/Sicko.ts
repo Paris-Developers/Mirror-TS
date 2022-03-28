@@ -14,14 +14,13 @@ import {
 	Permissions,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export class Sicko implements SlashCommand {
 	name: string = 'sicko';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Have Mirror join your voice channel/but sicko mode',
-	};
+	description: string = 'Have Mirror join your voice channel/but sicko mode';
+	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
 	async run(
 		bot: Bot,
@@ -46,7 +45,7 @@ export class Sicko implements SlashCommand {
 			interaction.reply('reply lol');
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

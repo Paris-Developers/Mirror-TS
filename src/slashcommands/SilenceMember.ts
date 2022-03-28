@@ -9,28 +9,26 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export const silencedUsers = new Enmap('silencedUsers');
 
 export class SilenceMember implements SlashCommand {
 	name: string = 'silencemember';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description:
-			'[ADMIN ONLY] Silence a member from using Intros or Setting their birthday.',
-		options: [
-			{
-				name: 'user',
-				description: 'The user to silence/unsilence',
-				required: true,
-				type: ApplicationCommandOptionTypes.USER,
-			},
-		],
-	};
+	description: string =
+		'[ADMIN ONLY] Silence a member from using Intros or Setting their birthday.';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'user',
+			'The user to silence/unsilence',
+			ApplicationCommandOptionTypes.USER,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-		try{
+		try {
 			let badUser = interaction.options.getUser('user');
 			if (badUser?.bot) {
 				return interaction.reply({
@@ -51,7 +49,9 @@ export class SilenceMember implements SlashCommand {
 			}
 
 			let badMember = interaction.guild!.members.cache.get(badUser!.id); //need to pull member object for .permissionsIn()
-			if (badMember!.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')) {
+			if (
+				badMember!.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')
+			) {
 				return interaction.reply({
 					content: 'Administrators cannot be silenced',
 					ephemeral: true,
@@ -72,7 +72,7 @@ export class SilenceMember implements SlashCommand {
 				ephemeral: true,
 			});
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			return interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
