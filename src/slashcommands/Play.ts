@@ -129,4 +129,3 @@ export class Play implements SlashCommand {
 	managerRequired?: boolean | undefined;
 	blockSilenced?: boolean | undefined = true;
 }
-``;
