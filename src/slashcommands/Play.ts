@@ -11,6 +11,7 @@ import { SlashCommand } from './SlashCommand';
 import { player, playOptions } from '../index';
 import { QueryType } from 'discord-player';
 import { Option, Subcommand } from './Option';
+import { joinVoiceChannel } from '@discordjs/voice';
 
 export class Play implements SlashCommand {
 	name: string = 'play';
@@ -45,13 +46,14 @@ export class Play implements SlashCommand {
 			}
 
 			//if mirror is not connected to voice
-			if (!interaction.guild!.me?.voice) {
-				embed.setDescription(
-					'Mirror is not connected to a voice channel, use `/join`'
-				);
-				return interaction.reply({ embeds: [embed], ephemeral: true });
+			if (!interaction.guild!.me?.voice.channel) {
+				console.log('test');
+				const connection = joinVoiceChannel({
+					channelId: state.id!,
+					guildId: interaction.guildId!,
+					adapterCreator: interaction.guild!.voiceAdapterCreator,
+				});
 			}
-
 			//if the user is not connected to the correct voice, end
 			if (interaction.guild!.me?.voice.channel!.id != state.id) {
 				embed.setDescription(
