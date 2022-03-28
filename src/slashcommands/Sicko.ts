@@ -13,6 +13,7 @@ import {
 	GuildMember,
 	Permissions,
 } from 'discord.js';
+import { player } from '..';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
@@ -33,15 +34,20 @@ export class Sicko implements SlashCommand {
 				interaction.reply('you are not in a valid voice channel!');
 				return;
 			}
+			let queue = player.getQueue(interaction.guild!.id);
+			if (queue) {
+				interaction.reply('Cant go sicko while music is playing :sob:');
+				return;
+			}
 			const connection = joinVoiceChannel({
 				channelId: state.channelId!,
 				guildId: interaction.guildId!,
 				adapterCreator: interaction.guild!.voiceAdapterCreator,
 			});
-			let player = createAudioPlayer();
-			connection.subscribe(player);
+			let audio = createAudioPlayer();
+			connection.subscribe(audio);
 			const mirrormp3 = createAudioResource('./music/sicko.mp3');
-			player.play(mirrormp3);
+			audio.play(mirrormp3);
 			interaction.reply('reply lol');
 			return;
 		} catch (err) {
