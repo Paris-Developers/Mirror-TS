@@ -4,14 +4,18 @@ import {
 	MessageEmbed,
 	GuildMember,
 } from 'discord.js';
+import { player, playOptions } from '..';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
+import { QueryType } from 'discord-player';
 import { SlashCommand } from './SlashCommand';
 
 export class PlayNext implements SlashCommand {
 	name: string = 'playnext';
 	description: string = 'Add a song to the begining of the queue';
-	options: (Option | Subcommand)[] = [];
+	options: (Option | Subcommand)[] = [
+		new Option('query', 'The song to play next', 3, true),
+	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
@@ -21,7 +25,7 @@ export class PlayNext implements SlashCommand {
 			const embed = new MessageEmbed().setColor('BLUE');
 
 			let member = interaction.member as GuildMember;
-			let state = member.voice;
+			let state = member.voice.channel;
 
 			//if user is not connected
 			if (!state) {
@@ -38,7 +42,7 @@ export class PlayNext implements SlashCommand {
 			}
 
 			//if the user is not connected to the correct voice, end
-			if (interaction.guild!.me?.voice.channel!.id != state.channel!.id) {
+			if (interaction.guild!.me?.voice.channel!.id != state.id) {
 				embed.setDescription(
 					'Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call'
 				);
@@ -77,7 +81,7 @@ export class PlayNext implements SlashCommand {
 			}
 			embed
 				.setDescription(
-					`Loading Song: **${searchResult.tracks[0].title}** by, *${searchResult.tracks[0].author}*`
+					`Playing next: **${searchResult.tracks[0].title}** by, *${searchResult.tracks[0].author}*`
 				)
 				.setFooter({
 					text: `Requested by ${searchResult.tracks[0].requestedBy.tag}`,
@@ -85,20 +89,22 @@ export class PlayNext implements SlashCommand {
 				});
 			await interaction.editReply({ embeds: [embed] });
 
-			searchResult.playlist
-				? queue.addTracks(searchResult.tracks)
-				: queue.addTrack(searchResult.tracks[0]);
+			if (searchResult.playlist) {
+				queue.addTracks(searchResult.tracks.slice(1, -1));
+			}
+			queue.insert(searchResult.tracks[0], 0);
+
 			let track = searchResult.tracks[0];
 			if (!queue.playing) {
 				embed.setDescription(
-					`Playing first: **${track.title}**, by *${track.author}* (${track.duration})`
+					`Playing next: **${track.title}**, by *${track.author}* (${track.duration})`
 				);
 				await queue.play();
 			} else {
 				searchResult.playlist
 					? embed.setDescription('Playlist added to the queue!')
 					: embed.setDescription(
-							`**${track.title}**, by *${track.author}* (${track.duration}) added to the queue!`
+							`**${track.title}**, by *${track.author}* (${track.duration}) added to the **front** of the queue!`
 					  );
 			}
 			interaction.editReply({ embeds: [embed] });
