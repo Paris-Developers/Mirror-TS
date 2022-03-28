@@ -57,9 +57,9 @@ export class Queue implements SlashCommand {
 			let ptrString = '.';
 			for (let track of queue.tracks) {
 				ptrString = ptr.toString() + ') ';
-				if (track.title.length > 45) {
+				if (track.title.length > 42) {
 					titleString =
-						titleString + ptrString + track.title.slice(0, 43) + '...\n';
+						titleString + ptrString + track.title.slice(0, 40) + '...\n';
 				} else {
 					titleString = titleString + ptrString + track.title + '\n';
 				}
