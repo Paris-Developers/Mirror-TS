@@ -41,7 +41,7 @@ export class Queue implements SlashCommand {
 			}
 
 			//if the user is not connected to the correct voice, end
-			if (interaction.guild!.me?.voice.channel!.id != state.id) {
+			else if (interaction.guild!.me?.voice.channel!.id != state.id) {
 				embed.setDescription(
 					'Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call'
 				);
