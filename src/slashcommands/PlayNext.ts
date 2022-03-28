@@ -1,32 +1,17 @@
 import {
-	ApplicationCommandDataResolvable,
 	CommandInteraction,
 	CacheType,
 	MessageEmbed,
 	GuildMember,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
-import { SlashCommand } from './SlashCommand';
-import { player, playOptions } from '../index';
-import { QueryType } from 'discord-player';
 import { Option, Subcommand } from './Option';
+import { SlashCommand } from './SlashCommand';
 
-export class Play implements SlashCommand {
-	name: string = 'play';
-	description = 'Play a song in the voice channel.';
-	options: (Option | Subcommand)[] = [
-		new Option(
-			'query',
-			'The song or playlist you want to queue',
-			ApplicationCommandOptionTypes.STRING,
-			true
-		),
-	];
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: this.description,
-	};
+export class PlayNext implements SlashCommand {
+	name: string = 'playnext';
+	description: string = 'Add a song to the begining of the queue';
+	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
@@ -36,7 +21,7 @@ export class Play implements SlashCommand {
 			const embed = new MessageEmbed().setColor('BLUE');
 
 			let member = interaction.member as GuildMember;
-			let state = member.voice.channel;
+			let state = member.voice;
 
 			//if user is not connected
 			if (!state) {
@@ -53,7 +38,7 @@ export class Play implements SlashCommand {
 			}
 
 			//if the user is not connected to the correct voice, end
-			if (interaction.guild!.me?.voice.channel!.id != state.id) {
+			if (interaction.guild!.me?.voice.channel!.id != state.channel!.id) {
 				embed.setDescription(
 					'Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call'
 				);
