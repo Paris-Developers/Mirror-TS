@@ -25,6 +25,18 @@ export class Roll implements SlashCommand {
 		try {
 			const embed = new MessageEmbed().setColor('BLUE');
 			if (interaction.options.getString('roll')) {
+				if (interaction.options.getString('roll') == '1dbbq') {
+					if (Math.floor(Math.random() * 2 + 0.99) == 1) {
+						embed
+							.setDescription('Let there be barbeque :smiling_imp:')
+							.setImage(
+								'https://media2.giphy.com/media/xTiN0K9jW2rSQ6AB6U/giphy.gif'
+							);
+					} else {
+						embed.setDescription('No barbeque :sob:');
+					}
+					return interaction.reply({ embeds: [embed] });
+				}
 				let array = interaction.options.getString('roll')?.split('+');
 				let rollTotal = 0;
 				let rollString = '';
@@ -50,7 +62,7 @@ export class Roll implements SlashCommand {
 					.setDescription(rollString);
 				return interaction.reply({ embeds: [embed] });
 			}
-			return interaction.reply(Math.floor(Math.random() * 6 + 1).toString());
+			return interaction.reply(Math.floor(Math.random() * 6 + 0.99).toString());
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			return interaction.reply({
