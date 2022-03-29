@@ -6,6 +6,7 @@ export const guildTimers = new Enmap('guildTimers');
 
 export async function scheduleTimer(guild: string, bot:Bot, timer: Object): Promise<void> {
     try{
+        //tets
         return console.log(timer);
         let infoString = guildTimers.ensure(guild, []);
         if(infoString.length == 0){
