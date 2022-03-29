@@ -2,9 +2,10 @@ import { ApplicationCommandDataResolvable, CommandInteraction, CacheType, Messag
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { Bot } from "../Bot";
 import { weatherEmbed } from "../resources/embed constructors/weatherEmbed";
-import { scheduleTimer } from "../resources/scheduleTImer";
+import { scheduleTimer } from "../resources/scheduleTimer";
 import { SlashCommand } from "./SlashCommand";
-import { guildTimers } from "../resources/scheduleTImer";
+import { guildTimers } from "../resources/scheduleTimer";
+import { Option, Subcommand } from "./Option";
 
 const messageOptions = [
     { name: 'Weather', value: 'weather',},
@@ -28,51 +29,58 @@ const timezones = [
 
 
 export class CreateTimer implements SlashCommand{
-    name: string = 'createtimer';
-    registerData: ApplicationCommandDataResolvable = {
-        name: this.name,
-        description: 'Create a schedule message for your server',
-        options: [{
-            name: 'messageoptions',
-            description: 'The type of message you would like to put on a timer',
-            required: true,
-            type: ApplicationCommandOptionTypes.STRING,
-            choices: messageOptions,
-        },{
-            name: 'query',
-            description: 'The content (if needed) for your bot to search for',
-            required: false,
-            type: ApplicationCommandOptionTypes.STRING,
-        },{
-            name: 'scheduleoptions',
-            description: 'How frequently you want to recieve the timers message',
-            required: true,
-            type: ApplicationCommandOptionTypes.STRING,
-            choices: scheduleOptions
-        },{
-            name: 'channel',
-            description: 'The Channel you would like the timer to be sent in',
-            required: true,
-            type: ApplicationCommandOptionTypes.CHANNEL
-        },{
-            name: 'hour',
-            description:
-                'The hour you want to send Birthday messages in local time, military format (0-23)',
-            type: 'INTEGER',
-            required: true,
-        },{
-            name: 'minute',
-            description: 'The minute you want to send Birthday messages',
-            type: 'INTEGER',
-            required: true,
-        },{
-            name: 'timezone',
-            description: 'Your local timezone',
-            type: 'STRING',
-            required: true,
-            choices: timezones,
-        }],
-    }
+    name: 'createtimer';
+    description: string = 'Schedule a timer';
+    options: (Option | Subcommand)[] = [
+        new Option(
+            'messageoptions',
+            'The type of message you would like to put on a timer',
+            ApplicationCommandOptionTypes.STRING,
+            true,
+            false,
+            messageOptions
+        ),
+        new Option(
+            'query',
+            'The content (if needed) for your bot to search for',
+            ApplicationCommandOptionTypes.STRING,
+            false,
+        ),
+        new Option(
+            'scheduleoptions',
+            'How frequently you want to recieve the timers message',
+            ApplicationCommandOptionTypes.STRING,
+            true,
+            false,
+            scheduleOptions
+        ),
+        new Option(
+            'channel',
+            'The Channel you would like the timer to be sent in',
+            ApplicationCommandOptionTypes.STRING,
+            true,
+        ),
+        new Option(
+            'hour',
+            'The hour you want to send your timer in local, military time (0-23)',
+            ApplicationCommandOptionTypes.INTEGER,
+            true,
+        ),
+        new Option(
+            'minute',
+            'The minute you want your timer to send',
+            ApplicationCommandOptionTypes.INTEGER,
+            true,
+        ),
+        new Option(
+            'timezone',
+            'Your local timezone',
+            ApplicationCommandOptionTypes.STRING,
+            true,
+            false,
+            timezones,
+        )
+    ]
     requiredPermissions: bigint[] = [];
     async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
         try{
