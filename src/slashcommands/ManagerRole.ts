@@ -10,24 +10,22 @@ import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export const managerRoles = new Enmap('managerRoles');
 
 export class ManagerRole implements SlashCommand {
 	name: string = 'managerrole';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: '[MANAGER] Add or remove a role as a manager',
-		options: [
-			{
-				name: 'role',
-				description: 'The role you want to add or remove as a manager',
-				type: ApplicationCommandOptionTypes.ROLE,
-				required: true,
-			},
-		],
-	};
+	description: string = '[MANAGER] Add or remove a role as a manager';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'role',
+			'The role you want to add or remove as a manager',
+			ApplicationCommandOptionTypes.ROLE,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,

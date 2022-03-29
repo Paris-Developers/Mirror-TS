@@ -7,6 +7,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { Option } from './Option';
 import { silencedUsers } from './SilenceMember';
 import { SlashCommand } from './SlashCommand';
 
@@ -25,6 +26,22 @@ const monthCode = {
 	november: 11,
 	december: 12,
 } as monthIndex;
+
+const dayCap = {
+	january: 31,
+	february: 29,
+	march: 31,
+	april: 30,
+	may: 31,
+	june: 30,
+	july: 31,
+	august: 31,
+	september: 30,
+	october: 31,
+	november: 30,
+	december: 31,
+} as monthIndex;
+
 const months = [
 	{
 		name: 'January',
@@ -80,26 +97,24 @@ export let bdayDates = new Enmap({ name: 'bdayDates' });
 
 export class Birthday implements SlashCommand {
 	name: string = 'birthday';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description:
-			'Set your birthday to recieve a Birthday message on your birthday!',
-		options: [
-			{
-				name: 'month',
-				description: 'Your birth month',
-				type: ApplicationCommandOptionTypes.STRING,
-				required: true,
-				choices: months,
-			},
-			{
-				name: 'day',
-				description: 'The date of your birthday',
-				type: ApplicationCommandOptionTypes.INTEGER,
-				required: true,
-			},
-		],
-	};
+	description =
+		'Set your birthday to recieve a Birthday message on your birthday!';
+	options = [
+		new Option(
+			'month',
+			'Your Birth Month',
+			ApplicationCommandOptionTypes.STRING,
+			true,
+			'may',
+			months
+		),
+		new Option(
+			'day',
+			'The date of your birthday',
+			ApplicationCommandOptionTypes.INTEGER,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
@@ -110,6 +125,17 @@ export class Birthday implements SlashCommand {
 			if (userArray.includes(interaction.user.id)) {
 				return interaction.reply({
 					content: 'Silenced users cannot use this command',
+					ephemeral: true,
+				});
+			}
+
+			if (
+				interaction.options.getInteger('day')! >
+					dayCap[interaction.options.getString('month')!] ||
+				interaction.options.getInteger('day')! < 1
+			) {
+				return interaction.reply({
+					content: 'Please enter a valid date',
 					ephemeral: true,
 				});
 			}
@@ -134,7 +160,7 @@ export class Birthday implements SlashCommand {
 			interaction.reply({ embeds: [embed] });
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

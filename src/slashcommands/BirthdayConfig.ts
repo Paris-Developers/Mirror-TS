@@ -10,6 +10,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
+import { Option } from './Option';
 import { birthdayTimer } from '../resources/birthdayTimer';
 import Enmap from 'enmap';
 
@@ -38,39 +39,36 @@ export let bdayTimes = new Enmap({ name: 'bdayTimes' });
 
 export class BirthdayConfig implements SlashCommand {
 	name: string = 'birthdayconfig';
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description:
-			'[MANAGER] Configure the time and channel to send the birthday messages',
-		options: [
-			{
-				name: 'channel',
-				description: 'Set the channel where the birthday messages are sent to',
-				required: true,
-				type: ApplicationCommandOptionTypes.CHANNEL,
-			},
-			{
-				name: 'hour',
-				description:
-					'The hour you want to send Birthday messages in local time, military format (0-23)',
-				type: 'INTEGER',
-				required: true,
-			},
-			{
-				name: 'minute',
-				description: 'The minute you want to send Birthday messages',
-				type: 'INTEGER',
-				required: true,
-			},
-			{
-				name: 'timezone',
-				description: 'Your local timezone',
-				type: 'STRING',
-				required: true,
-				choices: timezones,
-			},
-		],
-	};
+	description =
+		'[MANAGER] Configure the time and channel to send the birthday messages';
+	options = [
+		new Option(
+			'channel',
+			'Set the channel where the birthday messages are sent to',
+			ApplicationCommandOptionTypes.CHANNEL,
+			true
+		),
+		new Option(
+			'hour',
+			'The hour you want to send Birthday messages in local time, military format (0-23)',
+			ApplicationCommandOptionTypes.NUMBER,
+			true
+		),
+		new Option(
+			'minute',
+			'The minute you want to send Birthday messages',
+			ApplicationCommandOptionTypes.NUMBER,
+			true
+		),
+		new Option(
+			'timezone',
+			'Your local timezone',
+			ApplicationCommandOptionTypes.STRING,
+			true,
+			'cst',
+			timezones
+		),
+	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
@@ -161,7 +159,7 @@ export class BirthdayConfig implements SlashCommand {
 			interaction.reply({ embeds: [embed] });
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

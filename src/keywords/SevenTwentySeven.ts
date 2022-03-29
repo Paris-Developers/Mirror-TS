@@ -26,7 +26,7 @@ export class SevenTwentySeven implements Keyword {
 				.setTitle('**__WHEN YOU FUCKING SEE IT__**');
 			message.channel.send({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.error(message.channel!.id, this.name, err);
+			bot.logger.commandError(message.channel!.id, this.name, err);
 			message.reply({
 				content: 'Error: contact a developer to investigate',
 			});

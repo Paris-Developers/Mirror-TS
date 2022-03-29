@@ -4,11 +4,13 @@ import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
 } from 'discord.js';
+import { Option, Subcommand } from './Option';
 
 export interface SlashCommand {
 	//name of the slash command as discord will register it. Must be all lowercase.
 	name: string;
-	registerData: ApplicationCommandDataResolvable;
+	description: string;
+	options: Array<Option | Subcommand>;
 	//an array of Permissions.FLAGS
 	requiredPermissions: Array<bigint>;
 	//function that will run on command execution
@@ -17,4 +19,6 @@ export interface SlashCommand {
 	guildRequired?: boolean;
 	//if the command needs to be run by a manager or admin
 	managerRequired?: boolean;
+	//if the command blocks silenced users/roles set true
+	blockSilenced?: boolean;
 }

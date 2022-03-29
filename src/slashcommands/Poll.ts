@@ -2,16 +2,16 @@
 //Returns a custom in depth poll
 import {
 	MessageEmbed,
-	ReactionCollector,
 	Message,
 	Permissions,
 	CacheType,
-	ChatInputApplicationCommandData,
 	CommandInteraction,
 	User,
 	MessageReaction,
 } from 'discord.js';
+import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 const progBar = [
@@ -44,84 +44,27 @@ const emoteIndex: index = {
 
 export class Poll implements SlashCommand {
 	name: string = 'poll';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Create a poll with up to 10 options',
-		options: [
-			{
-				name: 'title',
-				type: 'STRING',
-				description: 'Set the poll title',
-				required: true,
-			},
-			{
-				name: 'time',
-				type: 'INTEGER',
-				description: 'How many minutes you want the poll open, max: 3600',
-				required: true,
-			},
-			{
-				name: 'arguement1',
-				type: 'STRING',
-				description: 'first poll option',
-				required: true,
-			},
-			{
-				name: 'arguement2',
-				type: 'STRING',
-				description: 'second poll option',
-				required: true,
-			},
-			{
-				name: 'arguement3',
-				type: 'STRING',
-				description: 'third poll option',
-				required: false,
-			},
-			{
-				name: 'arguement4',
-				type: 'STRING',
-				description: 'fourth poll option',
-				required: false,
-			},
-			{
-				name: 'arguement5',
-				type: 'STRING',
-				description: 'fifth poll option',
-				required: false,
-			},
-			{
-				name: 'arguement6',
-				type: 'STRING',
-				description: 'sixth poll option',
-				required: false,
-			},
-			{
-				name: 'arguement7',
-				type: 'STRING',
-				description: 'seventh poll option',
-				required: false,
-			},
-			{
-				name: 'arguement8',
-				type: 'STRING',
-				description: 'eigth poll option',
-				required: false,
-			},
-			{
-				name: 'arguement9',
-				type: 'STRING',
-				description: 'ninth poll option',
-				required: false,
-			},
-			{
-				name: 'arguement10',
-				type: 'STRING',
-				description: 'tenth poll option',
-				required: false,
-			},
-		],
-	};
+	description: string = 'Create a poll with up to 10 options';
+	//I'm not writing the applicationcommandoptiontype property every time. STRING = 3
+	options: (Option | Subcommand)[] = [
+		new Option('title', 'Set the poll title', 3, true),
+		new Option(
+			'time',
+			'How many minutes you want the poll open',
+			ApplicationCommandOptionTypes.INTEGER,
+			true
+		),
+		new Option('argument1', 'first poll option', 3, true),
+		new Option('argument2', 'second poll option', 3, true),
+		new Option('argument3', 'third poll option', 3, false),
+		new Option('argument4', 'fourth poll option', 3, false),
+		new Option('argument5', 'fifth poll option', 3, false),
+		new Option('argument6', 'sixth poll option', 3, false),
+		new Option('argument7', 'seventh poll option', 3, false),
+		new Option('argument8', 'eigth poll option', 3, false),
+		new Option('argument9', 'ninth poll option', 3, false),
+		new Option('argument10', 'tenth poll option', 3, false),
+	];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.MANAGE_MESSAGES,
@@ -138,7 +81,7 @@ export class Poll implements SlashCommand {
 				return interaction.reply({content: 'Please enter a positive minute below 3600', ephemeral: true})
 			}
 			let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
-			//TODO: error test for empty arguements
+			//TODO: error test for empty arguments
 
 			const embed = new MessageEmbed()
 				.setColor('#FFFFFF')
@@ -179,7 +122,7 @@ export class Poll implements SlashCommand {
 				fetchReply: true,
 			})) as Message;
 
-			//react to the interaction for each arguement
+			//react to the interaction for each argument
 			for (let arg in options) {
 				await message.react(emoteKeys[arg]);
 			}
@@ -240,7 +183,7 @@ export class Poll implements SlashCommand {
 				);
 			});
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

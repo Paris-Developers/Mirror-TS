@@ -11,21 +11,20 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import fetch from 'node-fetch';
+import { Option, Subcommand } from './Option';
+import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 
 export class News implements SlashCommand {
 	name: string = 'news';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Current news',
-		options: [
-			{
-				name: 'query',
-				type: 'STRING',
-				description: 'headlines to query, space separated',
-				required: true,
-			},
-		],
-	};
+	description: string = 'Current news';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'query',
+			'headling to query, space separated',
+			ApplicationCommandOptionTypes.STRING,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
@@ -66,7 +65,7 @@ export class News implements SlashCommand {
 			embed.setThumbnail(jsonData.articles[0].urlToImage);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

@@ -9,14 +9,13 @@ import {
 } from 'discord.js';
 import fetch from 'node-fetch';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export class Kawaii implements SlashCommand {
 	name: string = 'kawaii';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Get a cute catgirl',
-	};
+	description: string = 'Get a cute catgirl';
+	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
@@ -32,7 +31,7 @@ export class Kawaii implements SlashCommand {
 			let embed = new MessageEmbed().setColor('#0071b6').setImage(jsonData.url);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

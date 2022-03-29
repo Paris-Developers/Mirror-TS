@@ -17,7 +17,7 @@ export class Cringe implements MessageCommand {
 			message.reply('🕴️');
 			return;
 		} catch (err) {
-			bot.logger.error(message.channel!.id, this.name, err);
+			bot.logger.commandError(message.channel!.id, this.name, err);
 			message.reply({
 				content: 'Error: contact a developer to investigate',
 			});
