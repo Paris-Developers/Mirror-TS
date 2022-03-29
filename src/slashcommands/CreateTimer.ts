@@ -33,6 +33,16 @@ const timezones = [
 	{ name: 'MST', value: 'mst' },
 	{ name: 'PST', value: 'pst' },
 ];
+type timeIndex = { [index: string]: number };
+const timezoneCode = {
+	eet: 8,
+	cet: 7,
+	gmt: 6,
+	est: 1,
+	cst: 0,
+	mst: -1,
+	pst: -2,
+} as timeIndex;
 
 export class CreateTimer implements SlashCommand {
 	name: string = 'createtimer';
@@ -123,7 +133,10 @@ export class CreateTimer implements SlashCommand {
 			//TODO: Check if channel is a text channel
 
 			let scheduleOptions = interaction.options.getString('scheduleoptions');
-			let timezone = 'timezone';
+
+			let timezone = interaction.options.getString('timezone');
+			let tzChange = timezoneCode[timezone!];
+			let cst = hour + tzChange;
 
 			//TODO handle the specific syntax for the timer they are requesting
 			//let embed: MessageEmbed;
@@ -159,6 +172,7 @@ export class CreateTimer implements SlashCommand {
 				time: 20000,
 				dispose: true,
 			});
+			var responded = false;
 			collector.on('collect', async (reaction: MessageReaction, user: User) => {
 				if (reaction.emoji.name == '✅') {
 					const timer = {
@@ -166,17 +180,24 @@ export class CreateTimer implements SlashCommand {
 						hour: hour,
 						dow: scheduleOptions,
 						timezone: timezone,
+						channel: channel,
 						type: interaction.options.getString('messageOptions'),
 						query: query,
 					} as Object;
 					guildTimers.set(interaction.guild!.id, guildArray);
 					await scheduleTimer(interaction.guild!.id, bot, timer);
-					embed.setFooter({ text: 'successfully scheduled your timer!' });
+					interaction.channel?.send(
+						`Successfully scheduled your ${interaction.options.getString(
+							'messageOptions'
+						)} timer to send in ${channel} at \`${hour}:${minute}\` ${timezone}`
+					);
 					interaction.editReply({ embeds: [embed] });
+					responded = true;
 					collector.stop();
 				}
 			});
 			collector.on('end', () => {
+				if (responded) return;
 				interaction.channel?.send('You did not respond in time');
 			});
 
