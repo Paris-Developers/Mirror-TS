@@ -29,7 +29,7 @@ const timezones = [
 
 
 export class CreateTimer implements SlashCommand{
-    name: 'createtimer';
+    name: string = 'createtimer';
     description: string = 'Schedule a timer';
     options: (Option | Subcommand)[] = [
         new Option(
@@ -39,12 +39,6 @@ export class CreateTimer implements SlashCommand{
             true,
             false,
             messageOptions
-        ),
-        new Option(
-            'query',
-            'The content (if needed) for your bot to search for',
-            ApplicationCommandOptionTypes.STRING,
-            false,
         ),
         new Option(
             'scheduleoptions',
@@ -79,7 +73,13 @@ export class CreateTimer implements SlashCommand{
             true,
             false,
             timezones,
-        )
+        ),
+        new Option(
+            'query',
+            'The content (if needed) for your bot to search for',
+            ApplicationCommandOptionTypes.STRING,
+            false,
+        ),
     ]
     requiredPermissions: bigint[] = [];
     async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
