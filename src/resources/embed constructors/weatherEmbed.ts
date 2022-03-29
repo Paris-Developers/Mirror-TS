@@ -1,7 +1,8 @@
 import { DiscordAPIError, MessageEmbed } from "discord.js";
 import { find } from 'geo-tz';
-import config from '../../../config.json'
-import { Bot } from '../../Bot'
+import config from '../../../config.json';
+import { Bot } from '../../Bot';
+import fetch from 'node-fetch';
 
 //Here is an example embed constructor.It would simplify things if we passed
 //an interaction but because we are potentially using these for timers we cannot.
@@ -42,6 +43,7 @@ const weatherEmoji = {
 
 export async function weatherEmbed(bot: Bot, query: string): Promise<MessageEmbed>{
     try{
+        bot.logger.info('test 1');
         //if it encounters an error it will run the code under the catch function
         //Pulls data from the API and stores as a JSON object
         let jsonData;
@@ -49,6 +51,7 @@ export async function weatherEmbed(bot: Bot, query: string): Promise<MessageEmbe
             `http://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${config.weather_token}`
         );
         jsonData = await res.json();
+        bot.logger.info('test 2 for real');
         if (jsonData.cod == '404') {
             const embed = new MessageEmbed()
                 .setColor('#FFFFFF')
@@ -100,9 +103,11 @@ export async function weatherEmbed(bot: Bot, query: string): Promise<MessageEmbe
                 ' ';
         }
         //creates message embed and edits modifiers
+        bot.logger.info('test 2');
         const embed = new MessageEmbed()
             .setColor('#FFFFFF')
             .setTitle(`**Current Weather in ${str}**`)
+            .setDescription('test')
             .addFields(
                 //adds multiple embed fields simultaneously
                 {
@@ -123,9 +128,10 @@ export async function weatherEmbed(bot: Bot, query: string): Promise<MessageEmbe
                 { name: 'Humidity:', value: `${humidity}`, inline: true }
             )
             .setTimestamp();
-            return embed;
+        bot.logger.info('test 3');
+        return embed;
     } catch (err){
-        bot.logger.error(undefined, "weatherEmbed", err)
+        bot.logger.commandError('testing', "weatherEmbed", err)
         const embed = new MessageEmbed()
             .setDescription("Error contact a developer to investigate");
         return embed;

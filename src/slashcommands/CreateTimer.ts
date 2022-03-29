@@ -51,7 +51,7 @@ export class CreateTimer implements SlashCommand{
         new Option(
             'channel',
             'The Channel you would like the timer to be sent in',
-            ApplicationCommandOptionTypes.STRING,
+            ApplicationCommandOptionTypes.CHANNEL,
             true,
         ),
         new Option(
@@ -110,22 +110,26 @@ export class CreateTimer implements SlashCommand{
             let timezone = 'timezone';
 
             //TODO handle the specific syntax for the timer they are requesting
+            //let embed: MessageEmbed;
             var embed: MessageEmbed;
-            if(interaction.options.getString('messageOptions')=='weather'){
+            if(interaction.options.getString('messageoptions')=='weather'){
                 try{
-                    embed = await weatherEmbed(bot,query) as MessageEmbed;
+                    console.log('test?');
+                    embed = await weatherEmbed(bot,query);
+                    console.log(embed.title);
                 } catch (err){
                     interaction.reply('We has a problem constructing your message, try again');
                     bot.logger.error(interaction.channel?.id, this.name,err);
                     return;
                 }
             }
+            console.log(embed!.title);
             let response = await interaction.reply({
-                content:"Here is your timers content, react with :regional_indicator_y: if you want to continue to schedule this timer, and :regional_indicator_x: if not", 
+                content:"Here is your timers content, react with ✅ if you want to continue to schedule this timer, and ❌ if not", 
                 embeds: [embed!],
                 fetchReply:true}) as Message;
-            await response.react(':regional_indicator_y:');
-            await response.react(':regional_indicator_n:');
+            await response.react('✅');
+            await response.react('❌');
             const filter = (reaction: MessageReaction, user: User) => {
                 if(user.id != interaction.user.id) return false;
                 return !user.bot;
@@ -136,7 +140,7 @@ export class CreateTimer implements SlashCommand{
                 dispose: true,
             });
             collector.on('collect', async (reaction: MessageReaction, user: User) => {
-                if(reaction.emoji.name == 'regional_indicator_y:'){
+                if(reaction.emoji.name == '✅'){
                     const timer ={
                         "min":minute,
                         "hour":hour,
@@ -148,8 +152,13 @@ export class CreateTimer implements SlashCommand{
                     guildTimers.set(interaction.guild!.id, guildArray);
                     await scheduleTimer(interaction.guild!.id, bot, timer);
                     embed.setFooter({text:'successfully scheduled your timer!'});
+                    interaction.editReply({embeds:[embed]});
+                    collector.stop();
                 }
-            })
+            });
+            collector.on('end', () => {
+                interaction.channel?.send('You did not respond in time')
+            });
             
             
             //TODO show them an example embed in the current channel,
@@ -165,8 +174,12 @@ export class CreateTimer implements SlashCommand{
             //TODO update config and create a way to delete timers, with a new function.
             return;
         } catch (err){
-            //TODO: update this
-            return interaction.reply('test');
+            bot.logger.commandError(interaction.channel!.id, this.name, err);
+            interaction.reply({
+                content: 'Error: contact a developer to investigate',
+                ephemeral: true,
+            });
+            return;
         }
     }
     guildRequired?: boolean | undefined = true;
