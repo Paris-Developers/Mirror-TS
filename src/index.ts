@@ -30,23 +30,23 @@ export const playOptions: PlayerOptions = {
 export const player = new Player(bot.client);
 
 player.on('botDisconnect', (queue) => {
-	console.log('test');
+	queue.destroy();
 	player.deleteQueue(queue.guild);
 });
 
 player.on('queueEnd', (queue) => {
-	console.log('test');
+	queue.destroy;
 	player.deleteQueue(queue.guild);
 });
 
 player.on('channelEmpty', (queue) => {
-	console.log('test');
+	queue.destroy();
 	player.deleteQueue(queue.guild);
 });
 
 player.on('connectionError', (queue, error) => {
+	queue.destroy();
 	player.deleteQueue(queue.guild);
-	console.log('test');
 	bot.logger.info(
 		`[${queue.guild.name}] Error emitted from the queue: ${error.message}`
 	);
