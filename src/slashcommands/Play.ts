@@ -24,10 +24,6 @@ export class Play implements SlashCommand {
 			true
 		),
 	];
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: this.description,
-	};
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,

@@ -13,10 +13,6 @@ export class Pause implements SlashCommand {
 	name: string = 'pause';
 	description: string = 'Pause the music player';
 	options = [];
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: this.description,
-	};
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,

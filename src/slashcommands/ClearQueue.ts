@@ -13,10 +13,6 @@ export class ClearQueue implements SlashCommand {
 	name: string = 'clearqueue';
 	description = 'Clear the music queue.';
 	options = [];
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: this.description,
-	};
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {

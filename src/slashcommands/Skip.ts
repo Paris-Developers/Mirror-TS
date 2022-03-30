@@ -9,23 +9,19 @@ import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { player } from '..';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
+import { Option } from './Option';
 
 export class Skip implements SlashCommand {
 	name: string = 'skip';
 	description = 'Skip the current song in the queue';
-	options = [];
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: this.description,
-		options: [
-			{
-				name: 'number',
-				description: 'How many tracks you want to skip in the queue',
-				type: ApplicationCommandOptionTypes.INTEGER,
-				required: false,
-			},
-		],
-	};
+	options = [
+		new Option(
+			'number',
+			'How many tracks you want to skip in the queue',
+			ApplicationCommandOptionTypes.INTEGER,
+			false
+		)
+	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,

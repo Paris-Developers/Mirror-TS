@@ -14,10 +14,6 @@ export class Queue implements SlashCommand {
 	name: string = 'queue';
 	description: string = 'View the music queue';
 	options = [];
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: this.description,
-	};
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {

@@ -13,10 +13,6 @@ export class Resume implements SlashCommand {
 	name: string = 'resume';
 	description = 'Pause the music player';
 	options = [];
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: this.description,
-	};
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,

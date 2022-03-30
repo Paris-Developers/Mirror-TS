@@ -13,10 +13,6 @@ export class Shuffle implements SlashCommand {
 	name: string = 'shuffle';
 	description: string = 'Shuffle the music queue';
 	options = [];
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: this.description,
-	};
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,

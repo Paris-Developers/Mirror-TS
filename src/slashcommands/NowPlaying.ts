@@ -13,10 +13,6 @@ export class NowPlaying implements SlashCommand {
 	name: string = 'nowplaying';
 	description = 'Get the current song';
 	options = [];
-	registerData: ApplicationCommandDataResolvable = {
-		name: this.name,
-		description: this.description,
-	};
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
