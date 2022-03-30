@@ -12,17 +12,19 @@ import { Bot } from "../Bot";
 import { SlashCommand } from "./SlashCommand";
 import fetch from "node-fetch";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { Subcommand, Option } from "./Option";
 
 export class Tickle implements SlashCommand {
     name: string = 'tickle';
-    registerData: ApplicationCommandDataResolvable = {
-        name: this.name,
-        description: 'Get tickled',
-        options: [{name: 'user',
-        description: 'Tickle a user',
-        type: ApplicationCommandOptionTypes.USER,
-        required: false}]
-    };
+    description = 'Get tickled';
+    options: (Option | Subcommand)[] = [   
+        new Option(
+            'user',
+            'The user to tickle',
+            ApplicationCommandOptionTypes.USER,
+            false
+        ),
+    ];
     requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
@@ -30,6 +32,9 @@ export class Tickle implements SlashCommand {
     async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
         //throw new Error("Method not implemented.");
         //interaction.reply('Test');
+        try {
+            
+
 
         let res = await fetch(`https://nekos.best/api/v1/tickle`);
         let jsonData = await res.json();
@@ -40,9 +45,13 @@ export class Tickle implements SlashCommand {
         }
         
         interaction.reply({embeds: [tickleEmbed] });
-        
-
-
+            } catch (err) {
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
+			return interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
+			    });
+            }
     }
     /*
     guildRequired?: boolean | undefined;
