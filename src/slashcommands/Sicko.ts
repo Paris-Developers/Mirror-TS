@@ -13,7 +13,6 @@ import {
 	GuildMember,
 	Permissions,
 } from 'discord.js';
-import { player } from '..';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
@@ -34,7 +33,7 @@ export class Sicko implements SlashCommand {
 				interaction.reply('you are not in a valid voice channel!');
 				return;
 			}
-			let queue = player.getQueue(interaction.guild!.id);
+			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (queue) {
 				interaction.reply('Cant go sicko while music is playing :sob:');
 				return;

@@ -2,7 +2,6 @@ import { CommandInteraction, CacheType } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
-import { player } from '..';
 
 export class DestroyQueue implements SlashCommand {
 	name: string = 'destroyqueue';
@@ -11,7 +10,7 @@ export class DestroyQueue implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
-			let queue = player.getQueue(interaction.guild!.id);
+			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (queue) {
 				queue.destroy();
 			}
