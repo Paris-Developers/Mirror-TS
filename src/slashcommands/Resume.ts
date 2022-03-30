@@ -5,7 +5,6 @@ import {
 	MessageEmbed,
 	GuildMember,
 } from 'discord.js';
-import { player } from '..';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 
@@ -46,7 +45,7 @@ export class Resume implements SlashCommand {
 				return interaction.reply({ embeds: [embed], ephemeral: true });
 			}
 
-			let queue = player.getQueue(interaction.guild!.id);
+			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
 				embed.setDescription('There is no music playing!');
 				return interaction.reply({ embeds: [embed], ephemeral: true });

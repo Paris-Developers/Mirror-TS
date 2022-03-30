@@ -8,7 +8,6 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
-import { player, playOptions } from '../index';
 import { QueryType } from 'discord-player';
 import { Option, Subcommand } from './Option';
 import { joinVoiceChannel } from '@discordjs/voice';
@@ -60,7 +59,7 @@ export class Play implements SlashCommand {
 			await interaction.deferReply();
 			const guild = bot.client.guilds.cache.get(interaction.guild!.id);
 			const query = interaction.options.getString('query')!;
-			const searchResult = await player
+			const searchResult = await bot.player
 				.search(query, {
 					requestedBy: interaction.user,
 					searchEngine: QueryType.AUTO,
@@ -69,13 +68,13 @@ export class Play implements SlashCommand {
 			if (!searchResult || !searchResult.tracks.length)
 				return void interaction.editReply('no results were found');
 
-			const queue = await player.createQueue(guild!, playOptions);
+			const queue = await bot.player.createQueue(guild!, bot.player.playOptions);
 
 			await guild?.members.fetch(interaction.user.id);
 			try {
 				if (!queue.connection) await queue.connect(member?.voice.channel!);
 			} catch {
-				void player.deleteQueue(guild!.id);
+				void bot.player.deleteQueue(guild!.id);
 				return void interaction.editReply('Could not join your voice channel');
 			}
 

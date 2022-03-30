@@ -6,7 +6,6 @@ import {
 	MessageEmbed,
 	GuildMember,
 } from 'discord.js';
-import { player } from '..';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 
@@ -43,7 +42,7 @@ export class Queue implements SlashCommand {
 				);
 				return interaction.reply({ embeds: [embed], ephemeral: true });
 			}
-			let queue = player.getQueue(interaction.guild!.id);
+			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing || queue.tracks.length == 0)
 				return interaction.reply('There is no queue');
 			let ptr = 1;

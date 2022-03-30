@@ -6,7 +6,6 @@ import {
 	GuildMember,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
-import { player } from '..';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
@@ -55,7 +54,7 @@ export class Skip implements SlashCommand {
 				return interaction.reply({ embeds: [embed], ephemeral: true });
 			}
 
-			let queue = player.getQueue(interaction.guild!.id);
+			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
 				embed.setDescription('There is no music playing!');
 				return interaction.reply({ embeds: [embed], ephemeral: true });
