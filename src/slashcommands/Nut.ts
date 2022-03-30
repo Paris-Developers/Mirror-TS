@@ -1,4 +1,4 @@
-import { CommandInteraction, CacheType, MessageEmbed } from 'discord.js';
+import { CommandInteraction, CacheType, MessageEmbed, User } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
@@ -23,7 +23,13 @@ export class Nut implements SlashCommand {
 				'change',
 				'how many nuts to add',
 				ApplicationCommandOptionTypes.INTEGER,
-				true
+				false
+			),
+			new Option(
+				'user',
+				'whos jar to add nuts to',
+				ApplicationCommandOptionTypes.USER,
+				false
 			),
 		]),
 		new Subcommand('subtract', 'Remove nuts to the jar', [
@@ -31,7 +37,13 @@ export class Nut implements SlashCommand {
 				'change',
 				'How many nuts to remove',
 				ApplicationCommandOptionTypes.INTEGER,
-				true
+				false
+			),
+			new Option(
+				'user',
+				'whos jar to subtract nuts from',
+				ApplicationCommandOptionTypes.USER,
+				false
 			),
 		]),
 	];
@@ -50,24 +62,43 @@ export class Nut implements SlashCommand {
 			}
 
 			if (interaction.options.getSubcommand() == 'add') {
-				let storage = nuts.ensure(interaction.user.id, 0);
-				storage += interaction.options.getInteger('change')!;
-				nuts.set(interaction.user.id, storage);
+				let messageContent = true;
+				let change = interaction.options.getInteger('change');
+				let jarUser = interaction.options.getUser('user');
+				if (!change) change = 1; //if no change is provided, set to one.
+				if (!jarUser) {
+					//if no user is provided, set it to the user.
+					jarUser = interaction.user;
+					messageContent = false;
+				}
+				let storage = nuts.ensure(jarUser.id, 0);
+				storage += change;
+				nuts.set(jarUser.id, storage);
 				embed.setDescription(
-					`Successfully added ${interaction.options.getInteger(
-						'change'
-					)} to your jar, your new total is ${storage}`
+					`Successfully added ${change} to ${
+						messageContent ? `${jarUser}'s` : 'your'
+					} jar, the new total is ${storage}`
 				);
 				return interaction.reply({ embeds: [embed] });
 			}
+
 			if (interaction.options.getSubcommand() == 'subtract') {
-				let storage = nuts.ensure(interaction.user.id, 0);
-				storage -= interaction.options.getInteger('change')!;
-				nuts.set(interaction.user.id, storage);
+				let messageContent = true;
+				let change = interaction.options.getInteger('change');
+				let jarUser = interaction.options.getUser('user');
+				if (!change) change = 1; //if no change is provided, set to one.
+				if (!jarUser) {
+					//if no user is provided, set it to the user.
+					jarUser = interaction.user;
+					messageContent = false;
+				}
+				let storage = nuts.ensure(jarUser.id, 0);
+				storage -= change;
+				nuts.set(jarUser.id, storage);
 				embed.setDescription(
-					`Successfully removed ${interaction.options.getInteger(
-						'change'
-					)} from your jar, your new total is ${storage}`
+					`Successfully subtracted ${change} from ${
+						messageContent ? `${jarUser}'s` : 'your'
+					} jar, the new total is ${storage}`
 				);
 				return interaction.reply({ embeds: [embed] });
 			}
