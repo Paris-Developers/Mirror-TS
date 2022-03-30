@@ -13,14 +13,13 @@ import {
 	Permissions,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export class Join implements SlashCommand {
 	name: string = 'join';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Have Mirror join your voice channel',
-	};
+	description: string = 'Have Mirror join your voice channel';
+	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
 	async run(
 		bot: Bot,
@@ -45,7 +44,7 @@ export class Join implements SlashCommand {
 			interaction.reply({ content: 'success', ephemeral: true }); //hides the reply to anyone but the user
 			return;
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

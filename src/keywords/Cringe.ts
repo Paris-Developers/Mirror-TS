@@ -32,7 +32,7 @@ export class Cringe implements Keyword {
 			let num = Math.floor(Math.random() * cringeDict.length);
 			message.reply(cringeDict[num]);
 		} catch (err) {
-			bot.logger.error(message.channel!.id, this.name, err);
+			bot.logger.commandError(message.channel!.id, this.name, err);
 			message.reply({
 				content: 'Error: contact a developer to investigate',
 			});

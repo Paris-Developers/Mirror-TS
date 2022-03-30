@@ -11,6 +11,8 @@ import mkdirp from 'mkdirp';
 import { SlashCommand } from './SlashCommand';
 import { Bot } from '../Bot';
 import { silencedUsers } from './SilenceMember';
+import { Option, Subcommand } from './Option';
+import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 
 interface Format {
 	approxDurationMs: number;
@@ -18,18 +20,15 @@ interface Format {
 
 export class Intro implements SlashCommand {
 	name: string = 'intro';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Update your intro theme!',
-		options: [
-			{
-				name: 'video',
-				type: 'STRING',
-				description: 'Youtube link to intro',
-				required: true,
-			},
-		],
-	};
+	description: string = 'Update your intro theme!';
+	options: (Option | Subcommand)[] = [
+		new Option(
+			'video',
+			'Youtube link to intro',
+			ApplicationCommandOptionTypes.STRING,
+			true
+		),
+	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
@@ -80,7 +79,7 @@ export class Intro implements SlashCommand {
 				);
 				return;
 			}
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.editReply({
 				content: 'Error detected, contact an admin to investigate.',
 			});

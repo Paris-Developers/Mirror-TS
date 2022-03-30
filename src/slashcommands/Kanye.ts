@@ -13,10 +13,8 @@ import { SlashCommand } from './SlashCommand';
 
 export class Kanye implements SlashCommand {
 	name: string = 'kanye';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Kanye',
-	};
+	description: string = 'Kanye';
+	options = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
@@ -37,7 +35,7 @@ export class Kanye implements SlashCommand {
 				});
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,

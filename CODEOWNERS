@@ -1,10 +1,22 @@
 /src/Bot.ts @CPhantasm
 /src/index.ts @CPhantasm @FordFriedel
+/src/CustomLogger.ts @CPhantasm
+
+CODEOWNERS @CPhantasm @FordFriedel
+package.json @CPhantasm
+tsconfig.json @CPhantasm
+.gitignore @CPhantasm
+build.bat @CPhantasm
+build.sh @CPhantasm
+
+/src/keywords/Keyword.ts @CPhantasm
 /src/events/EventHandler.ts @CPhantasm
 /src/slashcommands/SlashCommand.ts @CPhantasm
 /src/messagecommands/MessageCommand.ts @CPhantasm
-/src/keywords/Keyword.ts @CPhantasm
-/src/CustomLogger.ts @CPhantasm
+
 /src/slashcommands/Poll.ts @FordFriedel
 /src/slashcommands/Birthday.ts @FordFriedel
 /src/slashcommands/Intro.ts @FordFriedel
+
+
+

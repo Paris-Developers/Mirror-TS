@@ -11,13 +11,12 @@ import fetch from 'node-fetch';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
+import { Option, Subcommand } from './Option';
 
 export class Nasa implements SlashCommand {
 	name: string = 'nasa';
-	registerData: ChatInputApplicationCommandData = {
-		name: this.name,
-		description: 'Get daily astronomy pictures',
-	};
+	description: string = 'Get daily astronomy pictures';
+	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.EMBED_LINKS,
@@ -44,7 +43,7 @@ export class Nasa implements SlashCommand {
 			if (jsonData.copyright) embed.setAuthor({ name: jsonData.copyright }); //checks to see if the copyright item exists, then it will include it in the author slot.
 			interaction.editReply({ embeds: [embed] }); //technically deferReply() creates the reply, so we need to edit that.
 		} catch (err) {
-			bot.logger.error(interaction.channel!.id, this.name, err);
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
