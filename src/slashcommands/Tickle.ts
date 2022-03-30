@@ -30,12 +30,8 @@ export class Tickle implements SlashCommand {
 		Permissions.FLAGS.EMBED_LINKS,
 	];
     async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-        //throw new Error("Method not implemented.");
-        //interaction.reply('Test');
+
         try {
-            
-
-
         let res = await fetch(`https://nekos.best/api/v1/tickle`);
         let jsonData = await res.json();
         console.log(jsonData);
