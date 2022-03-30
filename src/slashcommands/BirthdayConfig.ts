@@ -51,13 +51,13 @@ export class BirthdayConfig implements SlashCommand {
 		new Option(
 			'hour',
 			'The hour you want to send Birthday messages in local time, military format (0-23)',
-			ApplicationCommandOptionTypes.NUMBER,
+			ApplicationCommandOptionTypes.INTEGER,
 			true
 		),
 		new Option(
 			'minute',
 			'The minute you want to send Birthday messages',
-			ApplicationCommandOptionTypes.NUMBER,
+			ApplicationCommandOptionTypes.INTEGER,
 			true
 		),
 		new Option(

@@ -12,6 +12,7 @@ import { updateChannels } from './Update';
 import { nsfw } from './Nsfw';
 import { managerRoles } from './ManagerRole';
 import { silencedRole } from './SilenceRole';
+import { guildTimers } from '../resources/scheduleTimer';
 
 export class Config implements SlashCommand {
 	name: string = 'config';
@@ -35,6 +36,7 @@ export class Config implements SlashCommand {
 			let update = updateChannels.get(interaction.guild!.id);
 			let nsfwToggle = nsfw.get(interaction.guild!.id);
 			let silence = silencedRole.get(interaction.guild!.id);
+			let timers = guildTimers.get(interaction.guild!.id);
 			if (update) {
 				update = bot.client.channels.cache.get(update);
 				lines[1][2] = update;
@@ -67,6 +69,15 @@ export class Config implements SlashCommand {
 				let getRole = interaction.guild?.roles.cache.get(silence);
 				silenceString = `${getRole}`;
 			}
+				var nameString = '';
+				var timeString = '';
+				var channelString = '';
+			if(timers.length > 0){
+
+				for (let timer of timers) {
+
+				}
+			}
 			embed.addFields(
 				{
 					name: lines[0][0],
@@ -92,7 +103,13 @@ export class Config implements SlashCommand {
 					name: 'Silenced Role',
 					value: silenceString,
 					inline: false,
-				}
+				},
+				{
+					name: 'Timers'
+					value: nameString,
+					inline: true,
+				},
+
 			);
 			return interaction.reply({ embeds: [embed] });
 		} catch (err) {

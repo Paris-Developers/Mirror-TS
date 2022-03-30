@@ -137,6 +137,8 @@ export class CreateTimer implements SlashCommand {
 			let timezone = interaction.options.getString('timezone');
 			let tzChange = timezoneCode[timezone!];
 			let cst = hour + tzChange;
+			if (cst >= 24) cst -= 24;
+			if (cst <= 0) cst += 24;
 
 			//TODO handle the specific syntax for the timer they are requesting
 			//let embed: MessageEmbed;
@@ -177,7 +179,7 @@ export class CreateTimer implements SlashCommand {
 				if (reaction.emoji.name == '✅') {
 					const timer = {
 						min: minute,
-						hour: hour,
+						hour: cst,
 						dow: scheduleOptions,
 						timezone: timezone,
 						channel: channel,
@@ -201,15 +203,7 @@ export class CreateTimer implements SlashCommand {
 				interaction.channel?.send('You did not respond in time');
 			});
 
-			//TODO show them an example embed in the current channel,
-			//if they find this satisfactory, allow them to approve and continue configuration
-
 			//TODO schedule and store the timer
-
-			//INFOSTRING EXAMPLE: 'MM-HH-DOW-TIMEZONE-TYPE-QUERY'
-			//DOW: Date of Week
-			//TYPE: type of timer (i.e. weather or stock)
-			//QUERY: What they are searching up (i.e. Burnsville)
 
 			//TODO update config and create a way to delete timers, with a new function.
 			return;

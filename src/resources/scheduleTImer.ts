@@ -1,6 +1,8 @@
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import cron from 'node-cron';
+import { Channel, GuildChannel, MessageEmbed, TextChannel } from 'discord.js';
+import { weatherEmbed } from './embed constructors/weatherEmbed';
 
 export const guildTimers = new Enmap('guildTimers');
 
@@ -11,21 +13,29 @@ export async function scheduleTimer(
 ): Promise<void> {
 	try {
 		let timerArray = Object.values(timer);
+		const min = timerArray[0] as number;
+		const hour = timerArray[1] as number;
+		let channel = timerArray[4];
+		let type = timerArray[6] as string;
+		const query = timerArray[7] as string;
 		let cronTime = `${timerArray[0]} ${timerArray[1]} * * *`;
 
 		let task = cron.schedule(cronTime, async () => {
-			//this will run daily at the specified time:
-			//create a day object, ensure that Mirror knows what date to scan
-			let today = new Date();
-			let dayString = new String();
-
-			if (dateMod == 'x') today.setDate(today.getDate());
-			if (dateMod == 'minus') today.setDate(today.getDate() - 1); //yes these look weird but the Date fxn is smart enough to make the adjustment between months/years
-			if (dateMod == 'plus') today.setDate(today.getDate() + 1);
-			dayString = `${today.getDate()}-${today.getMonth() + 1}`;
+			var embed: MessageEmbed;
+			if (type == 'weather') {
+				embed = await weatherEmbed(bot, query);
+			}
+			if (type == 'stock') {
+				return;
+			}
+			if (type == 'nasa') {
+				return;
+			}
+			channel.message.send(embed!);
+			return;
 		});
 	} catch (err) {
-		bot.logger.error(guild, 'scheduleTimer', err);
+		bot.logger.error(guildID, 'scheduleTimer', err);
 		return;
 	}
 }
