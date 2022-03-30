@@ -49,6 +49,12 @@ export class Roll implements SlashCommand {
 					let y = 0;
 					while (y < parseInt(dStrings[0])) {
 						let one = Math.floor((Math.random() * 100) / parseInt(dStrings[1]));
+						console.log(one);
+						if (isNaN(one)) {
+							return interaction.reply({
+								content: 'Invalid syntax, try something like "2d12"',
+							});
+						}
 						rollTotal += one;
 						if (rollString.length > -0) rollString += ' + ';
 						rollString += one.toString();
