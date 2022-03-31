@@ -26,4 +26,5 @@ export class DestroyQueue implements SlashCommand {
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
 	blockSilenced?: boolean | undefined = true;
+	musicCommand?: boolean | undefined = true;
 }

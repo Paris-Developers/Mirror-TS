@@ -25,30 +25,6 @@ export class PlayNext implements SlashCommand {
 			const embed = new MessageEmbed().setColor('BLUE');
 
 			let member = interaction.member as GuildMember;
-			let state = member.voice.channel;
-
-			//if user is not connected
-			if (!state) {
-				embed.setDescription('You are not connected to a voice channel!');
-				return interaction.reply({ embeds: [embed], ephemeral: true });
-			}
-
-			//if mirror is not connected to voice
-			if (!interaction.guild!.me?.voice.channel) {
-				const connection = joinVoiceChannel({
-					channelId: state.id!,
-					guildId: interaction.guildId!,
-					adapterCreator: interaction.guild!.voiceAdapterCreator,
-				});
-			}
-
-			//if the user is not connected to the correct voice, end
-			else if (interaction.guild!.me?.voice.channel!.id != state.id) {
-				embed.setDescription(
-					'Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call'
-				);
-				return interaction.reply({ embeds: [embed], ephemeral: true });
-			}
 
 			await interaction.deferReply();
 			const guild = bot.client.guilds.cache.get(interaction.guild!.id);

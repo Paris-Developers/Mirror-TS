@@ -31,30 +31,7 @@ export class Play implements SlashCommand {
 		try {
 			const embed = new MessageEmbed().setColor('BLUE');
 
-			let member = interaction.member as GuildMember;
-			let state = member.voice.channel;
-
-			//if user is not connected
-			if (!state) {
-				embed.setDescription('You are not connected to a voice channel!');
-				return interaction.reply({ embeds: [embed], ephemeral: true });
-			}
-
-			//if mirror is not connected to voice
-			if (!interaction.guild!.me?.voice.channel) {
-				const connection = joinVoiceChannel({
-					channelId: state.id!,
-					guildId: interaction.guildId!,
-					adapterCreator: interaction.guild!.voiceAdapterCreator,
-				});
-			}
-			//if the user is not connected to the correct voice, end
-			else if (interaction.guild!.me?.voice.channel!.id != state.id) {
-				embed.setDescription(
-					'Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call'
-				);
-				return interaction.reply({ embeds: [embed], ephemeral: true });
-			}
+			let member = interaction.member as GuildMember; //need this for later
 
 			await interaction.deferReply();
 			const guild = bot.client.guilds.cache.get(interaction.guild!.id);
@@ -71,12 +48,6 @@ export class Play implements SlashCommand {
 			const queue = await bot.player.createQueue(guild!, bot.player.playOptions);
 
 			await guild?.members.fetch(interaction.user.id);
-			try {
-				if (!queue.connection) await queue.connect(member?.voice.channel!);
-			} catch {
-				void bot.player.deleteQueue(guild!.id);
-				return void interaction.editReply('Could not join your voice channel');
-			}
 
 			if (searchResult.playlist) {
 				embed
@@ -125,4 +96,5 @@ export class Play implements SlashCommand {
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
 	blockSilenced?: boolean | undefined = true;
+	musicCommand?: boolean | undefined = true;
 }

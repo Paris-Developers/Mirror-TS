@@ -1,4 +1,5 @@
-import { CommandInteraction, TextChannel } from 'discord.js';
+import { joinVoiceChannel } from '@discordjs/voice';
+import { CommandInteraction, GuildMember, MessageEmbed, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
 import { silenceCheck } from '../slashcommands/SilenceRole';
@@ -42,6 +43,41 @@ export class InteractionCreate implements EventHandler {
 						'This command cannot be used by silenced members',
 					ephemeral: true,
 				});
+			}
+		}
+		if(command.musicCommand){
+			let member = interaction.member as GuildMember;
+			let state = member.voice.channel;
+			var embed = new MessageEmbed().setColor('BLUE');
+
+			//if user is not connected
+			if (!state) {
+				embed.setDescription('You are not connected to a voice channel!');
+				return interaction.reply({ embeds: [embed], ephemeral: true });
+			}
+
+			//if mirror is not connected to voice
+			if (!interaction.guild!.me?.voice.channel) {
+				const cmdCatches = ["play","playNext","join","sicko"];
+				if(cmdCatches.includes(interaction.commandName)){
+					joinVoiceChannel({
+						channelId: state.id!,
+						guildId: interaction.guildId!,
+						adapterCreator: interaction.guild!.voiceAdapterCreator,
+					});
+				} else {
+					embed.setDescription(
+						'Mirror is not connected to a voice channel, use `/join`'
+					);
+					return interaction.reply({ embeds: [embed], ephemeral: true });
+				}
+			}
+			//if the user is not connected to the correct voice, end
+			else if (interaction.guild!.me?.voice.channel!.id != state.id) {
+				embed.setDescription(
+					'Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call'
+				);
+				return interaction.reply({ embeds: [embed], ephemeral: true });
 			}
 		}
 		//if the command requires permissions
