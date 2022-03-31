@@ -125,7 +125,7 @@ export class Help implements SlashCommand {
 				`\`/test\`  ${cmds.test}\n`
 			},{
 				name: 'Thanks You!',
-				value: 'Thank you for using Mirror! On behalf of the developer team we appreciate you taking time to learn and improve our bot.  If you have anyquestions regarding Mirror, reach out to us using our [Support Server](https://discord.gg/uvdg2R5PAU)'
+				value: 'Thank you for using Mirror! On behalf of the developer team we appreciate you taking time to learn and improve our bot.  If you have any questions regarding Mirror, reach out to us using our [Support Server](https://discord.gg/uvdg2R5PAU)'
 			})
 			.setFooter({ text: 'Page 5 of 5' });
 			let embedArray = [page1, page2, page3, page4, page5];
