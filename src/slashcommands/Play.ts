@@ -48,6 +48,12 @@ export class Play implements SlashCommand {
 			const queue = await bot.player.createQueue(guild!, bot.player.playOptions);
 
 			await guild?.members.fetch(interaction.user.id);
+			try {
+				if (!queue.connection) await queue.connect(member?.voice.channel!);
+			} catch {
+				void bot.player.deleteQueue(guild!.id);
+				return void interaction.editReply('Could not join your voice channel');
+			}
 
 			if (searchResult.playlist) {
 				embed
