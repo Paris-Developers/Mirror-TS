@@ -21,7 +21,7 @@ export class Github implements SlashCommand {
 				.setColor('#FFFFFF')
 				.setTitle(':lock: __Mirror-TS Codebase and Privacy__')
 				.setDescription(
-					'Mirror scans all messages in a server by default, but does not store them.\n\nIf you want to prevent Mirror from scanning messages, reinvite it without the "read messages" permissions in the Oauth portal. \n\nInterested in our open source code? Visit our [github](https://github.com/paris-developers/Mirror-TS)\n\nStill have questions? Join our [support server](https://discord.gg/uvdg2R5PAU)'
+					'Mirror reads all sent messages in a server by default, but does not store them.\n\nIf you want to prevent Mirror from scanning messages, reinvite it without the "read messages" permissions in the [Oauth portal](https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=139606649936&scope=bot%20applications.commands). \n\nInterested in our open source code? Visit our [github](https://github.com/paris-developers/Mirror-TS)\n\nStill have questions? Join our [support server](https://discord.gg/uvdg2R5PAU)'
 				);
 			interaction.reply({ embeds: [embed] });
 			return;

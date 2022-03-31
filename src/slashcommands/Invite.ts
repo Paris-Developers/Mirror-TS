@@ -29,7 +29,7 @@ export class Invite implements SlashCommand {
 				)
 				.setThumbnail('https://imgur.com/nXf9JGG.jpg')
 				.setURL(
-					'https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=0&scope=bot%20applications.commands'
+					'https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=139606649936&scope=bot%20applications.commands'
 				)
 				.setFooter({
 					text: 'Created in 2021, by Fordle#0001 and Phantasm#0001',
