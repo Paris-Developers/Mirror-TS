@@ -48,7 +48,7 @@ export class Help implements SlashCommand {
 						inline: false,
 					}
 				)
-				.setFooter({ text: 'Page 1 of 4' });
+				.setFooter({ text: 'Page 1 of 5' });
 			const page2 = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setTitle(':sound: **__Voice Commands__**')
@@ -72,10 +72,11 @@ export class Help implements SlashCommand {
 					`\`/shuffle\`  ${cmds.shuffle}\n` +
 					`\`/pause\`  ${cmds.pause}\n` +
 					`\`/resume\`  ${cmds.resume}\n` +
-					`\`/destroyqueue\`  ${cmds.destroyqueue}\n`,
+					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
+					`\`/sicko\`  ${cmds.sicko}\n`,
 					inline:false
 				})
-				.setFooter({ text: 'Page 2 of 4' });
+				.setFooter({ text: 'Page 2 of 5' });
 			const page3 = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.addFields({
@@ -86,21 +87,48 @@ export class Help implements SlashCommand {
 					`\`/github\`  ${cmds.github}\n`,
 				},{
 					name: 'Fun Commands',
-					value: 
+					value: `\`/birthday\`  ${cmds.birthday}\n` +
+					`\`/kanye\`  ${cmds.kanye}\n` +
+					`\`/poll\`  ${cmds.poll}\n` +
+					`\`/kawaii\`  ${cmds.kawaii}\n` +
+					`\`/tickle\`  ${cmds.tickle}\n` +
+					`\`/mirror\`  ${cmds.mirror}\n` +
+					`\`/boey\`  ${cmds.boey}\n` +
+					`\`/nut\`  ${cmds.nut}\n` +
+					`\`/roll\`  ${cmds.roll}\n`
 				})
-				.setFooter({ text: 'Page 3 of 4' });
+				.setFooter({ text: 'Page 3 of 5' });
 			const page4 = new MessageEmbed()
 				.setColor('#FFFFFF')
-				.setTitle(':bell: **__Other Commands__**')
+				.setTitle(':bell: **__Server Configuration__**')
 				.setDescription(
-					'/poll: Create a timed poll with up to 10 options  \n' +
-						'/kanye: Sends a random kanye quote\n' +
-						'/kawaii: Sends a cute catgirl.\n' +
-						'/birthday: Set your birthdayfor a message on your special day. \n' +
-						'/mirror: :mirror:'
+					`\`/config\`  ${cmds.config}\n` +
+					`\`/defaultvc\`  ${cmds.defaultvc}\n` +
+					`\`/update\`  ${cmds.update}\n` +
+					`\`/birthdayconfig\`  ${cmds.birthdayconfig}\n` +
+					`\`/managerrole\`  ${cmds.managerrole}\n` +
+					`\`/silencemember\`  ${cmds.silencemember}\n` +
+					`\`/silencerole\`  ${cmds.silencerole}\n` + 
+					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
+					`\`/nsfw\`  ${cmds.nsfw}\n` +
+					`\`/removeintro\`  ${cmds.removeintro}\n`
 				)
-				.setFooter({ text: 'Page 4 of 4' });
-			let embedArray = [page1, page2, page3, page4];
+				.setFooter({ text: 'Page 4 of 5' });
+			const page5 = new MessageEmbed()
+			.setColor('#FFFFFF')
+			.setTitle(':bell: **__Other Information__**')
+			.addFields({
+				name: 'Commands',
+				value: `\`/github\`  ${cmds.github}\n` +
+				`\`/invite\`  ${cmds.invite}\n` +
+				`\`/support\`  ${cmds.support}\n` +
+				`\`/test\`  ${cmds.test}\n`
+			},{
+				name: 'Thanks You!',
+				value: 'Thank you for using Mirror! On behalf of the developer team we appreciate you taking time to learn and improve our bot.  If you have anyquestions regarding Mirror, reach out to us using our [Support Server](https://discord.gg/uvdg2R5PAU)'
+			})
+			.setFooter({ text: 'Page 5 of 5' });
+			let embedArray = [page1, page2, page3, page4, page5];
 			let index = 0;
 			let message = (await interaction.reply({
 				embeds: [embedArray[index]],
