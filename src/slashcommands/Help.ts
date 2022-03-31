@@ -3,6 +3,7 @@
 import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
+	CommandOptionChannelResolvableType,
 	Message,
 	MessageEmbed,
 	MessageReaction,
@@ -24,6 +25,11 @@ export class Help implements SlashCommand {
 	];
 	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
 		try {
+			type cmdList = {[index:string]: string};
+			let cmds = {} as cmdList;
+			bot.slashCommands.forEach((command)=>{
+				cmds[command.name] = command.description;
+			})
 			const page1 = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setTitle(':mirror: **__Mirror__**')
@@ -47,23 +53,41 @@ export class Help implements SlashCommand {
 				.setColor('#FFFFFF')
 				.setTitle(':sound: **__Voice Commands__**')
 				.setDescription(
-					'/join: Have Mirror join the current voice call.\n' +
-						'/leave: Have Mirror leave the current voice call.\n' +
-						'/intro: Have Mirror set a specified youtube video as your intro theme.\n' +
-						'/banintro: Allows an administrator to remove a specified users intro.\n' +
-						'/sicko: :skull:'
+					`\`/join\`  ${cmds.join}\n` +
+					`\`/leave\`  ${cmds.leave}\n` + 
+					`\`/default\`  ${cmds.defaultvc}\n`
 				)
+				.addFields({
+					name: 'Introtheme Commands',
+					value: `\`/intro\`  ${cmds.intro}\n` +
+					`\`/banIntro\`  ${cmds.banIntro}\n`,
+					inline: false	
+				},{
+					name: 'Music Commands',
+					value: `\`/play\`  ${cmds.play}\n` +
+					`\`/playnext\`  ${cmds.playnext}\n` +
+					`\`/nowplaying\`  ${cmds.nowplaying}\n` +
+					`\`/queue\`  ${cmds.queue}\n` +
+					`\`/clearqueue\`  ${cmds.clearqueue}\n` +
+					`\`/shuffle\`  ${cmds.shuffle}\n` +
+					`\`/pause\`  ${cmds.pause}\n` +
+					`\`/resume\`  ${cmds.resume}\n` +
+					`\`/destroyqueue\`  ${cmds.destroyqueue}\n`,
+					inline:false
+				})
 				.setFooter({ text: 'Page 2 of 4' });
 			const page3 = new MessageEmbed()
 				.setColor('#FFFFFF')
-				.setTitle(':newspaper: **__Informative Commands__**')
-				.setDescription(
-					'/weather: Displays the current weather for a specified city. \n' +
-						'/stock: Displays daily reports for up to 10 specified stocks. \n' +
-						'/nasa: Sends the Nasa Astrology Picture of the Day.\n' +
-						'/news: WIP.\n' +
-						'/github: Links the open source code for Mirror'
-				)
+				.addFields({
+					name: 'Informative Commands',
+					value: `\`/weather\`  ${cmds.weather}\n` +
+					`\`/stock\`  ${cmds.stock}\n` +
+					`\`/nasa\`  ${cmds.nasa}\n` +
+					`\`/github\`  ${cmds.github}\n`,
+				},{
+					name: 'Fun Commands',
+					value: 
+				})
 				.setFooter({ text: 'Page 3 of 4' });
 			const page4 = new MessageEmbed()
 				.setColor('#FFFFFF')
