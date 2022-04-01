@@ -79,6 +79,10 @@ export class Poll implements SlashCommand {
 		try {
 			let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
 			//TODO: error test for empty arguments
+			let time = interaction.options.getInteger('time')!;
+			if(time >= 1500){
+				return interaction.reply({content: 'Your poll cannot be longer than 24 hours or 1440 minutes', ephemeral: true});
+			}
 
 			const embed = new MessageEmbed()
 				.setColor(colorCheck(interaction.guild!.id))
@@ -86,7 +90,7 @@ export class Poll implements SlashCommand {
 				.setFooter({
 					text: `Poll created by ${
 						interaction.user.tag
-					}, open for ${interaction.options.getInteger('time')} minutes.`,
+					}, open for ${time} minutes.`,
 				});
 			let emoteVal: index = {
 				'1️⃣': 0,
@@ -133,7 +137,7 @@ export class Poll implements SlashCommand {
 			let total = 0;
 			const collector = message.createReactionCollector({
 				filter,
-				time: interaction.options.getInteger('time')! * 60000,
+				time: time * 60000,
 				dispose: true,
 			});
 			collector.on('collect', (reaction: MessageReaction, user: User) => {
