@@ -1,0 +1,45 @@
+import {
+	ApplicationCommandDataResolvable,
+	CommandInteraction,
+	CacheType,
+	MessageEmbed,
+	GuildMember,
+} from 'discord.js';
+import { Bot } from '../Bot';
+import { SlashCommand } from './SlashCommand';
+
+
+export class Pause implements SlashCommand {
+	name: string = 'pause';
+	description: string = 'Pause the music player';
+	options = [];
+	requiredPermissions: bigint[] = [];
+	async run(
+		bot: Bot,
+		interaction: CommandInteraction<CacheType>
+	): Promise<void> {
+		try {
+			const embed = new MessageEmbed().setColor('BLUE');
+
+			let queue = bot.player.getQueue(interaction.guild!.id);
+			if (!queue || !queue.playing) {
+				embed.setDescription('There is no music playing!');
+				return interaction.reply({ embeds: [embed], ephemeral: true });
+			}
+			queue.setPaused(true);
+			embed.setDescription(`Music was paused by ${interaction.user}`);
+			return interaction.reply({ embeds: [embed] });
+		} catch (err) {
+			bot.logger.commandError(interaction.channel!.id, this.name, err);
+			interaction.reply({
+				content: 'Error: contact a developer to investigate',
+				ephemeral: true,
+			});
+			return;
+		}
+	}
+	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined;
+	blockSilenced?: boolean | undefined = true;
+	musicCommand?: boolean | undefined = true;
+}

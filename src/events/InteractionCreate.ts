@@ -1,6 +1,8 @@
-import { CommandInteraction, TextChannel } from 'discord.js';
+import { joinVoiceChannel } from '@discordjs/voice';
+import { CommandInteraction, GuildMember, MessageEmbed, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
+import { voiceCommandCheck } from '../resources/voiceCommandCheck';
 import { silenceCheck } from '../slashcommands/SilenceRole';
 import { EventHandler } from './EventHandler';
 
@@ -43,6 +45,9 @@ export class InteractionCreate implements EventHandler {
 					ephemeral: true,
 				});
 			}
+		}
+		if(command.musicCommand){
+			if(!(await voiceCommandCheck(bot, interaction))) return;
 		}
 		//if the command requires permissions
 		if (command.requiredPermissions) {

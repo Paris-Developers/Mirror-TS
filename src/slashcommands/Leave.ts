@@ -44,4 +44,5 @@ export class Leave implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean = true;
+	blockSilenced?: boolean | undefined = true;
 }
