@@ -9,7 +9,7 @@ export const serverColors = new Enmap('serverColors');
 
 export class ServerColor implements SlashCommand {
     name: string = 'servercolor';
-    description: string = '[MANAGER] Set the color to be used in Mirror messages';
+    description: string = '[MANAGER] Set the color to be used in Mirror message embeds';
     options: (Option | Subcommand)[] = [
         new Option(
             'color',
