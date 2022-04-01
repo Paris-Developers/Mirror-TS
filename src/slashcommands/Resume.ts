@@ -10,7 +10,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class Resume implements SlashCommand {
 	name: string = 'resume';
-	description = 'Pause the music player';
+	description = 'Resume the music player';
 	options = [];
 	requiredPermissions: bigint[] = [];
 	async run(

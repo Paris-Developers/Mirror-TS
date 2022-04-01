@@ -20,7 +20,7 @@ interface Format {
 
 export class Intro implements SlashCommand {
 	name: string = 'intro';
-	description: string = 'Update your intro theme!';
+	description: string = 'Set your intro theme, must be a Youtube video under 10 seconds';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'video',

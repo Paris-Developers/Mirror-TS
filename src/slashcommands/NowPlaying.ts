@@ -10,7 +10,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class NowPlaying implements SlashCommand {
 	name: string = 'nowplaying';
-	description = 'Get the current song';
+	description = 'Get the song that is currently playing';
 	options = [];
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {

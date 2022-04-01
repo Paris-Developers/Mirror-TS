@@ -9,7 +9,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class Boey implements SlashCommand {
 	name: string = 'boey';
-	description: string = 'Sends Boeys stream information!';
+	description: string = 'Boeys stream information!';
 	options = [];
 	requiredPermissions: bigint[] = [];
 	async run(

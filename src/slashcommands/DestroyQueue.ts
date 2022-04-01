@@ -5,7 +5,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class DestroyQueue implements SlashCommand {
 	name: string = 'destroyqueue';
-	description: string = 'Empty and destroy the queue';
+	description: string = 'Empty and destroy the queue, will reset the music player entirely';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {

@@ -3,6 +3,7 @@
 import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
+	CommandOptionChannelResolvableType,
 	Message,
 	MessageEmbed,
 	MessageReaction,
@@ -18,16 +19,21 @@ export class Help implements SlashCommand {
 	options = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		Permissions.FLAGS.EMBED_LINKS, 
 		Permissions.FLAGS.MANAGE_MESSAGES,
 		Permissions.FLAGS.ADD_REACTIONS,
 	];
 	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
 		try {
+			type cmdList = {[index:string]: string};
+			let cmds = {} as cmdList;
+			bot.slashCommands.forEach((command)=>{
+				cmds[command.name] = command.description;
+			})
 			const page1 = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setTitle(':mirror: **__Mirror__**')
-				.setDescription('Discord utility bot created by Ford, Zac, and Marty')
+				.setDescription('Informational and fun discord bot created by Ford, Zac, and Marty')
 				.addFields(
 					{
 						name: '__Support server:__',
@@ -38,45 +44,94 @@ export class Help implements SlashCommand {
 					{
 						name: '__Command List:__',
 						value:
-							'**Page 1:** Voice Commands\n**Page 2:** Informative Commands\n**Page 3:** Other Commands',
+							'**Page 2:** Voice Commands\n' +
+							'**Page 3:** Informative and Fun Commands\n' +
+							'**Page 4:** Server Configuration Guide\n' +
+							'**Page 5:** More Information',
 						inline: false,
 					}
 				)
-				.setFooter({ text: 'Page 1 of 4' });
+				.setFooter({ text: 'Page 1 of 5' });
 			const page2 = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setTitle(':sound: **__Voice Commands__**')
 				.setDescription(
-					'/join: Have Mirror join the current voice call.\n' +
-						'/leave: Have Mirror leave the current voice call.\n' +
-						'/intro: Have Mirror set a specified youtube video as your intro theme.\n' +
-						'/banintro: Allows an administrator to remove a specified users intro.\n' +
-						'/sicko: :skull:'
+					`\`/join\`  ${cmds.join}\n` +
+					`\`/leave\`  ${cmds.leave}\n` + 
+					`\`/default\`  ${cmds.defaultvc}\n`
 				)
-				.setFooter({ text: 'Page 2 of 4' });
+				.addFields({
+					name: 'Introtheme Commands',
+					value: `\`/intro\`  ${cmds.intro}\n` +
+					`\`/banIntro\`  ${cmds.banIntro}\n`,
+					inline: false	
+				},{
+					name: 'Music Commands',
+					value: `\`/play\`  ${cmds.play}\n` +
+					`\`/playnext\`  ${cmds.playnext}\n` +
+					`\`/nowplaying\`  ${cmds.nowplaying}\n` +
+					`\`/queue\`  ${cmds.queue}\n` +
+					`\`/clearqueue\`  ${cmds.clearqueue}\n` +
+					`\`/shuffle\`  ${cmds.shuffle}\n` +
+					`\`/pause\`  ${cmds.pause}\n` +
+					`\`/resume\`  ${cmds.resume}\n` +
+					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
+					`\`/sicko\`  ${cmds.sicko}\n`,
+					inline:false
+				})
+				.setFooter({ text: 'Page 2 of 5' });
 			const page3 = new MessageEmbed()
 				.setColor('#FFFFFF')
-				.setTitle(':newspaper: **__Informative Commands__**')
-				.setDescription(
-					'/weather: Displays the current weather for a specified city. \n' +
-						'/stock: Displays daily reports for up to 10 specified stocks. \n' +
-						'/nasa: Sends the Nasa Astrology Picture of the Day.\n' +
-						'/news: WIP.\n' +
-						'/github: Links the open source code for Mirror'
-				)
-				.setFooter({ text: 'Page 3 of 4' });
+				.addFields({
+					name: 'Informative Commands',
+					value: `\`/weather\`  ${cmds.weather}\n` +
+					`\`/stock\`  ${cmds.stock}\n` +
+					`\`/nasa\`  ${cmds.nasa}\n` +
+					`\`/github\`  ${cmds.github}\n`,
+				},{
+					name: 'Fun Commands',
+					value: `\`/birthday\`  ${cmds.birthday}\n` +
+					`\`/kanye\`  ${cmds.kanye}\n` +
+					`\`/poll\`  ${cmds.poll}\n` +
+					`\`/kawaii\`  ${cmds.kawaii}\n` +
+					`\`/tickle\`  ${cmds.tickle}\n` +
+					`\`/mirror\`  ${cmds.mirror}\n` +
+					`\`/boey\`  ${cmds.boey}\n` +
+					`\`/nut\`  ${cmds.nut}\n` +
+					`\`/roll\`  ${cmds.roll}\n`
+				})
+				.setFooter({ text: 'Page 3 of 5' });
 			const page4 = new MessageEmbed()
 				.setColor('#FFFFFF')
-				.setTitle(':bell: **__Other Commands__**')
+				.setTitle(':bell: **__Server Configuration__**')
 				.setDescription(
-					'/poll: Create a timed poll with up to 10 options  \n' +
-						'/kanye: Sends a random kanye quote\n' +
-						'/kawaii: Sends a cute catgirl.\n' +
-						'/birthday: Set your birthdayfor a message on your special day. \n' +
-						'/mirror: :mirror:'
+					`\`/config\`  ${cmds.config}\n` +
+					`\`/defaultvc\`  ${cmds.defaultvc}\n` +
+					`\`/update\`  ${cmds.update}\n` +
+					`\`/birthdayconfig\`  ${cmds.birthdayconfig}\n` +
+					`\`/managerrole\`  ${cmds.managerrole}\n` +
+					`\`/silencemember\`  ${cmds.silencemember}\n` +
+					`\`/silencerole\`  ${cmds.silencerole}\n` + 
+					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
+					`\`/nsfw\`  ${cmds.nsfw}\n` +
+					`\`/removeintro\`  ${cmds.removeintro}\n`
 				)
-				.setFooter({ text: 'Page 4 of 4' });
-			let embedArray = [page1, page2, page3, page4];
+				.setFooter({ text: 'Page 4 of 5' });
+			const page5 = new MessageEmbed()
+			.setColor('#FFFFFF')
+			.setTitle(':bell: **__Other Information__**')
+			.addFields({
+				name: 'Commands',
+				value: `\`/github\`  ${cmds.github}\n` +
+				`\`/invite\`  ${cmds.invite}\n` +
+				`\`/support\`  ${cmds.support}\n` +
+				`\`/test\`  ${cmds.test}\n`
+			},{
+				name: 'Thanks You!',
+				value: 'Thank you for using Mirror! On behalf of the developer team we appreciate you taking time to learn and improve our bot.  If you have any questions regarding Mirror, reach out to us using our [Support Server](https://discord.gg/uvdg2R5PAU)'
+			})
+			.setFooter({ text: 'Page 5 of 5' });
+			let embedArray = [page1, page2, page3, page4, page5];
 			let index = 0;
 			let message = (await interaction.reply({
 				embeds: [embedArray[index]],

@@ -16,7 +16,7 @@ import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 
 export class News implements SlashCommand {
 	name: string = 'news';
-	description: string = 'Current news';
+	description: string = 'News';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'query',
