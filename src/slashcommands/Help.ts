@@ -29,7 +29,6 @@ export class Help implements SlashCommand {
 			let cmds = {} as cmdList;
 			bot.slashCommands.forEach((command)=>{
 				cmds[command.name] = command.description;
-				console.log(`${command.name}: ${command.description}`);
 			})
 			const page1 = new MessageEmbed()
 				.setColor('#FFFFFF')
