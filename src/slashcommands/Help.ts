@@ -10,6 +10,7 @@ import {
 	User,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { SlashCommand } from './SlashCommand';
 
 export class Help implements SlashCommand {
@@ -25,7 +26,7 @@ export class Help implements SlashCommand {
 	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
 		try {
 			const page1 = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':mirror: **__Mirror__**')
 				.setDescription('Discord utility bot created by Ford, Zac, and Marty')
 				.addFields(
@@ -44,7 +45,7 @@ export class Help implements SlashCommand {
 				)
 				.setFooter({ text: 'Page 1 of 4' });
 			const page2 = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':sound: **__Voice Commands__**')
 				.setDescription(
 					'/join: Have Mirror join the current voice call.\n' +
@@ -55,7 +56,7 @@ export class Help implements SlashCommand {
 				)
 				.setFooter({ text: 'Page 2 of 4' });
 			const page3 = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':newspaper: **__Informative Commands__**')
 				.setDescription(
 					'/weather: Displays the current weather for a specified city. \n' +
@@ -66,7 +67,7 @@ export class Help implements SlashCommand {
 				)
 				.setFooter({ text: 'Page 3 of 4' });
 			const page4 = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':bell: **__Other Commands__**')
 				.setDescription(
 					'/poll: Create a timed poll with up to 10 options  \n' +

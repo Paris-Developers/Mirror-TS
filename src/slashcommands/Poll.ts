@@ -11,6 +11,7 @@ import {
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
@@ -80,7 +81,7 @@ export class Poll implements SlashCommand {
 			//TODO: error test for empty arguments
 
 			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(`__${interaction.options.getString('title')}__`)
 				.setFooter({
 					text: `Poll created by ${

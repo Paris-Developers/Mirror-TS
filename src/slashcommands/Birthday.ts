@@ -7,6 +7,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { Option } from './Option';
 import { silencedUsers } from './SilenceMember';
 import { SlashCommand } from './SlashCommand';
@@ -156,7 +157,7 @@ export class Birthday implements SlashCommand {
 						'day'
 					)}`
 				)
-				.setColor('#FFFFFF');
+				.setColor(colorCheck(interaction.guild!.id));
 			interaction.reply({ embeds: [embed] });
 			return;
 		} catch (err) {

@@ -12,6 +12,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
@@ -79,7 +80,7 @@ export class Gavin implements SlashCommand {
 				let squat = gav_records.ensure('squat', 445);
 				let deadlift = gav_records.ensure('deadlift', 605);
 				const embed = new MessageEmbed()
-					.setColor('#FFFFFF')
+					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(
 						`GAVIN'S CURRENT PRS:\n BENCH: ${bench} LB \n SQUAT: ${squat} LB \n DEADLIFT: ${deadlift} LB \n`
 					);
@@ -100,7 +101,7 @@ export class Gavin implements SlashCommand {
 					return;
 				}
 				const embed = new MessageEmbed()
-					.setColor('#FFFFFF')
+					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(`GAVIN'S ${type!.toUpperCase()} PR: ${toprint}`);
 				interaction.reply({ embeds: [embed] });
 				return;
@@ -114,7 +115,7 @@ export class Gavin implements SlashCommand {
 				if (type == 'deadlift') gav_records.set('deadlift', lift);
 
 				const embed = new MessageEmbed()
-					.setColor('#FFFFFF')
+					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(
 						`UPDATED GAVIN'S ${type!.toUpperCase()} PR TO: ${lift}\nGOOD JOB SOLDIER`
 					);

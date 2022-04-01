@@ -21,18 +21,18 @@ export class ServerColor implements SlashCommand {
     requiredPermissions: bigint[] = [];
     run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
         try{
-            let color = interaction.options.getString('color');
+            let color = interaction.options.getString('color')?.toUpperCase();
             try{
-                var colorTest = color as ColorResolvable
+                var colorTest = color as ColorResolvable;
+
+                const embed = new MessageEmbed()
+                    .setColor(colorTest)
+                    .setDescription('This is your new server color!');
+                serverColors.set(interaction.guild!.id, colorTest);
+                return interaction.reply({embeds: [embed]});
             } catch (err){
                 return interaction.reply({content: 'Invalid color, please try again with format: \'#ABC123\' or BLUE or RANDOM'});
             }
-            const embed = new MessageEmbed()
-                .setColor(colorTest)
-                .setDescription('This is your new server color!');
-            
-            return interaction.reply({embeds: [embed]})
-
         } catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			return interaction.reply({

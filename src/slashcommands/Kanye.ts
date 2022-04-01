@@ -9,6 +9,7 @@ import {
 } from 'discord.js';
 import fetch from 'node-fetch';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { SlashCommand } from './SlashCommand';
 
 export class Kanye implements SlashCommand {
@@ -27,7 +28,7 @@ export class Kanye implements SlashCommand {
 			let res = await fetch(`https://api.kanye.rest/`);
 			let jsonData = await res.json();
 			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(`**${jsonData.quote}**`)
 				.setFooter({
 					text: 'Kanye West',
