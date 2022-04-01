@@ -14,7 +14,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class Kawaii implements SlashCommand {
 	name: string = 'kawaii';
-	description: string = 'Get a cute catgirl';
+	description: string = 'Wink, wink';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,

@@ -19,7 +19,7 @@ export const silencedRole = new Enmap('SilencedRole');
 export class SilenceRole implements SlashCommand {
 	name: string = 'silencerole';
 	description: string =
-		'[MANAGER] Set a role from using Birthday, Intro, or Music commands.';
+		'[MANAGER] Set a role from using Intro, Music, or Birthday commands';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'role',

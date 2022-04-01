@@ -11,7 +11,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class Invite implements SlashCommand {
 	name: string = 'invite';
-	description: string = 'Invite link for Mirror';
+	description: string = 'Invite link for mirror';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,

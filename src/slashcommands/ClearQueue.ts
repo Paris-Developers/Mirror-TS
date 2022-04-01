@@ -10,7 +10,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class ClearQueue implements SlashCommand {
 	name: string = 'clearqueue';
-	description = 'Clear the music queue.';
+	description = 'Clear the music queue';
 	options = [];
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {

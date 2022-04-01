@@ -19,7 +19,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class Sicko implements SlashCommand {
 	name: string = 'sicko';
-	description: string = 'Have Mirror join your voice channel/but sicko mode';
+	description: string = 'Have Mirror join your voice channel, but sicko mode';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
 	async run(

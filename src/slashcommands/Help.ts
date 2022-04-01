@@ -19,7 +19,7 @@ export class Help implements SlashCommand {
 	options = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		Permissions.FLAGS.EMBED_LINKS, 
 		Permissions.FLAGS.MANAGE_MESSAGES,
 		Permissions.FLAGS.ADD_REACTIONS,
 	];
@@ -29,11 +29,12 @@ export class Help implements SlashCommand {
 			let cmds = {} as cmdList;
 			bot.slashCommands.forEach((command)=>{
 				cmds[command.name] = command.description;
+				console.log(`${command.name}: ${command.description}`);
 			})
 			const page1 = new MessageEmbed()
 				.setColor('#FFFFFF')
 				.setTitle(':mirror: **__Mirror__**')
-				.setDescription('Discord utility bot created by Ford, Zac, and Marty')
+				.setDescription('Informational and fun discord bot created by Ford, Zac, and Marty')
 				.addFields(
 					{
 						name: '__Support server:__',
@@ -44,7 +45,10 @@ export class Help implements SlashCommand {
 					{
 						name: '__Command List:__',
 						value:
-							'**Page 1:** Voice Commands\n**Page 2:** Informative Commands\n**Page 3:** Other Commands',
+							'**Page 2:** Voice Commands\n' +
+							'**Page 3:** Informative and Fun Commands\n' +
+							'**Page 4:** Server Configuration Guide\n' +
+							'**Page 5:** More Information',
 						inline: false,
 					}
 				)

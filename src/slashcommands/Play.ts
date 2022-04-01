@@ -14,7 +14,7 @@ import { joinVoiceChannel } from '@discordjs/voice';
 
 export class Play implements SlashCommand {
 	name: string = 'play';
-	description = 'Play a song in the voice channel.';
+	description = 'Play a song in the voice channel';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'query',

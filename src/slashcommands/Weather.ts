@@ -50,7 +50,7 @@ const cardinalDir = {
 
 export class Weather implements SlashCommand {
 	name: string = 'weather';
-	description: string = 'Weather data';
+	description: string = 'Weather data for a provided city';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'city',
