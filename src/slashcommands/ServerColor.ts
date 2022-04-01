@@ -1,8 +1,11 @@
 import { CommandInteraction, CacheType, MessageEmbed, ColorResolvable } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import Enmap from "enmap";
 import { Bot } from "../Bot";
 import { Option, Subcommand } from "./Option";
 import { SlashCommand } from "./SlashCommand";
+
+export const serverColors = new Enmap('serverColors');
 
 export class ServerColor implements SlashCommand {
     name: string = 'servercolor';
@@ -19,9 +22,15 @@ export class ServerColor implements SlashCommand {
     run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
         try{
             let color = interaction.options.getString('color');
-            let colorTest = color as ColorResolvable
+            try{
+                var colorTest = color as ColorResolvable
+            } catch (err){
+                return interaction.reply({content: 'Invalid color, please try again with format: \'#ABC123\' or BLUE or RANDOM'});
+            }
             const embed = new MessageEmbed()
-                .setColor(colorTest);
+                .setColor(colorTest)
+                .setDescription('This is your new server color!');
+            
             return interaction.reply({embeds: [embed]})
 
         } catch (err) {
