@@ -115,6 +115,7 @@ export class Help implements SlashCommand {
 					`\`/silencerole\`  ${cmds.silencerole}\n` + 
 					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
 					`\`/nsfw\`  ${cmds.nsfw}\n` +
+					`\`/servercolor\`  ${cmds.servercolor}\n` +
 					`\`/removeintro\`  ${cmds.removeintro}\n`
 				)
 				.setFooter({ text: 'Page 4 of 5' });
