@@ -11,6 +11,7 @@ import { SlashCommand } from './SlashCommand';
 import { QueryType } from 'discord-player';
 import { Option, Subcommand } from './Option';
 import { joinVoiceChannel } from '@discordjs/voice';
+import { colorCheck } from '../resources/embedColorCheck';
 
 export class Play implements SlashCommand {
 	name: string = 'play';
@@ -29,7 +30,7 @@ export class Play implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor('BLUE');
+			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
 
 			let member = interaction.member as GuildMember; //need this for later
 

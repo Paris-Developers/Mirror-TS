@@ -2,11 +2,12 @@ import { joinVoiceChannel } from "@discordjs/voice";
 import { CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
 import { transpileModule } from "typescript";
 import { Bot } from "../Bot";
+import { colorCheck } from "./embedColorCheck";
 
 export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): boolean {
     let member = interaction.member as GuildMember;
     let state = member.voice.channel;
-    var embed = new MessageEmbed().setColor('BLUE');
+    var embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
 
     //if user is not connected
     if (!state) {

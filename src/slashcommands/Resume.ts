@@ -6,6 +6,7 @@ import {
 	GuildMember,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { SlashCommand } from './SlashCommand';
 
 export class Resume implements SlashCommand {
@@ -18,7 +19,7 @@ export class Resume implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor('BLUE');
+			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {

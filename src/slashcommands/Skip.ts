@@ -9,6 +9,7 @@ import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
+import { colorCheck } from '../resources/embedColorCheck';
 
 export class Skip implements SlashCommand {
 	name: string = 'skip';
@@ -27,7 +28,7 @@ export class Skip implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor('BLUE');
+			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
