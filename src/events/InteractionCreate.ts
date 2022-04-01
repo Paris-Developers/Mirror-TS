@@ -47,7 +47,7 @@ export class InteractionCreate implements EventHandler {
 			}
 		}
 		if(command.musicCommand){
-			if(await voiceCommandCheck(bot, interaction)) return;
+			if(!(await voiceCommandCheck(bot, interaction))) return;
 		}
 		//if the command requires permissions
 		if (command.requiredPermissions) {

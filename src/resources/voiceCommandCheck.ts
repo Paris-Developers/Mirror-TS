@@ -12,7 +12,7 @@ export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): bo
     if (!state) {
         embed.setDescription('You are not connected to a voice channel!');
         interaction.reply({ embeds: [embed], ephemeral: true });
-        return true;
+        return false;
     }
 
     //if mirror is not connected to voice
@@ -29,7 +29,7 @@ export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): bo
                 'Mirror is not connected to a voice channel, use `/join`'
             );
             interaction.reply({ embeds: [embed], ephemeral: true });
-            return true;
+            return false;
         }
     }
     //if the user is not connected to the correct voice, end
@@ -38,7 +38,7 @@ export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): bo
             'Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call'
         );
         interaction.reply({ embeds: [embed], ephemeral: true });
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
