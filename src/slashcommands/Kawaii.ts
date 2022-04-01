@@ -9,6 +9,7 @@ import {
 } from 'discord.js';
 import fetch from 'node-fetch';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
@@ -28,7 +29,7 @@ export class Kawaii implements SlashCommand {
 			//fetches the nekos.best api
 			let res = await fetch(`https://nekos.best/api/v1/wink`);
 			let jsonData = await res.json();
-			let embed = new MessageEmbed().setColor('#0071b6').setImage(jsonData.url);
+			let embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id)).setImage(jsonData.url);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
