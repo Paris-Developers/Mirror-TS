@@ -41,7 +41,7 @@ export let bdayTimes = new Enmap({ name: 'bdayTimes' });
 export class BirthdayConfig implements SlashCommand {
 	name: string = 'birthdayconfig';
 	description =
-		'[MANAGER] Configure the time and channel to send the birthday messages';
+		'[MANAGER] Configure the time and channel for birthday messages';
 	options = [
 		new Option(
 			'channel',

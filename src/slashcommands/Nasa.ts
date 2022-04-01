@@ -16,7 +16,7 @@ import { colorCheck } from '../resources/embedColorCheck';
 
 export class Nasa implements SlashCommand {
 	name: string = 'nasa';
-	description: string = 'Get daily astronomy pictures';
+	description: string = 'NASA\'s astronomy picture of the day';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,

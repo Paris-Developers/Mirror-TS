@@ -15,7 +15,7 @@ import { Option, Subcommand } from './Option';
 
 export class RemoveIntro implements SlashCommand {
 	public name = 'removeintro';
-	description: string = '[MANAGER] Delete someones intro theme!';
+	description: string = '[MANAGER] Remove someones intro theme!';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'user',

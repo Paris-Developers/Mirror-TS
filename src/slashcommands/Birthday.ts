@@ -99,7 +99,7 @@ export let bdayDates = new Enmap({ name: 'bdayDates' });
 export class Birthday implements SlashCommand {
 	name: string = 'birthday';
 	description =
-		'Set your birthday to recieve a Birthday message on your birthday!';
+		'Set your birthday to recieve a special message on your birthday!';
 	options = [
 		new Option(
 			'month',

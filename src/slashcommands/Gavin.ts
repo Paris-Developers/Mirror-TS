@@ -36,7 +36,7 @@ let gav_records = new Enmap({ name: 'gav_records' }); //named enmaps are persist
 //dirt whore
 export class Gavin implements SlashCommand {
 	name: string = 'gavin';
-	description: string = 'Lift data';
+	description: string = 'Gavins personal records';
 	options: (Option | Subcommand)[] = [
 		new Subcommand('all', 'print all of the lift data'),
 		new Subcommand('lift', "show a specific lift's data", [

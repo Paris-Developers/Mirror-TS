@@ -12,7 +12,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class Leave implements SlashCommand {
 	name: string = 'leave';
-	description: string = 'Have Mirror leave your voice channel.';
+	description: string = 'Have Mirror leave your voice channel';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
@@ -44,4 +44,5 @@ export class Leave implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean = true;
+	blockSilenced?: boolean | undefined = true;
 }

@@ -21,4 +21,6 @@ export interface SlashCommand {
 	managerRequired?: boolean;
 	//if the command blocks silenced users/roles set true
 	blockSilenced?: boolean;
+	//if the command is a voice command and we need to check VC
+	musicCommand?: boolean;
 }

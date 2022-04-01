@@ -21,7 +21,7 @@ export let defaultVc = new Enmap('defaultVc');
 export class DefaultVc implements SlashCommand {
 	name: string = 'defaultvc';
 	description =
-		'[MANAGER] Set a default voice channel for Mirror to join upon restart, will not play a sound';
+		'[MANAGER] Set voice channel for Mirror to join upon restart, will not play an intro';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'channel',
