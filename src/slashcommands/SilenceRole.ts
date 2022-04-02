@@ -90,6 +90,7 @@ export function silenceCheck(interaction: Interaction): boolean {
 	let silenced = silencedRole.get(interaction.guild!.id);
 	if (member?.roles.cache.has(silenced)) return true;
 	silenced = silencedUsers.get(interaction.guild!.id);
+	if(!silenced) return false;
 	for (let user of silenced) {
 		if (user == member!.id) return true;
 	}
