@@ -112,7 +112,7 @@ export class Config implements SlashCommand {
 					inline: false,
 				},
 				{
-					name: 'Timers'
+					name: 'Timers',
 					value: nameString,
 					inline: true,
 				},
