@@ -56,14 +56,14 @@ export class CreateTimer implements SlashCommand {
 			false,
 			messageOptions
 		),
-		new Option(
-			'scheduleoptions',
-			'How frequently you want to recieve the timers message',
-			ApplicationCommandOptionTypes.STRING,
-			true,
-			false,
-			scheduleOptions
-		),
+		// new Option(
+		// 	'scheduleoptions',
+		// 	'How frequently you want to recieve the timers message',
+		// 	ApplicationCommandOptionTypes.STRING,
+		// 	true,
+		// 	false,
+		// 	scheduleOptions
+		// ),
 		new Option(
 			'channel',
 			'The Channel you would like the timer to be sent in',
@@ -90,12 +90,12 @@ export class CreateTimer implements SlashCommand {
 			false,
 			timezones
 		),
-		new Option(
-			'query',
-			'The content (if needed) for your bot to search for',
-			ApplicationCommandOptionTypes.STRING,
-			false
-		),
+		// new Option(
+		// 	'query',
+		// 	'The content (if needed) for your bot to search for',
+		// 	ApplicationCommandOptionTypes.STRING,
+		// 	false
+		// ),
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
