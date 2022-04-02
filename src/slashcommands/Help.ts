@@ -11,6 +11,7 @@ import {
 	User,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { SlashCommand } from './SlashCommand';
 
 export class Help implements SlashCommand {
@@ -31,7 +32,7 @@ export class Help implements SlashCommand {
 				cmds[command.name] = command.description;
 			})
 			const page1 = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':mirror: **__Mirror__**')
 				.setDescription('Informational and fun discord bot created by Ford, Zac, and Marty')
 				.addFields(
@@ -53,7 +54,7 @@ export class Help implements SlashCommand {
 				)
 				.setFooter({ text: 'Page 1 of 5' });
 			const page2 = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':sound: **__Voice Commands__**')
 				.setDescription(
 					`\`/join\`  ${cmds.join}\n` +
@@ -81,7 +82,7 @@ export class Help implements SlashCommand {
 				})
 				.setFooter({ text: 'Page 2 of 5' });
 			const page3 = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.addFields({
 					name: 'Informative Commands',
 					value: `\`/weather\`  ${cmds.weather}\n` +
@@ -102,7 +103,7 @@ export class Help implements SlashCommand {
 				})
 				.setFooter({ text: 'Page 3 of 5' });
 			const page4 = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':bell: **__Server Configuration__**')
 				.setDescription(
 					`\`/config\`  ${cmds.config}\n` +
@@ -114,11 +115,12 @@ export class Help implements SlashCommand {
 					`\`/silencerole\`  ${cmds.silencerole}\n` + 
 					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
 					`\`/nsfw\`  ${cmds.nsfw}\n` +
+					`\`/servercolor\`  ${cmds.servercolor}\n` +
 					`\`/removeintro\`  ${cmds.removeintro}\n`
 				)
 				.setFooter({ text: 'Page 4 of 5' });
 			const page5 = new MessageEmbed()
-			.setColor('#FFFFFF')
+			.setColor(colorCheck(interaction.guild!.id))
 			.setTitle(':bell: **__Other Information__**')
 			.addFields({
 				name: 'Commands',

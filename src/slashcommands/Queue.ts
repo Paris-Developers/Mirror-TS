@@ -7,6 +7,7 @@ import {
 	GuildMember,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { SlashCommand } from './SlashCommand';
 
 export class Queue implements SlashCommand {
@@ -16,7 +17,7 @@ export class Queue implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor('BLUE');
+			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing || queue.tracks.length == 0)
@@ -70,7 +71,7 @@ export class Queue implements SlashCommand {
 						inline: true,
 					}
 				)
-				.setColor('BLUE');
+				.setColor(colorCheck(interaction.guild!.id,true));
 			if (queue.tracks.length - 16 > 0) {
 				footerText = `${queue.tracks.length - 16} more tracks, ` + footerText;
 			}

@@ -12,6 +12,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
@@ -64,7 +65,7 @@ export class DefaultVc implements SlashCommand {
 			}
 			defaultVc.set(interaction.guild!.id, channel.id);
 			let embed = new MessageEmbed()
-				.setColor('#ffffff')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Sucessfully updated your default voice channel to ${channel}`
 				);
