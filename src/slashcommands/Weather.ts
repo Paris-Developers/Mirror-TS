@@ -15,6 +15,7 @@ import { find } from 'geo-tz';
 import config from '../../config.json';
 import { Option, Subcommand } from './Option';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { colorCheck } from '../resources/embedColorCheck';
 
 type emojiConverter = { [index: string]: string };
 const weatherEmoji = {
@@ -50,7 +51,7 @@ const cardinalDir = {
 
 export class Weather implements SlashCommand {
 	name: string = 'weather';
-	description: string = 'Weather data';
+	description: string = 'Weather data for a provided city';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'city',
@@ -76,7 +77,7 @@ export class Weather implements SlashCommand {
 		try {
 			if (!interaction.options.getString('city')) {
 				const embed = new MessageEmbed()
-					.setColor('#FFFFFF')
+					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Empty message, please provide a city');
 				interaction.reply({ embeds: [embed] });
 				return;
@@ -96,7 +97,7 @@ export class Weather implements SlashCommand {
 			jsonData = await res.json();
 			if (jsonData.cod == '404') {
 				const embed = new MessageEmbed()
-					.setColor('#FFFFFF')
+					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(`Error: City not found, try again`);
 				interaction.reply({ embeds: [embed] });
 				return;
@@ -147,7 +148,7 @@ export class Weather implements SlashCommand {
 			}
 			//creates message embed and edits modifiers
 			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(`**Current Weather in ${str}**`)
 				.addFields(
 					//adds multiple embed fields simultaneously

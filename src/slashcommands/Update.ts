@@ -14,6 +14,7 @@ import config from '../../config.json';
 import Enmap from 'enmap';
 import { Option, Subcommand } from './Option';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { colorCheck } from '../resources/embedColorCheck';
 
 export let updateChannels = new Enmap({ name: 'updateChannels' });
 
@@ -74,7 +75,7 @@ export class Update implements SlashCommand {
 			//var enmapChannel = updateChannels.ensure(interaction.guild.id, '');
 			updateChannels.set(interaction.guild.id, channel?.id);
 			let embed = new MessageEmbed()
-				.setColor('#ffffff')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Sucessfully updated your development messages to ${channel}`
 				);

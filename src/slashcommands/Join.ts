@@ -4,6 +4,7 @@ import {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
+	VoiceConnection,
 } from '@discordjs/voice';
 import {
 	CacheType,
@@ -28,10 +29,6 @@ export class Join implements SlashCommand {
 		try {
 			let member = interaction.member as GuildMember;
 			let state = member.voice;
-			if (!state.channel) {
-				interaction.reply('you are not in a valid voice channel!');
-				return;
-			}
 			const connection = joinVoiceChannel({
 				channelId: state.channelId!,
 				guildId: interaction.guildId!,
@@ -53,4 +50,6 @@ export class Join implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean = true;
+	blockSilenced?: boolean | undefined = true;
+	musicCommand = true;
 }

@@ -13,6 +13,7 @@ import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
 import { birthdayTimer } from '../resources/birthdayTimer';
 import Enmap from 'enmap';
+import { colorCheck } from '../resources/embedColorCheck';
 
 const timezones = [
 	{ name: 'GMT', value: 'gmt' },
@@ -40,7 +41,7 @@ export let bdayTimes = new Enmap({ name: 'bdayTimes' });
 export class BirthdayConfig implements SlashCommand {
 	name: string = 'birthdayconfig';
 	description =
-		'[MANAGER] Configure the time and channel to send the birthday messages';
+		'[MANAGER] Configure the time and channel for birthday messages';
 	options = [
 		new Option(
 			'channel',
@@ -150,7 +151,7 @@ export class BirthdayConfig implements SlashCommand {
 			if (hour < 10) hourText = '0' + hourText;
 			if (minute < 10) minuteText = '0' + minuteText;
 			let embed = new MessageEmbed()
-				.setColor('#ffffff')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Successfully scheduled your birthday timer for **\`${hourText}:${minuteText}\` \`${timezone.toUpperCase()}\`** in ${interaction.options.getChannel(
 						'channel'

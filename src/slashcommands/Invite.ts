@@ -11,7 +11,7 @@ import { SlashCommand } from './SlashCommand';
 
 export class Invite implements SlashCommand {
 	name: string = 'invite';
-	description: string = 'Invite link for Mirror';
+	description: string = 'Invite link for mirror';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
@@ -23,14 +23,10 @@ export class Invite implements SlashCommand {
 	): Promise<void> {
 		try {
 			const embed = new MessageEmbed()
-				.setTitle('**__Invite Mirror__**')
 				.setDescription(
-					'Want to invite Mirror to your own server? Click the link above.'
+					'Want to invite Mirror to your own server? Click [here](https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=139606649936&scope=bot%20applications.commands).'
 				)
 				.setThumbnail('https://imgur.com/nXf9JGG.jpg')
-				.setURL(
-					'https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=0&scope=bot%20applications.commands'
-				)
 				.setFooter({
 					text: 'Created in 2021, by Fordle#0001 and Phantasm#0001',
 				});

@@ -12,10 +12,11 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import { Option, Subcommand } from './Option';
+import { colorCheck } from '../resources/embedColorCheck';
 
 export class Nasa implements SlashCommand {
 	name: string = 'nasa';
-	description: string = 'Get daily astronomy pictures';
+	description: string = 'NASA\'s astronomy picture of the day';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
 		Permissions.FLAGS.SEND_MESSAGES,
@@ -34,7 +35,7 @@ export class Nasa implements SlashCommand {
 			let footer = `${jsonData.date} NASA Astronomy Picture of the day`; //we need this for the deprecation error we are getting with .setFooter()
 			bot.logger.debug(jsonData); // <- remove eventually;
 			var embed = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(`${jsonData.explanation.substr(0, 200)}...`)
 				.setFooter({ text: footer })
 				.setImage(jsonData.url)

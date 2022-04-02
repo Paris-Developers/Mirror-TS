@@ -17,7 +17,7 @@ export const silencedUsers = new Enmap('silencedUsers');
 export class SilenceMember implements SlashCommand {
 	name: string = 'silencemember';
 	description: string =
-		'[ADMIN ONLY] Silence a member from using Intros or Setting their birthday.';
+		'[ADMIN ONLY] Silence a member from using Intros, Music or Birthday commands.';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'user',

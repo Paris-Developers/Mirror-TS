@@ -12,6 +12,7 @@ import {
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
+import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
@@ -20,7 +21,7 @@ export let defaultVc = new Enmap('defaultVc');
 export class DefaultVc implements SlashCommand {
 	name: string = 'defaultvc';
 	description =
-		'[MANAGER] Set a default voice channel for Mirror to join upon restart, will not play a sound';
+		'[MANAGER] Set voice channel for Mirror to join upon restart, will not play an intro';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'channel',
@@ -64,7 +65,7 @@ export class DefaultVc implements SlashCommand {
 			}
 			defaultVc.set(interaction.guild!.id, channel.id);
 			let embed = new MessageEmbed()
-				.setColor('#ffffff')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Sucessfully updated your default voice channel to ${channel}`
 				);

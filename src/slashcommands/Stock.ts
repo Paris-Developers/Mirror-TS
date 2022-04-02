@@ -14,6 +14,7 @@ import config from '../../config.json';
 import fetch from 'node-fetch';
 import { Option, Subcommand } from './Option';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { colorCheck } from '../resources/embedColorCheck';
 
 export class Stock implements SlashCommand {
 	name: string = 'stock';
@@ -38,7 +39,7 @@ export class Stock implements SlashCommand {
 			//tests to see if the command was passed in with arguements
 			if (!interaction.options.getString('tickers')) {
 				const embed = new MessageEmbed()
-					.setColor('#FFFFFF')
+					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Please provide a valid ticker(s)');
 				interaction.reply({ embeds: [embed] });
 				return;
@@ -47,7 +48,7 @@ export class Stock implements SlashCommand {
 			let args = interaction.options.getString('tickers')!.split(' ');
 			if (args.length > 10) {
 				const embed = new MessageEmbed()
-					.setColor('#FFFFFF')
+					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Please provide 10 or fewer stocks to call');
 				interaction.reply({ embeds: [embed] });
 				return;
@@ -95,7 +96,7 @@ export class Stock implements SlashCommand {
 
 				//creates discord message embed and edits the modifiers with the attained variables above
 				embedList[ctr] = new MessageEmbed()
-					.setColor('#FFFFFF')
+					.setColor(colorCheck(interaction.guild!.id))
 					.setTitle(`__Summary for ${company}:__`)
 					.setDescription(' ')
 					.addFields(

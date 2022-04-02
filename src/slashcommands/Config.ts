@@ -13,6 +13,8 @@ import { nsfw } from './Nsfw';
 import { managerRoles } from './ManagerRole';
 import { silencedRole } from './SilenceRole';
 import { guildTimers } from '../resources/scheduleTimer';
+import { serverColors } from './ServerColor';
+import { colorCheck } from '../resources/embedColorCheck';
 
 export class Config implements SlashCommand {
 	name: string = 'config';
@@ -21,15 +23,16 @@ export class Config implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
-			let embed = new MessageEmbed().setTitle(
-				`:gear: Server Settings for ${interaction.guild?.name}`
-			);
+			let embed = new MessageEmbed()
+				.setTitle(`:gear: Server Settings for ${interaction.guild?.name}`)
+				.setColor(colorCheck(interaction.guild!.id));
 			let lines: any[][] = [
 				['Setting', 'Description', 'Configuration'],
 				['`/update`', 'Mirror development updates', '❌'],
 				['`/birthdayconfig`', 'Recieve birthday messages', '❌'],
 				['`/defaultvc`', 'Channel Mirror joins automatically', '❌'],
 				['`/nsfw`', 'Toggle NSFW settings', '❌'],
+				['`/servercolor`','Change Default Color', '❌'],
 			];
 			let bday = bdayChannels.get(interaction.guild!.id);
 			let defaultVoice = defaultVc.get(interaction.guild!.id);
@@ -37,6 +40,7 @@ export class Config implements SlashCommand {
 			let nsfwToggle = nsfw.get(interaction.guild!.id);
 			let silence = silencedRole.get(interaction.guild!.id);
 			let timers = guildTimers.get(interaction.guild!.id);
+			let serverColor = serverColors.get(interaction.guild!.id);
 			if (update) {
 				update = bot.client.channels.cache.get(update);
 				lines[1][2] = update;
@@ -51,6 +55,9 @@ export class Config implements SlashCommand {
 			}
 			if (nsfwToggle == 'on') {
 				lines[4][2] = '✅';
+			}
+			if(serverColor){
+				lines[5][2] = serverColor;
 			}
 			let managerArray = managerRoles.ensure(interaction.guild!.id, []);
 			let managerString = '';
@@ -81,17 +88,17 @@ export class Config implements SlashCommand {
 			embed.addFields(
 				{
 					name: lines[0][0],
-					value: `${lines[1][0]}\n${lines[2][0]}\n${lines[3][0]}\n${lines[4][0]}`,
+					value: `${lines[1][0]}\n${lines[2][0]}\n${lines[3][0]}\n${lines[4][0]}\n${lines[5][0]}`,
 					inline: true,
 				},
 				{
 					name: lines[0][1],
-					value: `${lines[1][1]}\n${lines[2][1]}\n${lines[3][1]}\n${lines[4][1]}`,
+					value: `${lines[1][1]}\n${lines[2][1]}\n${lines[3][1]}\n${lines[4][1]}\n${lines[5][1]}`,
 					inline: true,
 				},
 				{
 					name: lines[0][2],
-					value: `${lines[1][2]}\n${lines[2][2]}\n${lines[3][2]}\n${lines[4][2]}`,
+					value: `${lines[1][2]}\n${lines[2][2]}\n${lines[3][2]}\n${lines[4][2]}\n${lines[5][2]}`,
 					inline: true,
 				},
 				{

@@ -10,9 +10,11 @@
 	"author": "Ford Friedel",
 	"license": "ISC",
 	"dependencies": {
+		"@discordjs/opus": "latest",
 		"@discordjs/voice": "latest",
 		"chrono-node": "latest",
 		"cron": "latest",
+		"discord-player": "latest",
 		"discord.js": "latest",
 		"enmap": "latest",
 		"ffmpeg": "latest",
@@ -24,7 +26,8 @@
 		"tslog": "^3.3.2",
 		"tweetnacl": "latest",
 		"typescript": "^4.5.5",
-		"ytdl": "latest"
+		"ytdl": "latest",
+		"ytdl-core": "^4.11.0"
 	},
 	"devDependencies": {
 		"@types/mkdirp": "^1.0.2",

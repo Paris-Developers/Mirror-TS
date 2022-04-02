@@ -13,13 +13,14 @@ import { SlashCommand } from './SlashCommand';
 import { managerRoles } from './ManagerRole';
 import { silencedUsers } from './SilenceMember';
 import { Option, Subcommand } from './Option';
+import { colorCheck } from '../resources/embedColorCheck';
 
 export const silencedRole = new Enmap('SilencedRole');
 
 export class SilenceRole implements SlashCommand {
 	name: string = 'silencerole';
 	description: string =
-		'[MANAGER] Set a role from using Birthday, Intro, or Music commands.';
+		'[MANAGER] Set a role from using Intro, Music, or Birthday commands';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'role',
@@ -60,14 +61,14 @@ export class SilenceRole implements SlashCommand {
 			if (currentRole && currentRole != badRole.id) {
 				let getRole = interaction.guild?.roles.cache.get(currentRole);
 				const embed = new MessageEmbed()
-					.setColor('#FFFFFF')
+					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(
 						`Replaced role ${getRole} with ${badRole} as silenced role.  Members with this role will not be able to interact with Birthdays, Introthemes or Music Commands.`
 					);
 				return interaction.reply({ embeds: [embed] });
 			}
 			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
+				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Set ${badRole} as silenced, members with this role will not be able to react with Birthdays, Introthemes, and Music Commands`
 				);
@@ -90,6 +91,7 @@ export function silenceCheck(interaction: Interaction): boolean {
 	let silenced = silencedRole.get(interaction.guild!.id);
 	if (member?.roles.cache.has(silenced)) return true;
 	silenced = silencedUsers.get(interaction.guild!.id);
+	if(!silenced) return false;
 	for (let user of silenced) {
 		if (user == member!.id) return true;
 	}
