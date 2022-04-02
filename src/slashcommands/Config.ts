@@ -3,6 +3,9 @@ import {
 	CommandInteraction,
 	CacheType,
 	MessageEmbed,
+	Permissions,
+	GuildChannel,
+	GuildChannelResolvable,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -20,7 +23,7 @@ export class Config implements SlashCommand {
 	description = 'See the configuration settings for this server';
 	options = [];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			let embed = new MessageEmbed()
 				.setTitle(`:gear: Server Settings for ${interaction.guild?.name}`)
@@ -101,6 +104,36 @@ export class Config implements SlashCommand {
 					inline: false,
 				}
 			);
+			
+			var permString = 'Looks like you have all the required permissions to use Mirror in this channel :smile:';
+			//Check if administrator:
+			let channel = interaction.channel as GuildChannel;
+			//Check for missing permissions:
+			const requiredPermission: bigint[] = [
+				Permissions.FLAGS.ADD_REACTIONS,
+				Permissions.FLAGS.CONNECT,
+				Permissions.FLAGS.EMBED_LINKS,
+				Permissions.FLAGS.MANAGE_MESSAGES,
+				Permissions.FLAGS.MOVE_MEMBERS,
+				Permissions.FLAGS.SEND_MESSAGES,
+				Permissions.FLAGS.SPEAK,
+				Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
+				Permissions.FLAGS.VIEW_CHANNEL
+			]; 
+			let missingPerms = [];
+			let us = await interaction.guild!.members.fetch(bot.client.user!);
+			let permissions = channel.permissionsFor(us);
+			for(let perm of requiredPermission){
+				if(!permissions.has(perm)) missingPerms.push(perm);
+				console.log(perm);
+			}
+			if(missingPerms.length > 0){
+				permString = 'Looks like Mirror is missing a few permissions:'
+				for(let perm of missingPerms){
+					permString += '\n' + perm;
+				}
+			}
+			embed.addField('Permissions', permString);
 			return interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
