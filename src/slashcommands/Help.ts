@@ -59,12 +59,12 @@ export class Help implements SlashCommand {
 				.setDescription(
 					`\`/join\`  ${cmds.join}\n` +
 					`\`/leave\`  ${cmds.leave}\n` + 
-					`\`/default\`  ${cmds.defaultvc}\n`
+					`\`/defaultvc\`  ${cmds.defaultvc}\n`
 				)
 				.addFields({
 					name: 'Introtheme Commands',
 					value: `\`/intro\`  ${cmds.intro}\n` +
-					`\`/banIntro\`  ${cmds.banIntro}\n`,
+					`\`/banintro\`  ${cmds.banintro}\n`,
 					inline: false	
 				},{
 					name: 'Music Commands',
@@ -97,7 +97,6 @@ export class Help implements SlashCommand {
 					`\`/kawaii\`  ${cmds.kawaii}\n` +
 					`\`/tickle\`  ${cmds.tickle}\n` +
 					`\`/mirror\`  ${cmds.mirror}\n` +
-					`\`/boey\`  ${cmds.boey}\n` +
 					`\`/nut\`  ${cmds.nut}\n` +
 					`\`/roll\`  ${cmds.roll}\n`
 				})
@@ -129,7 +128,7 @@ export class Help implements SlashCommand {
 				`\`/support\`  ${cmds.support}\n` +
 				`\`/test\`  ${cmds.test}\n`
 			},{
-				name: 'Thanks You!',
+				name: 'Thank You!',
 				value: 'Thank you for using Mirror! On behalf of the developer team we appreciate you taking time to learn and improve our bot.  If you have any questions regarding Mirror, reach out to us using our [Support Server](https://discord.gg/uvdg2R5PAU)'
 			})
 			.setFooter({ text: 'Page 5 of 5' });
