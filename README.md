@@ -1,4 +1,8 @@
-# Mirror TS
+<img align="left" width="auto" height="90" src="./docs/images/thumbnail128x128.png">
+[![Join us on Discord](https://img.shields.io/discord/907277628816388106.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/uvdg2R5PAU)
+
+
+# Mirror
 
 Mirror is an informational Discord bot.
 
