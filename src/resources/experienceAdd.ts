@@ -20,7 +20,6 @@ export function experienceAdd(user: string): void {
     userXP.xp += 1;
     userXP.date = [today.getDate(),today.getHours()];
     experience.set(user, userXP);
-    console.log(userXP);
     return;
 
 

@@ -2,6 +2,7 @@ import { Message, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from '../keywords/Keyword';
 import { MessageCommand } from '../messagecommands/MessageCommand';
+import { experienceAdd } from '../resources/experienceAdd';
 import { EventHandler } from './EventHandler';
 
 export class MessageCreate implements EventHandler {
@@ -54,5 +55,6 @@ export class MessageCreate implements EventHandler {
 
 		//run command/keyword
 		command.run(bot, message, args);
+		experienceAdd(message.author.id);
 	}
 }
