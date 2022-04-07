@@ -4,15 +4,23 @@
 
 # Mirror
 
-Mirror is an informational Discord bot.
+Mirror is a Discord bot which provides fun, emersive and informational features for your discord server.
 
-Mirror was created by Fordle#0001 and Phantasm#0001
+Mirror is a for fun project for learning TypeScript and the Discord API.
+
+Mirror was created by Fordle#0001 and Phantasm#0001 with help from our friends.
 
 ## Essential Commands
 
 ### /intro
 
+Set your introtheme to play everytime you join the chat channel!
+
+Find a 10 second or shorter youtube video and paste the link into the command.
+
 ### /play
+
+Use /play to 
 
 ### /weather
 
