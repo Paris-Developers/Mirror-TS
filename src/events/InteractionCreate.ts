@@ -1,6 +1,7 @@
 import { joinVoiceChannel } from '@discordjs/voice';
 import { CommandInteraction, GuildMember, MessageEmbed, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
+import { experience, experienceAdd } from '../resources/experienceAdd';
 import { managerCheck } from '../resources/managerCheck';
 import { voiceCommandCheck } from '../resources/voiceCommandCheck';
 import { silenceCheck } from '../slashcommands/SilenceRole';
@@ -76,5 +77,6 @@ export class InteractionCreate implements EventHandler {
 			}
 		}
 		command.run(bot, interaction);
+		experienceAdd(interaction.user.id);
 	}
 }
