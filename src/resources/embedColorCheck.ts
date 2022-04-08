@@ -8,4 +8,4 @@ export function colorCheck(guildID: string, music?: boolean): ColorResolvable {
         return '#FFFFFF';
     }
     return color;
-}
+}   
