@@ -12,11 +12,11 @@ Mirror was created by Fordle#0001 and Phantasm#0001, with contributions from our
 
 ## Essential Commands
 
-### /intro
+### Introthemes
 
-Set your introtheme to play everytime you join the chat channel!
+Set your introtheme with `/intro` to play an audio clip everytime you join the chat channel!
 
-Find a 10 second or shorter youtube video and paste the link into the command.
+Find a 10 second or shorter youtube video and paste the link into 'video' feild.
 
 ### /play
 
