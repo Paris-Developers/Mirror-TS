@@ -3,6 +3,7 @@
 [![Join us on Discord](https://img.shields.io/discord/938519232155648011.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/uvdg2R5PAU)
 
 
+
 # About Mirror
 
 Mirror is a multi-purpose Discord bot which provides fun, immersive and informative features for your discord server.
