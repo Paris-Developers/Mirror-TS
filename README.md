@@ -1,6 +1,7 @@
 <img align="left" width="auto" height="90" src="./docs/images/thumbnail128x128.png">
 
 [![Join us on Discord](https://img.shields.io/discord/938519232155648011.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/uvdg2R5PAU)
+
 [![MIT License](https://img.shields.io/badge/license-MIT-informational.svg)](./LICENSE)
 
 
