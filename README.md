@@ -15,13 +15,15 @@ Mirror was created by Fordle#0001 and Phantasm#0001, with contributions from our
 
 ### Introthemes
 
-Set your introtheme with `/intro` to play an audio clip everytime you join the chat channel!
+Set your introtheme with [`/intro`](src/slashcommands/Intro.ts) to play an audio clip everytime you join the chat channel!
 
 Find a 10 second or shorter youtube video and paste the link into 'video' feild.
 
-### /play
+### Music Player
 
-Use /play to 
+Mirror allows users to listen to songs and playlists from Spotify, Youtube and Soundcloud.  Using [`/play`](src/slashcommands/Play.ts) or [`/playnext`](src/slashcommands/PlayNext.ts) you can search for songs or paste your own song or playlist and it will add it to the queue.
+
+The Music functionality includes many commands
 
 ### /weather
 
