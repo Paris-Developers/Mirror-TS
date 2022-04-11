@@ -11,7 +11,7 @@ Mirror is a multi-purpose Discord bot which provides fun, immersive and informat
 
 Mirror is a for fun personal project for learning programming and computer science concepts through TypeScript, GitHub and the Discord API.
 
-Mirror was created by Fordle#0001 and Phantasm#0001, with contributions from our friends.
+Mirror was created by Fordle#0001 and Phantasm#0001, with contributions from friends.
 
 ## Essential Commands
 
@@ -27,7 +27,10 @@ Mirror allows users to listen to songs and playlists from Spotify, Youtube and S
 
 The Music functionality includes many commands
 
-### /weather
+### Informational Commands
+
+[`/weather`](src/slashcommands/Weather.ts): Displays the current weather for a specified city.
+[`/]
 
 ### /nasa
 
