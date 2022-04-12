@@ -7,7 +7,7 @@ import { SlashCommand } from "./SlashCommand";
 
 export class Loop implements SlashCommand{
     name: string = 'loop';
-    description: string = 'Loop a song';
+    description: string = 'Loop the song that is currently playing';
     options: (Option | Subcommand)[] = [];
     requiredPermissions: bigint[] = [];
     run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
