@@ -10,6 +10,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
+import { Queue, QueueRepeatMode } from 'discord-player';
 
 export class Skip implements SlashCommand {
 	name: string = 'skip';
@@ -34,6 +35,9 @@ export class Skip implements SlashCommand {
 			if (!queue || !queue.playing) {
 				embed.setDescription('There is no music playing!');
 				return interaction.reply({ embeds: [embed], ephemeral: true });
+			}
+			if(queue.repeatMode){
+				queue.setRepeatMode(QueueRepeatMode.OFF);
 			}
 			let tracksToSkip = interaction.options.getInteger('number');
 			if (tracksToSkip) {
