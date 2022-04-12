@@ -19,8 +19,13 @@ export class Loop implements SlashCommand{
                 embed.setDescription('There is no music playing!');
                 return interaction.reply({embeds: [embed]});
             }
+            if(queue.repeatMode){
+                embed.setDescription('Stopped looping');
+                queue.setRepeatMode(QueueRepeatMode.OFF);
+                return interaction.reply({embeds: [embed]});
+            }
             queue.setRepeatMode(QueueRepeatMode.TRACK);
-            embed.setDescription('Looping the current song!');
+            embed.setDescription(`Now looping **${queue.nowPlaying().title}** by *${queue.nowPlaying().author}*.  Use \`/skip\` to continue the queue`);
             return interaction.reply({embeds:[embed]});
         }
         catch (err) {

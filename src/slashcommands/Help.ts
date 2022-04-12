@@ -64,7 +64,7 @@ export class Help implements SlashCommand {
 				.addFields({
 					name: 'Introtheme Commands',
 					value: `\`/intro\`  ${cmds.intro}\n` +
-					`\`/banintro\`  ${cmds.banintro}\n`,
+					`\`/removeintro\`  ${cmds.removeintro}\n`,
 					inline: false	
 				},{
 					name: 'Music Commands',
@@ -76,6 +76,7 @@ export class Help implements SlashCommand {
 					`\`/shuffle\`  ${cmds.shuffle}\n` +
 					`\`/pause\`  ${cmds.pause}\n` +
 					`\`/resume\`  ${cmds.resume}\n` +
+					`\`/loop\` ${cmds.loop}\n` +
 					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
 					`\`/sicko\`  ${cmds.sicko}\n`,
 					inline:false
