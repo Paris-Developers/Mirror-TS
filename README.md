@@ -26,20 +26,20 @@ Find a 10 second or shorter youtube video and paste the link into 'video' feild.
 Mirror allows users to listen to songs and playlists from Spotify, Youtube and Soundcloud.  Using [`/play`](src/slashcommands/Play.ts) or [`/playnext`](src/slashcommands/PlayNext.ts) you can search for songs or paste your own song or playlist and it will add it to the queue.
 
 The Music functionality includes many commands:
- [x] [`/shuffle`](src/slashcommands/Shuffle.ts)
- [x] [`/loop`](src/slashcommands/Loop.ts)
- [x] [`/resume`](src/slashcommands/Resume.ts), [`/pause`](src/slashcommands/Pause.ts)
- [x] [`/queue`](src/slashcommands/Queue.ts), [`/clearqueue`](src/slashcommands/ClearQueue.ts)
- [x] [`/skip`](src/slashcommands/Skip.ts)
+ - [x] [`/shuffle`](src/slashcommands/Shuffle.ts)
+ - [x] [`/loop`](src/slashcommands/Loop.ts)
+ - [x] [`/resume`](src/slashcommands/Resume.ts), [`/pause`](src/slashcommands/Pause.ts)
+ - [x] [`/queue`](src/slashcommands/Queue.ts), [`/clearqueue`](src/slashcommands/ClearQueue.ts)
+ - [x] [`/skip`](src/slashcommands/Skip.ts)
  and more!
  
 ### Informative Commands
 
-[`/weather`](src/slashcommands/Weather.ts) Current weather for a provided city.
+ - [x] [`/weather`](src/slashcommands/Weather.ts) Current weather for a provided city.
 
-[`/stock`](src/slashcommands/Stock.ts) Daily summaries for up to 10 provided tickers.
+ - [x] [`/stock`](src/slashcommands/Stock.ts) Daily summaries for up to 10 provided tickers.
 
-[`/nasa`](src/slashcommands/Nasa.ts) Display the NASA Astronomy Picture of the Day.
+ - [x] [`/nasa`](src/slashcommands/Nasa.ts) Display the NASA Astronomy Picture of the Day.
 
 ## Contributing to Mirror
 
@@ -52,4 +52,8 @@ For more information on formatting and installing the bot read below:
 [Contributing](docs/CONTRIBUTING.md)  
 [Building the bot](docs/BUILDING.md)  
 [APIs we use](docs/APIDOCUMENTATION.md)
+
+## Aknowledgements
+
+
 
