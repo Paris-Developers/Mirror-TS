@@ -5,7 +5,7 @@ import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
-const nuts = new Enmap('nuts');
+const nuts = new Enmap({name:'nuts', fetchAll: true});
 const gifArray = [
 	'https://media.giphy.com/media/j6ZW4QRTVTuWNsDlUV/giphy.gif',
 	'https://i.imgur.com/Fi6pnvQ.gif',
@@ -111,19 +111,38 @@ export class Nut implements SlashCommand {
 				return interaction.reply({ embeds: [embed] });
 			}
 			if(interaction.options.getSubcommand() == 'leaderboard'){
+				//nuts.fetchEverything();
 				let guild = interaction.guild!;
 				let leaderboard: any[][] = [];
-				nuts.forEach((nutCount, userId) => {
-					if(guild.members.cache.get(userId.toString())){
+				nuts.forEach(async (nutCount, userId) => {
+					let user = bot.client.users.cache.get(userId.toString());
+					console.log(`now iterating throught ${userId} with ${nutCount}`);
+					if(){
 						let user = guild.members.cache.get(userId.toString())!;
-						if(leaderboard.length == 0) leaderboard.push([user.displayName,nutCount]);
-						for(let x in leaderboard){
-							if(nutCount > x[1]){
-								
-							}
-						}
+						leaderboard.push([user.displayName,nutCount]);
 					}
+				})
+				leaderboard = sort(leaderboard);
+
+				var userString = '';
+				var nutString = '';
+				
+				for(let x of leaderboard){
+					userString = x[0] + '\n' + userString;
+					nutString = x[1] + '\n' + nutString;
 				}
+				embed.addFields({
+					name:'Users',
+					value: userString,
+					inline: true
+				},{
+					name: 'Nuts',
+					value: nutString,
+					inline: true,
+				});
+				embed.setTitle(`Nut leaderboard for ${interaction.guild!.name}`);
+
+				return interaction.reply({embeds:[embed]});
 			};
 			return interaction.reply(':eyes:');
 		} catch (err) {
@@ -135,7 +154,19 @@ export class Nut implements SlashCommand {
 		}
 	}
 
-	guildRequired?: boolean | undefined;
+	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
-	blockSilenced?: boolean | undefined;
+	blockSilenced?: boolean | undefined = true;
+}
+var sort = function(arr: any[]){
+	arr.sort(function (a,b){
+		if(a[1] <b[1]){
+			return -1;
+		}
+		if(a[1] > b[1]){
+			return 1;
+		}
+		return 0;
+	})
+	return arr;
 }
