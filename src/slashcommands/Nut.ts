@@ -46,6 +46,7 @@ export class Nut implements SlashCommand {
 				false
 			),
 		]),
+		new Subcommand('leaderboard', 'View the servers nut leaderboard', []),
 	];
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
@@ -109,6 +110,21 @@ export class Nut implements SlashCommand {
 					.setImage('https://c.tenor.com/injWPZSrCK0AAAAC/bear.gif');
 				return interaction.reply({ embeds: [embed] });
 			}
+			if(interaction.options.getSubcommand() == 'leaderboard'){
+				let guild = interaction.guild!;
+				let leaderboard: any[][] = [];
+				nuts.forEach((nutCount, userId) => {
+					if(guild.members.cache.get(userId.toString())){
+						let user = guild.members.cache.get(userId.toString())!;
+						if(leaderboard.length == 0) leaderboard.push([user.displayName,nutCount]);
+						for(let x in leaderboard){
+							if(nutCount > x[1]){
+								
+							}
+						}
+					}
+				}
+			};
 			return interaction.reply(':eyes:');
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
