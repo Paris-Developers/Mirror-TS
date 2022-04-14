@@ -49,7 +49,7 @@ export class Nut implements SlashCommand {
 		new Subcommand('leaderboard', 'View the servers nut leaderboard', []),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			const embed = new MessageEmbed().setColor('#FDA50F');
 			if (
@@ -114,34 +114,37 @@ export class Nut implements SlashCommand {
 				//nuts.fetchEverything();
 				let guild = interaction.guild!;
 				let leaderboard: any[][] = [];
-				nuts.forEach(async (nutCount, userId) => {
-					let user = await bot.client.users.fetch(userId.toString())!;
-					console.log(`now iterating throught ${userId} with ${nutCount}`);
-					if(guild.members.cache.get(user.id)){
-						console.log('hi');
-						leaderboard.push([user.username,nutCount]);
+				for(const item of nuts){
+					let user = await bot.client.users.fetch(item[0].toString())!;
+					if(await guild.members.fetch(user.id)){
+						leaderboard.push([user.username,item[1]]);
 					}
-				})
+				}
 				leaderboard = sort(leaderboard);
-
 				var userString = '';
 				var nutString = '';
 				
+				
+				let ctr = 1;
 				for(let x of leaderboard){
-					userString = x[0] + '\n' + userString;
-					nutString = x[1] + '\n' + nutString;
+					if(x[0]==interaction.user.username){
+						embed.setFooter({text: `Your rank: ${ctr} of ${leaderboard.length}`, iconURL: interaction.user.avatarURL()!});
+					}
+					userString += x[0] + '\n';
+					nutString += x[1] + '\n';
+					ctr ++;
+					if(ctr >=16) break;
 				}
 				embed.addFields({
-					name:'Users',
+					name:'🤓 Users',
 					value: userString,
 					inline: true
 				},{
-					name: 'Nuts',
+					name: '🥜 Nuts',
 					value: nutString,
 					inline: true,
 				});
 				embed.setTitle(`Nut leaderboard for ${interaction.guild!.name}`);
-
 				return interaction.reply({embeds:[embed]});
 			};
 			return interaction.reply(':eyes:');
@@ -161,10 +164,10 @@ export class Nut implements SlashCommand {
 var sort = function(arr: any[]){
 	arr.sort(function (a,b){
 		if(a[1] <b[1]){
-			return -1;
+			return 1;
 		}
 		if(a[1] > b[1]){
-			return 1;
+			return -1;
 		}
 		return 0;
 	})
