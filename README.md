@@ -9,9 +9,11 @@
 
 Mirror is a multi-purpose Discord bot which provides fun, immersive and informative features for your discord server at no cost.
 
-Mirror is a for fun personal project for learning programming and computer science concepts through TypeScript, GitHub, and the Discord API.
+Mirror is a for-fun personal project for learning programming and computer science concepts through TypeScript, node-js, GitHub, and the Discord API.
 
 Mirror was created by Fordle#0001 and Phantasm#0001, with contributions from friends.
+
+Interested in adding Mirror to your server? Click [here](https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=139606649936&scope=bot%20applications.commands)
 
 ## Essential Commands
 
@@ -52,6 +54,7 @@ For more information on formatting and installing the bot read below:
 [Contributing](docs/CONTRIBUTING.md)  
 [Building the bot](docs/BUILDING.md)  
 [APIs we use](docs/APIDOCUMENTATION.md)
+[Development Server](https://discord.gg/BTVseHM)
 
 ## Acknowledgements
 
