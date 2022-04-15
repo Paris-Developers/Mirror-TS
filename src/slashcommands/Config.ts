@@ -3,6 +3,11 @@ import {
 	CommandInteraction,
 	CacheType,
 	MessageEmbed,
+	Permissions,
+	GuildChannel,
+	GuildChannelResolvable,
+	PermissionOverwriteManager,
+	PermissionResolvable,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -15,12 +20,23 @@ import { silencedRole } from './SilenceRole';
 import { serverColors } from './ServerColor';
 import { colorCheck } from '../resources/embedColorCheck';
 
+const permList = [
+	['ADD_REACTIONS', Permissions.FLAGS.ADD_REACTIONS],
+	['CONNECT', Permissions.FLAGS.CONNECT],
+	['EMBED_LINKS', Permissions.FLAGS.EMBED_LINKS],
+	['MANAGE_MESSAGES',Permissions.FLAGS.MANAGE_MESSAGES],
+	['MOVE_MEMBERS', Permissions.FLAGS.MOVE_MEMBERS],
+	['SEND_MESSAGES', Permissions.FLAGS.SEND_MESSAGES],
+	['SPEAK', Permissions.FLAGS.SPEAK],
+	['USE_EXTERNAL_EMOJIS',Permissions.FLAGS.USE_EXTERNAL_EMOJIS],
+	['VIEW_CHANNEL',Permissions.FLAGS.VIEW_CHANNEL]]
+	
 export class Config implements SlashCommand {
 	name: string = 'config';
 	description = 'See the configuration settings for this server';
 	options = [];
-	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			let embed = new MessageEmbed()
 				.setTitle(`:gear: Server Settings for ${interaction.guild?.name}`)
@@ -31,7 +47,7 @@ export class Config implements SlashCommand {
 				['`/birthdayconfig`', 'Recieve birthday messages', '❌'],
 				['`/defaultvc`', 'Channel Mirror joins automatically', '❌'],
 				['`/nsfw`', 'Toggle NSFW settings', '❌'],
-				['`/servercolor`','Change Default Color', '❌'],
+				['`/servercolor`','Change default color', '❌'],
 			];
 			let bday = bdayChannels.get(interaction.guild!.id);
 			let defaultVoice = defaultVc.get(interaction.guild!.id);
@@ -69,7 +85,7 @@ export class Config implements SlashCommand {
 				managerString = managerString.slice(0, -2);
 			}
 			let silenceString =
-				'To prevent someone interacting with Introthemes, Birthday Command or Music\n`/silencerole` or `/silencemember`';
+				'To prevent someone interacting with introthemes, birthday commands or music\n`/silencerole` or `/silencemember`';
 			if (silence) {
 				let getRole = interaction.guild?.roles.cache.get(silence);
 				silenceString = `${getRole}`;
@@ -101,6 +117,23 @@ export class Config implements SlashCommand {
 					inline: false,
 				}
 			);
+			
+			var permString = 'Looks like you have all the required permissions to use Mirror in this channel :smile:';
+			let channel = interaction.channel as GuildChannel;
+			let missingPerms = [];
+			let us = await interaction.guild!.members.fetch(bot.client.user!);
+			let permissions = channel.permissionsFor(us);
+			for(let x in permList){
+				if(!permissions.has(permList[x][1] as PermissionResolvable)) missingPerms.push(permList[x][0].toString());
+			}
+			if(missingPerms.length > 0){
+				permString = 'Looks like Mirror is missing a few permissions:'
+				for(let perm of missingPerms){
+					permString += '\n' + '\`' + perm + '\`';
+				}
+				permString += '\n' + 'Assign mirror the missing permissions to ensure full functionality'
+			}
+			embed.addField('Permissions', permString);
 			return interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
