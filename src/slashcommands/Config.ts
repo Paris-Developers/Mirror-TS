@@ -85,7 +85,7 @@ export class Config implements SlashCommand {
 				managerString = managerString.slice(0, -2);
 			}
 			let silenceString =
-				'To prevent someone interacting with Introthemes, Birthday Command or Music\n`/silencerole` or `/silencemember`';
+				'To prevent someone interacting with Introthemes, Birthday Commands or Music\n`/silencerole` or `/silencemember`';
 			if (silence) {
 				let getRole = interaction.guild?.roles.cache.get(silence);
 				silenceString = `${getRole}`;
