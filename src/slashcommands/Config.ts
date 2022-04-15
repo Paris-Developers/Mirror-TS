@@ -119,21 +119,7 @@ export class Config implements SlashCommand {
 			);
 			
 			var permString = 'Looks like you have all the required permissions to use Mirror in this channel :smile:';
-			//Check if administrator:
 			let channel = interaction.channel as GuildChannel;
-			//Check for missing permissions:
-			const requiredPermission: bigint[] = [
-				Permissions.FLAGS.ADD_REACTIONS,
-				Permissions.FLAGS.CONNECT,
-				Permissions.FLAGS.EMBED_LINKS,
-				Permissions.FLAGS.MANAGE_MESSAGES,
-				Permissions.FLAGS.MOVE_MEMBERS,
-				Permissions.FLAGS.SEND_MESSAGES,
-				Permissions.FLAGS.SPEAK,
-				Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
-				Permissions.FLAGS.VIEW_CHANNEL
-			];
-
 			let missingPerms = [];
 			let us = await interaction.guild!.members.fetch(bot.client.user!);
 			let permissions = channel.permissionsFor(us);
