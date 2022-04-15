@@ -6,4 +6,3 @@ mirror.flp
 logs/
 built/
 .prettierrc
-coverage/
