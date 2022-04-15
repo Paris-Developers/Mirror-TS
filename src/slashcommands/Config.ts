@@ -47,7 +47,7 @@ export class Config implements SlashCommand {
 				['`/birthdayconfig`', 'Recieve birthday messages', '❌'],
 				['`/defaultvc`', 'Channel Mirror joins automatically', '❌'],
 				['`/nsfw`', 'Toggle NSFW settings', '❌'],
-				['`/servercolor`','Change Default Color', '❌'],
+				['`/servercolor`','Change default color', '❌'],
 			];
 			let bday = bdayChannels.get(interaction.guild!.id);
 			let defaultVoice = defaultVc.get(interaction.guild!.id);
@@ -85,7 +85,7 @@ export class Config implements SlashCommand {
 				managerString = managerString.slice(0, -2);
 			}
 			let silenceString =
-				'To prevent someone interacting with Introthemes, Birthday Commands or Music\n`/silencerole` or `/silencemember`';
+				'To prevent someone interacting with introthemes, birthday commands or music\n`/silencerole` or `/silencemember`';
 			if (silence) {
 				let getRole = interaction.guild?.roles.cache.get(silence);
 				silenceString = `${getRole}`;
