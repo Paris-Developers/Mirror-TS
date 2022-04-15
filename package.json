@@ -4,7 +4,7 @@
 	"description": "Mirror `Discord` Bot TypeScript edition",
 	"main": "built/index.js",
 	"scripts": {
-		"test": "jest --coverage",
+		"test": "jest",
 		"test:watch": "jest --watch",
 		"start": "node ./built/src/index.js"
 	},
