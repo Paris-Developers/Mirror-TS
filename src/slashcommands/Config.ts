@@ -131,6 +131,7 @@ export class Config implements SlashCommand {
 				for(let perm of missingPerms){
 					permString += '\n' + '\`' + perm + '\`';
 				}
+				permString += '\n' + 'Assign mirror the missing permissions to ensure full functionality'
 			}
 			embed.addField('Permissions', permString);
 			return interaction.reply({ embeds: [embed] });
