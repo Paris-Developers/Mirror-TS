@@ -6,6 +6,8 @@ import {
 	Permissions,
 	GuildChannel,
 	GuildChannelResolvable,
+	PermissionOverwriteManager,
+	PermissionResolvable,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -18,11 +20,22 @@ import { silencedRole } from './SilenceRole';
 import { serverColors } from './ServerColor';
 import { colorCheck } from '../resources/embedColorCheck';
 
+const permList = [
+	['ADD_REACTIONS', Permissions.FLAGS.ADD_REACTIONS],
+	['CONNECT', Permissions.FLAGS.CONNECT],
+	['EMBED_LINKS', Permissions.FLAGS.EMBED_LINKS],
+	['MANAGE_MESSAGES',Permissions.FLAGS.MANAGE_MESSAGES],
+	['MOVE_MEMBERS', Permissions.FLAGS.MOVE_MEMBERS],
+	['SEND_MESSAGES', Permissions.FLAGS.SEND_MESSAGES],
+	['SPEAK', Permissions.FLAGS.SPEAK],
+	['USE_EXTERNAL_EMOJIS',Permissions.FLAGS.USE_EXTERNAL_EMOJIS],
+	['VIEW_CHANNEL',Permissions.FLAGS.VIEW_CHANNEL]]
+	
 export class Config implements SlashCommand {
 	name: string = 'config';
 	description = 'See the configuration settings for this server';
 	options = [];
-	requiredPermissions: bigint[] = [];
+	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
 	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			let embed = new MessageEmbed()
@@ -119,18 +132,18 @@ export class Config implements SlashCommand {
 				Permissions.FLAGS.SPEAK,
 				Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
 				Permissions.FLAGS.VIEW_CHANNEL
-			]; 
+			];
+
 			let missingPerms = [];
 			let us = await interaction.guild!.members.fetch(bot.client.user!);
 			let permissions = channel.permissionsFor(us);
-			for(let perm of requiredPermission){
-				if(!permissions.has(perm)) missingPerms.push(perm);
-				console.log(perm);
+			for(let x in permList){
+				if(!permissions.has(permList[x][1] as PermissionResolvable)) missingPerms.push(permList[x][0].toString());
 			}
 			if(missingPerms.length > 0){
 				permString = 'Looks like Mirror is missing a few permissions:'
 				for(let perm of missingPerms){
-					permString += '\n' + perm;
+					permString += '\n' + '\`' + perm + '\`';
 				}
 			}
 			embed.addField('Permissions', permString);
