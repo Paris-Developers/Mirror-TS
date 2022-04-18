@@ -6,7 +6,7 @@ test('check that the color of a default command is #FFFFFF', () => {
 });
 
 test('check that the color of a music command is BLUE', () => {
-    expect(colorCheck('938519232155648011',true)).toBe('#BLUE');
+    expect(colorCheck('938519232155648011',true)).toBe('BLUE');
 });
 
 test('adds 1 + 2 to equal 3', () => {
