@@ -5,7 +5,7 @@ import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
-const nuts = new Enmap('nuts');
+const nuts = new Enmap({name:'nuts', fetchAll: true});
 const gifArray = [
 	'https://media.giphy.com/media/j6ZW4QRTVTuWNsDlUV/giphy.gif',
 	'https://i.imgur.com/Fi6pnvQ.gif',
@@ -46,9 +46,10 @@ export class Nut implements SlashCommand {
 				false
 			),
 		]),
+		new Subcommand('leaderboard', 'View the servers nut leaderboard', []),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			const embed = new MessageEmbed().setColor('#FDA50F');
 			if (
@@ -109,6 +110,43 @@ export class Nut implements SlashCommand {
 					.setImage('https://c.tenor.com/injWPZSrCK0AAAAC/bear.gif');
 				return interaction.reply({ embeds: [embed] });
 			}
+			if(interaction.options.getSubcommand() == 'leaderboard'){
+				//nuts.fetchEverything();
+				let guild = interaction.guild!;
+				let leaderboard: any[][] = [];
+				for(const item of nuts){
+					let user = await bot.client.users.fetch(item[0].toString())!;
+					if(await guild.members.fetch(user.id)){
+						leaderboard.push([user.username,item[1]]);
+					}
+				}
+				leaderboard = sort(leaderboard);
+				var userString = '';
+				var nutString = '';
+				
+				
+				let ctr = 1;
+				for(let x of leaderboard){
+					if(x[0]==interaction.user.username){
+						embed.setFooter({text: `Your rank: ${ctr} of ${leaderboard.length}`, iconURL: interaction.user.avatarURL()!});
+					}
+					userString += x[0] + '\n';
+					nutString += x[1] + '\n';
+					ctr ++;
+					if(ctr >=16) break;
+				}
+				embed.addFields({
+					name:'🤓 Users',
+					value: userString,
+					inline: true
+				},{
+					name: '🥜 Nuts',
+					value: nutString,
+					inline: true,
+				});
+				embed.setTitle(`Nut leaderboard for ${interaction.guild!.name}`);
+				return interaction.reply({embeds:[embed]});
+			};
 			return interaction.reply(':eyes:');
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
@@ -119,7 +157,19 @@ export class Nut implements SlashCommand {
 		}
 	}
 
-	guildRequired?: boolean | undefined;
+	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
-	blockSilenced?: boolean | undefined;
+	blockSilenced?: boolean | undefined = true;
+}
+var sort = function(arr: any[]){
+	arr.sort(function (a,b){
+		if(a[1] <b[1]){
+			return 1;
+		}
+		if(a[1] > b[1]){
+			return -1;
+		}
+		return 0;
+	})
+	return arr;
 }
