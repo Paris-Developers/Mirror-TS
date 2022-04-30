@@ -69,6 +69,10 @@ export class Intro implements SlashCommand {
 			});
 			return;
 		} catch (err: any) {
+			if (err.message.substr(0,18) == 'No video id found:'){
+				interaction.editReply('Please enter a valid youtube link');
+				return;
+			}
 			if (err == 'Error: Not a YouTube domain') {
 				interaction.editReply('Please enter a valid youtube link');
 				return;
