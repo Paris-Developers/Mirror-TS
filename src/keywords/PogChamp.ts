@@ -17,6 +17,11 @@ export class PogChamp implements Keyword {
 		args: String[]
 	): Promise<void> {
 		try {
+			const num = Math.round(Math.random()*2)
+			if (num == 2) {
+				message.react('<:fordpog:972224310951428176>');
+				return;
+			}
 			message.react(':JamesChamp:956572430778912858');
 		} catch (err) {
 			bot.logger.commandError(message.channel!.id, this.name, err);
