@@ -1,6 +1,6 @@
 import MockDiscord from "../mock";
-import InteractionCreate from "../../src/events/InteractionCreate";
 import { CommandInteraction, TextBasedChannel } from "discord.js";
+import { MockInteraction } from "../mock/interaction";
 
 describe("InteractionCreate", () => {
     let mockDiscord: MockDiscord;
@@ -11,6 +11,6 @@ describe("InteractionCreate", () => {
 
     it("Should prevent someone from using a command as a silenced member", () => {
         const secondMock = new MockDiscord();
-        const interaction = new CommandInteraction();
+        const interaction = new MockInteraction();
     })
 })

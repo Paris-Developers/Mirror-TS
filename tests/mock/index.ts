@@ -2,9 +2,11 @@ import Discord, {
     Channel,
     Client,
     ClientUser,
+    CommandInteraction,
     Guild,
     GuildChannel,
     GuildMember,
+    Interaction,
     Message,
     MessageReaction,
     Role,
@@ -23,6 +25,7 @@ import Discord, {
   import { GuildMock, MockGuild } from "./guild";
   import { MockGuildMember } from "./guildmember";
   import { RawUserData } from "discord.js/typings/rawDataTypes";
+  import { MockInteraction } from "./interaction";
   
   type Writeable<T> = { -readonly [P in keyof T]: T[P] };
   
@@ -32,6 +35,7 @@ import Discord, {
   export default class MockDiscord {
     public message!: Message;
     public messageReaction!: MessageReaction;
+    public interaction!: CommandInteraction;
     private client!: Client;
     private guild!: GuildMock;
     private channel!: Channel;
@@ -41,6 +45,7 @@ import Discord, {
     private guildMember!: GuildMember;
     private role!: Role;
     private voiceState!: VoiceState;
+    
   
     constructor() {
       this.mockClient();
@@ -55,6 +60,7 @@ import Discord, {
       this.mockMessageReaction();
       this.mockRole();
       this.mockVoiceState();
+      this.mockInteraction();
     }
   
     public getClient(): Client {
@@ -91,6 +97,10 @@ import Discord, {
   
     public getVoiceState(): Writeable<VoiceState> {
       return this.voiceState;
+    }
+
+    public getInteraction(): CommandInteraction {
+        return this.interaction;
     }
   
     private addMember = () => {
@@ -248,6 +258,16 @@ import Discord, {
           timestamp: "",
         }
       );
+    }
+    private mockInteraction(): void {
+        this.interaction = MockInteraction.new(
+            this.textChannel,
+            this.guild,
+            this.guildMember,
+            this.client,
+            inGuild: true,
+
+        )
     }
   
     private mockMessageReaction(): void {

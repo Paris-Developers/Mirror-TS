@@ -1,19 +1,14 @@
-import { Client, Guild, GuildMember, Interaction, TextBasedChannel } from "discord.js";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, Guild, GuildMember, Interaction, TextBasedChannel } from "discord.js";
 import { RawMessageData } from "discord.js/typings/rawDataTypes";
 
 export class MockInteraction {
     static new(
-        channel: TextBasedChannel,
-        guild: Guild,
-        member: GuildMember,
         client: Client,
-        data: RawMessageData
-    ): Interaction {
-        const interaction = Reflect.construct(Interaction, [client, data]);
+        options: CommandInteractionOptionResolver,
 
-        Object.defineProperty(interaction, "guild",{
-            get: () => guild,
-        });
+    ): CommandInteraction {
+        const interaction = Reflect.construct(CommandInteraction, [client]);
+
         return interaction;
     }
 
