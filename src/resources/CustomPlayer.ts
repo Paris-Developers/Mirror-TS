@@ -29,7 +29,6 @@ export class CustomPlayer extends Player{
         this.on('connectionError', (queue, error) => {
             queue.destroy();
             this.deleteQueue(queue.guild);
-            console.log('\'connection\' error:');
             this.bot.logger.error(
                 `[${queue.guild.name}] Error emitted from the queue: ${error.message}`
             );
@@ -37,7 +36,6 @@ export class CustomPlayer extends Player{
         
         this.on('error', (queue, error) => {
             queue.skip();
-            console.log('\'error\' error:');
             this.bot.logger.error(
                 `[${queue.guild.name}] Error emitted from the queue: ${error.message}`
             );
