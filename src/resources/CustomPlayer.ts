@@ -35,7 +35,7 @@ export class CustomPlayer extends Player{
         });
         
         this.on('error', (queue, error) => {
-            this.deleteQueue(queue.guild);
+            queue.skip();
             this.bot.logger.error(
                 `[${queue.guild.name}] Error emitted from the queue: ${error.message}`
             );
