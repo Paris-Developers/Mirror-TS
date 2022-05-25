@@ -1,7 +1,7 @@
 import { bdayDates } from '../slashcommands/Birthday';
 import cron from 'node-cron';
 import { Bot } from '../Bot';
-import { MessageEmbed, TextChannel, User } from 'discord.js';
+import { MessageEmbed, TextChannel, User, UserResolvable } from 'discord.js';
 import Enmap from 'enmap';
 import { bdayChannels, bdayTimes } from '../slashcommands/BirthdayConfig';
 import { silencedUsers } from '../slashcommands/SilenceMember';
@@ -43,8 +43,16 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 			if (dayString == bday) {
 				//TODO: check if the user exists in the guild
 				let birthGuild = bot.client.guilds.cache.get(guild)!;
-				if (!birthGuild.members.cache.get(userId.toString())) return;
-
+				let user = await birthGuild.members.fetch(userId as UserResolvable);
+				console.log(user.displayName);
+				if (!birthGuild.members.cache.get(userId.toString())) {
+					console.log('THIS BOT SUCKS');
+					return;
+				}
+				return;
+			}
+			
+				/*
 				//check if the user is silenced into the guild
 				let userArray = silencedUsers.ensure(birthGuild.id, []);
 				if (userArray.includes(userId)) return;
@@ -56,23 +64,26 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 				if (!targetChannel) return;
 
 				//import user object
-				let user = bot.client.users!.cache.get(userId.toString()) as User;
-				user = await user.fetch(true);
+				//let user = guild.members.get
+				//let user = bot.client.users!.cache.get(userId.toString()) as User;
+				//user = await user.fetch(true);
 
 				//create embed and send
 				const bdayEmbed = new MessageEmbed()
-					.setDescription(`**:birthday: Happy Birthday <@${userId}> :tada:**`)
-					.setColor(user.hexAccentColor!)
-					.setFooter({
-						text: `${
-							today.getMonth() + 1
-						}-${today.getDate()}-${today.getFullYear()}`,
-						iconURL: user.displayAvatarURL(),
+					.setDescription(`**:birthday: Happy Birthday <@${userId}> :tada:**`);
+					// .setColor(user.hexAccentColor!)
+					// .setFooter({
+					// 	text: `${
+					// 		today.getMonth() + 1
+					// 	}-${today.getDate()}-${today.getFullYear()}`,
+					// 	iconURL: user.displayAvatarURL(),
 					});
 				let message = await targetChannel.send({ embeds: [bdayEmbed] });
 				await message.react('🥳');
 			}
+					*/
 		});
+
 	});
 	//set task as the current cronJob for the guild
 	bdayCrons.set(guild, task);

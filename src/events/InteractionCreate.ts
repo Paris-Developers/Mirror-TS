@@ -76,7 +76,7 @@ export class InteractionCreate implements EventHandler {
 				return;
 			}
 		}
-		command.run(bot, interaction);
 		experienceAdd(interaction.user.id);
+		command.run(bot, interaction);
 	}
 }

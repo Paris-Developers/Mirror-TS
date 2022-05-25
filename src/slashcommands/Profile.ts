@@ -38,18 +38,23 @@ export class Profile implements SlashCommand {
             list = sort(propRetrive,list);
             console.log(list);
             let rank = `${list.findIndex((element) => element[0] == user.id)+1} of ${list.length}`;
-            
             let guild = bot.client.guilds.cache.get('938519232155648011');
             let inDev = false;
             if(guild?.members.fetch(user.id)) inDev = true;
-
+            let profile = userProfiles.get(user.id);
             const embed = new MessageEmbed()
                 .setTitle(`Mirror profile for ${user.username}`)
                 .setColor(colorCheck(interaction.guild!.id))
                 .addFields(
                     {
                         name:'Rank', 
-                        value: rank
+                        value: rank,
+                        inline:true,
+                    },
+                    {
+                        name:'First Command',
+                        value: `${profile.firstCommandUsed.getMonth()}/${profile.firstCommandUsed.getDay()+1}/${profile.firstCommandUsed.getYear()+1900}`,
+                        inline: true
                     },
                     {
                         name: 'Development Server',
