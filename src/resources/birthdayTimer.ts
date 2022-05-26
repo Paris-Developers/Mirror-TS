@@ -43,7 +43,12 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 			if (dayString == bday) {
 				//TODO: check if the user exists in the guild
 				let birthGuild = bot.client.guilds.cache.get(guild)!;
-				if (!birthGuild.members.cache.get(userId.toString())) return;
+				try {
+					var member = await birthGuild.members.fetch(userId.toString());
+				} catch(err){
+					console.log(err);
+					return;
+				}
 
 				//check if the user is silenced into the guild
 				let userArray = silencedUsers.ensure(birthGuild.id, []);
@@ -55,19 +60,15 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 				) as TextChannel;
 				if (!targetChannel) return;
 
-				//import user object
-				let user = bot.client.users!.cache.get(userId.toString()) as User;
-				user = await user.fetch(true);
-
 				//create embed and send
 				const bdayEmbed = new MessageEmbed()
 					.setDescription(`**:birthday: Happy Birthday <@${userId}> :tada:**`)
-					.setColor(user.hexAccentColor!)
+					.setColor(member.displayHexColor)
 					.setFooter({
 						text: `${
 							today.getMonth() + 1
 						}-${today.getDate()}-${today.getFullYear()}`,
-						iconURL: user.displayAvatarURL(),
+						iconURL: member.displayAvatarURL(),
 					});
 				let message = await targetChannel.send({ embeds: [bdayEmbed] });
 				await message.react('🥳');
