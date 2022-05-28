@@ -44,8 +44,11 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 				//TODO: check if the user exists in the guild
 				let birthGuild = bot.client.guilds.cache.get(guild);
 				if(!birthGuild) return;
-				var member = birthGuild.members.resolve(userId.toString());
-				if(!member) return;
+				try{
+					var member = await birthGuild.members.fetch(userId.toString());
+				} catch(err){
+					return
+				}
 
 				//check if the user is silenced into the guild
 				let userArray = silencedUsers.ensure(birthGuild.id, []);

@@ -116,19 +116,15 @@ export class Nut implements SlashCommand {
 				let leaderboard: any[][] = [];
 				for(const item of nuts){
 					console.log(item);
-					//let member = await guild.members.fetch(item[0].toString());				//	.then(()=>{leaderboard.push([member.user.username])}).catch(()=>{})
 					try{
 						let member = await guild.members.fetch(item[0].toString());
-						console.log(member);
 						leaderboard.push([member.user.username, item[1]]);
 					} catch(err) {
-						console.log(err);
 					}
 				}
 				leaderboard = sort(leaderboard);
 				var userString = '';
 				var nutString = '';
-				
 				let ctr = 1;
 				for(let x of leaderboard){
 					if(x[0]==interaction.user.username){
