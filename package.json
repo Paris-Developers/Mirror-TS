@@ -23,6 +23,7 @@
 		"mkdirp": "latest",
 		"node-cron": "latest",
 		"node-fetch": "^2.6.1",
+		"pm2": "^5.2.0",
 		"tslog": "^3.3.2",
 		"tweetnacl": "latest",
 		"typescript": "^4.5.5",

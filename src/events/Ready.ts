@@ -5,6 +5,7 @@ import { birthdayTimer } from '../resources/birthdayTimer';
 import { registerSlashCommands } from '../resources/registerSlashCommands';
 import { launchVoice } from '../slashcommands/DefaultVc';
 import config from '../../config.json';
+import { TextChannel } from 'discord.js';
 
 export class Ready implements EventHandler {
 	eventName = 'ready';
@@ -18,5 +19,8 @@ export class Ready implements EventHandler {
 			birthdayTimer(guild.toString(), bot);
 		});
 		launchVoice(bot);
+		let now = new Date();
+		let channel = bot.client.channels.cache.get(config.error_channel) as TextChannel;
+		channel.send(`Mirror started at ${now.getHours()}:${now.getMinutes()} in ${config.mode} mode`);
 	}
 }
