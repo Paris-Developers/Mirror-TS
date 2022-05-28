@@ -111,7 +111,7 @@ export class Nut implements SlashCommand {
 				return interaction.reply({ embeds: [embed] });
 			}
 			if(interaction.options.getSubcommand() == 'leaderboard'){
-				//nuts.fetchEverything();
+				nuts.fetchEverything();
 				let guild = interaction.guild!;
 				let leaderboard: any[][] = [];
 				for(const item of nuts){
