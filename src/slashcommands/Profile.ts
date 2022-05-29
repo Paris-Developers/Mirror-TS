@@ -1,4 +1,5 @@
 import { CommandInteraction, CacheType, MessageEmbed } from "discord.js";
+import Enmap from "enmap";
 import { Bot } from "../Bot";
 import { colorCheck } from "../resources/embedColorCheck";
 import { experienceAdd, userProfiles } from "../resources/experienceAdd";
@@ -78,21 +79,39 @@ export class Profile implements SlashCommand {
 
 } 
 export class UserProfile {
-    //userID string
     user: string;
     xp: number;
-    commandsUsed: number;
-    lastCommandUsed: Date;
-    firstCommandUsed: Date;
-    rank?: number;
+    guildxp?: Enmap;
+    commandsUsed?: number;
+    lastCommandUsed?: Date;
+    firstCommandUsed?: Date;
+    guildCommandsUsed?: Enmap;
+    guildFirstCommand?: Enmap;
+    guildLastCommand?: Enmap
+    messagesSent?: number;
+    firstMessageSent?: Date;
+    lastMessageSent?: Date;
+    guildMessages?: Enmap;
+    guildFirstSent?: Enmap;
+    guildLastSent?: Enmap;
+    //rank?: number;
 
     constructor(user: string) {
         this.user = user;
         this.xp = 0;
+        this.guildxp = new Enmap(`guildxp${user}`);
         this.commandsUsed = 0;
         this.lastCommandUsed = new Date(Date.now());
-        this.firstCommandUsed = new Date(Date.now())
+        this.firstCommandUsed = new Date(Date.now());
+        this.guildCommandsUsed = new Enmap(`guildCmd${user}`);
+        this.guildFirstCommand = new Enmap(`guildCmdFirst${user}`);
+        this.guildLastCommand = new Enmap(`guildCmdLast${user}`);
+        this.messagesSent = 0;
+        this.lastMessageSent = new Date(Date.now());
+        this.firstMessageSent = new Date(Date.now());
+        this.guildMessages = new Enmap(`guildMsg${user}`)
+        this.guildFirstSent = new Enmap(`guildMsgFirst${user}`);
+        this.guildLastSent = new Enmap(`guildMsgLast${user}`);
     }
-
-    
 }
+
