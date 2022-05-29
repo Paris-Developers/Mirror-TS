@@ -111,24 +111,19 @@ export class Nut implements SlashCommand {
 				return interaction.reply({ embeds: [embed] });
 			}
 			if(interaction.options.getSubcommand() == 'leaderboard'){
-				//nuts.fetchEverything();
+				nuts.fetchEverything();
 				let guild = interaction.guild!;
 				let leaderboard: any[][] = [];
 				for(const item of nuts){
-					let user = await bot.client.users.fetch(item[0].toString())!;
 					try{
-						if(await guild.members.fetch(user.id)){
-							leaderboard.push([user.username,item[1]]);
-					  }
-					} catch(err){
-						//test
+						let member = await guild.members.fetch(item[0].toString());
+						leaderboard.push([member.user.username, item[1]]);
+					} catch(err) {
 					}
 				}
 				leaderboard = sort(leaderboard);
 				var userString = '';
 				var nutString = '';
-				
-				
 				let ctr = 1;
 				for(let x of leaderboard){
 					if(x[0]==interaction.user.username){
@@ -149,9 +144,9 @@ export class Nut implements SlashCommand {
 					inline: true,
 				});
 				embed.setTitle(`Nut leaderboard for ${interaction.guild!.name}`);
-				return interaction.reply({embeds:[embed]});
+				interaction.reply({embeds:[embed]});
+				return;
 			};
-			return interaction.reply(':eyes:');
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			return interaction.reply({
