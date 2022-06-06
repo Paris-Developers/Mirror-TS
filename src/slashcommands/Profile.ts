@@ -64,7 +64,7 @@ export class Profile implements SlashCommand {
 			});
 		}
     }
-    guildRequired?: boolean | undefined = true;
+    guildRequired?: boolean | undefined;
     managerRequired?: boolean | undefined;
     blockSilenced?: boolean | undefined;
     musicCommand?: boolean | undefined;
