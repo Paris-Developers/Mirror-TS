@@ -2,7 +2,7 @@ import { Message, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from '../keywords/Keyword';
 import { MessageCommand } from '../messagecommands/MessageCommand';
-import { experienceAdd } from '../resources/experienceAdd';
+import { messageXP } from '../slashcommands/Profile';
 import { EventHandler } from './EventHandler';
 
 export class MessageCreate implements EventHandler {
@@ -10,6 +10,8 @@ export class MessageCreate implements EventHandler {
 	async process(bot: Bot, message: Message): Promise<void> {
 		//ignore all bots
 		if (message.author.bot) return;
+
+		messageXP(message.author.id, message.guild ? message.guild.id : undefined);
 
 		var prefix = bot.prefix;
 
@@ -55,6 +57,5 @@ export class MessageCreate implements EventHandler {
 
 		//run command/keyword
 		command.run(bot, message, args);
-		experienceAdd(message.author.id);
 	}
 }

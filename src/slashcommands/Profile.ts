@@ -2,10 +2,10 @@ import { CommandInteraction, CacheType, MessageEmbed } from "discord.js";
 import Enmap from "enmap";
 import { Bot } from "../Bot";
 import { colorCheck } from "../resources/embedColorCheck";
-import { experienceAdd, userProfiles } from "../resources/experienceAdd";
 import { Option, Subcommand } from "./Option";
 import { SlashCommand } from "./SlashCommand";
 
+export const profiles = new Enmap('Profiles');
 
 export class Profile implements SlashCommand {
     name: string = 'profile';
@@ -14,55 +14,47 @@ export class Profile implements SlashCommand {
     requiredPermissions: bigint[] = [];
     async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
         try{
-            let user = interaction.user;
-            let list = [];
-            for(let rank of userProfiles){
-                list.push(rank);
-            }
-            var propRetrive = function(obj: { xp: number; }[]) {
-                return obj[1].xp;
-            }
-            var sort = function(propertyRetriever : any, arr : any[]) {
-                arr.sort(function (a,b) {
-                    var valueA = propertyRetriever(a);
-                    var valueB = propertyRetriever(b);
-                    if (valueA < valueB) {
-                        return -1;
-                    } 
-                    if (valueA > valueB) {
-                        return 1;
-                    }
-                    return 0;
-                })
-                return arr;
-            }
-            list = sort(propRetrive,list);
-            console.log(list);
-            let rank = `${list.findIndex((element) => element[0] == user.id)+1} of ${list.length}`;
-            let guild = bot.client.guilds.cache.get('938519232155648011');
-            let inDev = false;
-            if(guild?.members.fetch(user.id)) inDev = true;
-            let profile = userProfiles.get(user.id);
+            let userProfile = profiles.get(interaction.user.id) as UserProfile;
             const embed = new MessageEmbed()
-                .setTitle(`Mirror profile for ${user.username}`)
+                .setTitle(`Mirror profile for ${interaction.user.username}`)
                 .setColor(colorCheck(interaction.guild!.id))
-                .addFields(
-                    {
-                        name:'Rank', 
-                        value: rank,
-                        inline:true,
-                    },
-                    {
-                        name:'First Command',
-                        value: `${profile.firstCommandUsed.getMonth()}/${profile.firstCommandUsed.getDay()+1}/${profile.firstCommandUsed.getYear()+1900}`,
-                        inline: true
-                    },
-                    {
-                        name: 'Development Server',
-                        value: inDev ? 'Member!' : '[Not a member :(](https://discord.gg/uvdg2R5PAU)'
+                .addFields({
+                    name: 'User Level',
+                    value: `${userProfile.xp >100 ? Math.floor(Math.log(userProfile.xp/100) / Math.log(2)) + 2: 1}`,
+                    inline: true,
+                },{
+                    name: 'Messages',
+                    value: `Messages sent: ${userProfile.messagesSent},
+                            First Message: ${userProfile.firstMessageSent?.getDate()},
+                            Last Message: ${userProfile.lastMessageSent?.getDate()}`,
+                    inline: true
+                },{
+                    name: 'Commands',
+                    value: `Commands Used: ${userProfile.commandsUsed},
+                            First Message: ${userProfile.firstCommandUsed?.getDate()},
+                            Last Message: ${userProfile.lastCommandUsed?.getDate()}`,
+                    inline: true
                 });
-            if(user.avatarURL()) embed.setThumbnail(user.avatarURL()!);
-            else embed.setThumbnail(user.defaultAvatarURL);
+            if(interaction.guild){
+                var guildData = userProfile.guildData.get(interaction.guild.id) as GuildData;
+                embed.addFields({
+                    name: 'Guild Level',
+                    value: `${userProfile.xp >100 ? Math.floor(Math.log(userProfile.xp/100) / Math.log(2)) + 2: 1}`,
+                    inline: true,
+                },{
+                    name: 'Guild Messages',
+                    value: `Messages sent: ${guildData.messagesSent},
+                            First Message: ${guildData.firstMessage?.getHours()}:${guildData.firstMessage?.getMinutes()} ${guildData.firstMessage?.getMonth()}-${guildData.firstMessage?.getDate()},
+                            Last Message: ${guildData.lastMessage?.getDate()}`,
+                    inline: true
+                },{
+                    name: 'Guild Commands',
+                    value: `Commands Used: ${guildData.commandsUsed},
+                            First Message: ${guildData.firstCommand?.getDate()},
+                            Last Message: ${guildData.lastCommand?.getDate()}`,
+                    inline: true
+                })  
+            }
             return interaction.reply({embeds: [embed]});
         } catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
@@ -81,37 +73,91 @@ export class Profile implements SlashCommand {
 export class UserProfile {
     user: string;
     xp: number;
-    guildxp?: Enmap;
-    commandsUsed?: number;
+    guildData: Enmap;
+    commandsUsed: number;
     lastCommandUsed?: Date;
     firstCommandUsed?: Date;
-    guildCommandsUsed?: Enmap;
-    guildFirstCommand?: Enmap;
-    guildLastCommand?: Enmap
-    messagesSent?: number;
+    messagesSent: number;
     firstMessageSent?: Date;
     lastMessageSent?: Date;
-    guildMessages?: Enmap;
-    guildFirstSent?: Enmap;
-    guildLastSent?: Enmap;
-    //rank?: number;
 
     constructor(user: string) {
         this.user = user;
         this.xp = 0;
-        this.guildxp = new Enmap(`guildxp${user}`);
+        this.guildData = new Enmap(`guild${user}`);
         this.commandsUsed = 0;
-        this.lastCommandUsed = new Date(Date.now());
-        this.firstCommandUsed = new Date(Date.now());
-        this.guildCommandsUsed = new Enmap(`guildCmd${user}`);
-        this.guildFirstCommand = new Enmap(`guildCmdFirst${user}`);
-        this.guildLastCommand = new Enmap(`guildCmdLast${user}`);
         this.messagesSent = 0;
-        this.lastMessageSent = new Date(Date.now());
-        this.firstMessageSent = new Date(Date.now());
-        this.guildMessages = new Enmap(`guildMsg${user}`)
-        this.guildFirstSent = new Enmap(`guildMsgFirst${user}`);
-        this.guildLastSent = new Enmap(`guildMsgLast${user}`);
+
     }
+}
+export class GuildData {
+    guild: string;
+    xp: number;
+    commandsUsed: number;
+    firstCommand?: Date;
+    lastCommand?: Date;
+    messagesSent: number;
+    firstMessage?: Date;
+    lastMessage?: Date;
+
+    constructor(guild: string){
+        this.guild = guild;
+        this.xp = 0;
+        this.commandsUsed = 0;
+        this.messagesSent = 0;
+    }
+}
+
+export function interactionXP(userString: string, guild?: string){
+    var userProfile = profiles.get(userString) as UserProfile;
+    if(!userProfile) userProfile = new UserProfile(userString);
+    var xp;
+    var now = new Date();
+    if(!userProfile.lastCommandUsed) xp = 100;
+    else if(userProfile.lastCommandUsed.getDate() != now.getDate()) xp = 50;
+    else if(userProfile.lastCommandUsed.getHours() != now.getHours()) xp = 25;
+    else if(userProfile.lastCommandUsed.getMinutes() != now.getMinutes()) xp = 10;
+    else xp = 1;
+    userProfile.xp += xp;
+    userProfile.commandsUsed += 1;
+    userProfile.lastCommandUsed = new Date();
+    if(!userProfile.firstCommandUsed) userProfile.firstCommandUsed = new Date();
+    if(guild){
+        var guildProfile = userProfile.guildData.get(guild) as GuildData;
+        if(!guildProfile) guildProfile = new GuildData(guild);
+        guildProfile.xp += xp;
+        guildProfile.commandsUsed += 1;
+        guildProfile.lastCommand = new Date();
+        if(!guildProfile.firstCommand) guildProfile.firstCommand = new Date();
+        userProfile.guildData.set(guild, guildProfile);
+    }
+    profiles.set(userString, userProfile);
+    return;
+}
+
+export function messageXP(userString: string, guild?: string){
+    var userProfile = profiles.get(userString) as UserProfile;
+    if(!userProfile) userProfile = new UserProfile(userString);
+    var xp;
+    var now = new Date();
+    if(!userProfile.lastMessageSent) xp = 10;
+    else if(userProfile.lastMessageSent.getDate() != now.getDate()) xp = 5;
+    else if(userProfile.lastMessageSent.getHours() != now.getHours()) xp = 2;
+    else xp = 1;
+    userProfile.xp += xp;
+    userProfile.messagesSent += 1;
+    userProfile.lastMessageSent = new Date();
+    if(!userProfile.firstMessageSent) userProfile.firstMessageSent = new Date();
+    if(guild){
+        var guildProfile = userProfile.guildData.get(guild) as GuildData;
+        if(!guildProfile) guildProfile = new GuildData(guild);
+        guildProfile.xp += xp;
+        guildProfile.messagesSent += 1;
+        guildProfile.lastMessage = new Date();
+        if(!guildProfile.firstMessage) guildProfile.firstMessage = new Date();
+        userProfile.guildData.set(guild, guildProfile);
+    }
+    profiles.set(userString, userProfile);
+    return;
 }
 
