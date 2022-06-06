@@ -17,8 +17,8 @@ export class Poggers implements Keyword {
 		args: String[]
 	): Promise<void> {
 		try {
-			const num = Math.round(Math.random()*2)
-			if (num == 2) {
+			const num =(Math.random())
+			if (num > .5) {
 				message.react('<:fordpog:972224310951428176>');
 				return;
 			}

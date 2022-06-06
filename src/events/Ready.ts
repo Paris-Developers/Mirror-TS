@@ -21,6 +21,6 @@ export class Ready implements EventHandler {
 		launchVoice(bot);
 		let now = new Date();
 		let channel = bot.client.channels.cache.get(config.error_channel) as TextChannel;
-		channel.send(`Mirror started at ${now.getHours()}:${now.getMinutes()} in ${config.mode} mode`);
+		channel.send(`Mirror started at ${now.getHours()}:${now.getMinutes()} in ${config.mode} mode, live in ${bot.client.guilds.cache.size} servers`);
 	}
 }
