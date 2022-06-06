@@ -1,5 +1,5 @@
 import { joinVoiceChannel } from '@discordjs/voice';
-import { CommandInteraction, GuildMember, MessageEmbed, TextChannel } from 'discord.js';
+import { CommandInteraction, GuildMember, MessageEmbed, TextChannel, TextBasedChannel, GuildChannel } from 'discord.js';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
 import { voiceCommandCheck } from '../resources/voiceCommandCheck';
@@ -23,7 +23,7 @@ export class InteractionCreate implements EventHandler {
 		//if the command needs to be run in a server setting
 		if (command.guildRequired) {
 			//If the command is used in anything but a server, return
-			if (!(interaction.channel instanceof TextChannel)) {
+			if (!(interaction.channel instanceof GuildChannel)) {
 				interaction.reply('Command must be used in a server');
 				return;
 			}
