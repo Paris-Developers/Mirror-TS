@@ -18,6 +18,13 @@ export class GuildCreate implements EventHandler {
 				'Thanks for inviting Mirror to your server! \n\n To get started with Mirror use **`/help`** for more information about commands and functionality\n\nUse **`/config`** to see what else you can do before Mirror is fully functional'
 			)
 			.setColor('#FFFFFF');
+		if(guild.systemChannel){
+			if(guild.systemChannel.permissionsFor(guild.me!).has('VIEW_CHANNEL') &&
+			guild.systemChannel.permissionsFor(guild.me!).has('SEND_MESSAGES')){
+				await guild.systemChannel.send({embeds: [embed]});
+				return;
+			}
+		}
 		let channelList = await guild.channels.fetch();
 		for (let channel of channelList) {
 			if (
