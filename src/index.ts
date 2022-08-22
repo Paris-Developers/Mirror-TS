@@ -12,12 +12,22 @@ let options = {
 		Intents.FLAGS.DIRECT_MESSAGES,
 	],
 };
-let bot = new Bot(
-	config.token,
+
+let mirror = new Bot(
+	config.mirror_token,
 	new Client(options),
 	'$',
 	config.mode,
 	config.test_server
 );
 
-bot.start();
+let distortion = new Bot(
+	config.distortion_token,
+	new Client(options),
+	'',
+	config.mode,
+	config.test_server
+)
+
+distortion.start();
+mirror.start();

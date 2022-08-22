@@ -23,4 +23,6 @@ export interface SlashCommand {
 	blockSilenced?: boolean;
 	//if the command is a voice command and we need to check VC
 	musicCommand?: boolean;
+	//if the command should be registered in distortion mode
+	distortion?: boolean;
 }

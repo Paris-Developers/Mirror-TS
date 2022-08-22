@@ -80,6 +80,7 @@ export class DefaultVc implements SlashCommand {
 			return;
 		}
 	}
+	distortion = true;
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined = true;
 }

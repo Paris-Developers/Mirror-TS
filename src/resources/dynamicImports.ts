@@ -2,6 +2,7 @@ import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
 import { Bot } from '../Bot';
+import config from '../../config.json';
 
 let promisedReaddir = promisify(fs.readdir);
 
@@ -17,6 +18,7 @@ export async function importSlashCommands(bot: Bot) {
 		let module = await import(`${__dirname}/../slashcommands/${file}`);
 		// make a new object using the exported class
 		let command = new module[path.parse(file).name]();
+		if(config.distortion == "true" && !command.distortion) continue;
 		let commandName = command.name;
 		bot.logger.info(`Loaded slash command ${commandName}`);
 		// push the new object to our array

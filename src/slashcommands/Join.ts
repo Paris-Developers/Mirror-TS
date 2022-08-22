@@ -52,4 +52,5 @@ export class Join implements SlashCommand {
 	guildRequired?: boolean = true;
 	blockSilenced?: boolean | undefined = true;
 	musicCommand = true;
+	distortion = true;
 }
