@@ -69,6 +69,10 @@ export class Intro implements SlashCommand {
 			});
 			return;
 		} catch (err: any) {
+			if (err.message == "This is a private video. Please sign in to verify that you may see it."){
+				interaction.editReply('Video is private, please use another video that I can access');
+				return;
+			}
 			if (err.message.substr(0,18) == 'No video id found:'){
 				interaction.editReply('Please enter a valid youtube link');
 				return;
