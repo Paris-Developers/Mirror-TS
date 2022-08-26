@@ -27,7 +27,7 @@
 		"tslog": "^3.3.2",
 		"tweetnacl": "latest",
 		"typescript": "^4.5.5",
-		"ytdl": "4.10.0",
+		"ytdl": "latest",
 		"ytdl-core": "^4.10.0"
 	},
 	"devDependencies": {
