@@ -29,5 +29,5 @@ let distortion = new Bot(
 	config.test_server
 )
 
-distortion.start();
-mirror.start();
+distortion.start(true);
+mirror.start(false);

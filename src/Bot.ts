@@ -47,12 +47,12 @@ export class Bot {
 		this.logger = new CustomLogger(logfileName, logLevel, this);
 	}
 
-	public async start(): Promise<void> {
+	public async start(distortion: boolean): Promise<void> {
 		await this.logger.initialize();
 		this.logger.info('Logging initialized');
 		await importSlashCommands(this);
 		
-		if(config.distortion != "true"){
+		if(!distortion){
 			await registerEvents(this);
 			await importMessageCommands(this);
 			await importKeywords(this);
