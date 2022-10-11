@@ -34,9 +34,7 @@ export class BirthdayList implements SlashCommand {
             try{
                 let member = await interaction.guild!.members.fetch(date[0].toString());
                 let birthdate = date[1].slice(' ').split('-');
-                //let month = monthCode[birthdate[1]]
-                list.push([member, birthdate[1], birthdate[0]])  //user - month - day
-                //runstring += `${member} : ${month} ${birthdate[0]}\n`
+                list.push([member, birthdate[1], birthdate[0]]) 
             } catch (err) {
             }
         }
@@ -45,21 +43,9 @@ export class BirthdayList implements SlashCommand {
         var dateString = '';
         for(let x of list){
             userString += `${x[0]}\n`;
-            dateString += monthCode[x[1]] + ' ' + x[2];
+            dateString += `${monthCode[x[1]]} ${x[2]}\n`;
         }
 
-
-        // forEach(async (date, userId) => {
-        //     try {
-        //         console.log(userId);
-        //         var member = await interaction.guild?.members.fetch(userId.toString());
-                
-        //         console.log(member?.displayName);
-        //     } catch(err) {
-        //         console.log(err);
-        //         return;
-        //     }
-        // });
         const embed = new MessageEmbed();
         embed.addFields({
             name: 'User',
