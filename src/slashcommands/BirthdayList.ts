@@ -67,11 +67,11 @@ export class BirthdayList implements SlashCommand {
 
 var sort = function(arr: any[]){
 	arr.sort(function (a,b){
-		if(a[1] < b[1]) return 1;
-		if(a[1] > b[1]) return -1;
+		if(a[1] > b[1]) return 1;
+		if(a[1] < b[1]) return -1;
         if(a[1] = b[1]){
-            if(a[2] < b[2]) return 1
-            if(a[2] > b[2]) return -1
+            if(a[2] > b[2]) return 1
+            if(a[2] < b[2]) return -1
         }
 		return 0;
 	})
