@@ -26,7 +26,7 @@ export class BirthdayList implements SlashCommand {
     options: (Option | Subcommand)[] = [];
     requiredPermissions: bigint[] = [];
     async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-        //await interaction.deferReply({ephemeral : true});
+        await interaction.deferReply();
         bdayDates.fetchEverything();
         let list: any[][] = [];
         for(const date of bdayDates){
@@ -107,9 +107,8 @@ export class BirthdayList implements SlashCommand {
         }
         pageOne.setFooter({text: `Page 1 of ${embedArray.length}`});
         let index = 0
-        let message = await interaction.reply({
-            embeds: [embedArray[0]], 
-            fetchReply: true}) as Message;
+        let message = await interaction.editReply({
+            embeds: [embedArray[0]]}) as Message;
         await message.react('⏪');
         await message.react('⏩');
         const filter = (reaction: MessageReaction, user: User) => {
