@@ -33,7 +33,7 @@ export class BirthdayList implements SlashCommand {
             try{
                 let member = await interaction.guild!.members.fetch(date[0].toString());
                 let birthdate = date[1].slice(' ').split('-');
-                list.push([member, birthdate[1], birthdate[0]]) 
+                list.push([member, parseInt(birthdate[1]), parseInt(birthdate[0])]) 
             } catch (err) {
             }
         }
