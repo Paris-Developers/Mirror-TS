@@ -1,4 +1,4 @@
-import { CommandInteraction, CacheType, MessageEmbed } from 'discord.js';
+import { CommandInteraction, CacheType, MessageEmbed, Message, User, MessageReaction } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand} from './SlashCommand';
@@ -26,8 +26,7 @@ export class BirthdayList implements SlashCommand {
     options: (Option | Subcommand)[] = [];
     requiredPermissions: bigint[] = [];
     async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-        await interaction.deferReply({ephemeral : true});
-        let runstring = '';
+        //await interaction.deferReply({ephemeral : true});
         bdayDates.fetchEverything();
         let list: any[][] = [];
         for(const date of bdayDates){
@@ -39,25 +38,104 @@ export class BirthdayList implements SlashCommand {
             }
         }
         list = sort(list);
-        var userString = '';
-        var dateString = '';
+        var userPageOne = '';
+        var userPageTwo = '';
+        var userPageThree = '';
+        var datePageOne = '';
+        var datePageTwo = '';
+        var datePageThree = '';
+        let count = 0;
         for(let x of list){
-            userString += `${x[0]}\n`;
-            dateString += `${monthCode[x[1]]} ${x[2]}\n`;
+            if (count >= 48) {
+                userPageThree += `${x[0]}\n`;
+                datePageThree += `${monthCode[x[1]]} ${x[2]}\n`;
+                count ++
+                continue
+            }
+            if (count >= 24) {
+                userPageTwo += `${x[0]}\n`;
+                datePageTwo += `${monthCode[x[1]]} ${x[2]}\n`;
+                count++
+                continue
+            }
+            userPageOne += `${x[0]}\n`;
+            datePageOne += `${monthCode[x[1]]} ${x[2]}\n`;
+            count ++
         }
-
-        const embed = new MessageEmbed();
-        embed.addFields({
+        let embedArray: [MessageEmbed];
+        const pageOne = new MessageEmbed()
+        .addFields({
             name: 'User',
-            value: userString,
+            value: userPageOne,
             inline: true,
         },{
             name: 'Birthday',
-            value: dateString,
+            value: datePageOne,
             inline: true,
         })
-        embed.setTitle(`Birthday List for ${interaction.guild!.name}`)
-        interaction.editReply({embeds: [embed]});
+        .setTitle(`Birthday List for ${interaction.guild!.name}`);
+        embedArray = [pageOne];
+
+        if(userPageTwo != ''){
+            const pageTwo = new MessageEmbed()
+            .addFields({
+                name: 'User',
+                value: userPageTwo,
+                inline: true,
+            },{
+                name: 'Birthday',
+                value: datePageTwo,
+                inline: true,
+            })
+            .setTitle(`Birthday List for ${interaction.guild!.name}`);
+            embedArray.push(pageTwo);
+        }
+
+        if(userPageThree != ''){
+            const pageThree = new MessageEmbed()
+            .addFields({
+                name: 'User',
+                value: userPageTwo,
+                inline: true,
+            },{
+                name: 'Birthday',
+                value: datePageTwo,
+                inline: true,
+            })
+            .setTitle(`Birthday List for ${interaction.guild!.name}`);
+            embedArray.push(pageThree);
+        }
+        pageOne.setFooter({text: `Page 1 of ${embedArray.length}`});
+        let index = 0
+        let message = await interaction.reply({
+            embeds: [embedArray[0]], 
+            fetchReply: true}) as Message;
+        await message.react('⏪');
+        await message.react('⏩');
+        const filter = (reaction: MessageReaction, user: User) => {
+            return (
+                ['⏪', '⏩'].includes(reaction.emoji.name!) &&
+                user.id === interaction.user.id
+            ); //if reaction emoji matches one of the two in this array + it was reacted by the interaction creator
+        };
+        const collector = message.createReactionCollector({
+            filter,
+            time: 60000,
+        });
+        collector.on('collect', (reaction, user) => {
+            if (reaction.emoji.name == '⏩') {
+                index += 1;
+            } else if (reaction.emoji.name == '⏪') {
+                index -= 1;
+            } else return;
+            if (index > embedArray.length - 1) {
+                index = 0;
+            } else if (index < 0) {
+                index = embedArray.length - 1;
+            }
+            message.edit({ embeds: [embedArray[index]] });
+            reaction.users.remove(user.id); //remove the emoji so the user doesn't have to remove it themselves
+        });
     }
     guildRequired?: boolean | undefined = true;
     managerRequired?: boolean | undefined;
