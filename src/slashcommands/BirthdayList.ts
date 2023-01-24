@@ -29,14 +29,13 @@ export class BirthdayList implements SlashCommand {
         await interaction.deferReply();
         bdayDates.fetchEverything();
         let list: any[][] = [];
-        for(const date of bdayDates){
-            try{
-                let member = await interaction.guild!.members.fetch(date[0].toString());
-                let birthdate = date[1].slice(' ').split('-');
-                list.push([member, parseInt(birthdate[1]), parseInt(birthdate[0])]) 
-            } catch (err) {
-            }
-        }
+        let memberFetch = await interaction.guild!.members.fetch();
+        memberFetch.forEach(async (member) => {
+            let birthdate = bdayDates.get(member.id)
+            if(!birthdate) return;
+            birthdate = birthdate.slice(' ').split('-');
+            list.push([member, parseInt(birthdate[1]), parseInt(birthdate[0])])
+        })
         list = sort(list);
         var userPageOne = '';
         var userPageTwo = '';
