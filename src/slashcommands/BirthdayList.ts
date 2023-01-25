@@ -37,77 +37,40 @@ export class BirthdayList implements SlashCommand {
             list.push([member, parseInt(birthdate[1]), parseInt(birthdate[0])])
         })
         list = sort(list);
-        var userPageOne = '';
-        var userPageTwo = '';
-        var userPageThree = '';
-        var datePageOne = '';
-        var datePageTwo = '';
-        var datePageThree = '';
-        let count = 0;
-        for(let x of list){
-            if (count >= 48) {
-                userPageThree += `${x[0]}\n`;
-                datePageThree += `${monthCode[x[1]]} ${x[2]}\n`;
-                count ++
-                continue
-            }
-            if (count >= 24) {
-                userPageTwo += `${x[0]}\n`;
-                datePageTwo += `${monthCode[x[1]]} ${x[2]}\n`;
-                count++
-                continue
-            }
-            userPageOne += `${x[0]}\n`;
-            datePageOne += `${monthCode[x[1]]} ${x[2]}\n`;
-            count ++
-        }
-        let embedArray: [MessageEmbed];
-        const pageOne = new MessageEmbed()
-        .addFields({
-            name: 'User',
-            value: userPageOne,
-            inline: true,
-        },{
-            name: 'Birthday',
-            value: datePageOne,
-            inline: true,
-        })
-        .setTitle(`Birthday List for ${interaction.guild!.name}`);
-        embedArray = [pageOne];
+        let pages = Math.floor(list.length / 24 + .99);
+        let currentPage = 1;
 
-        if(userPageTwo != ''){
-            const pageTwo = new MessageEmbed()
-            .addFields({
+        // let nameString = '';
+        // let dateString = '';
+        // let count = 0;
+        // while(count < 24) {
+        //     if(count >= list.length) break;
+        //     nameString += `${list[count][0]}\n`;
+        //     dateString += `${monthCode[list[count][1]]} ${list[count][2]}\n`;
+        //     count ++;
+        // }
+        let initialPage = populatePage(1,list);
+
+        let embed = new MessageEmbed()
+        .setTitle(`Birthday List for ${interaction.guild!.name}`)
+        .setFooter({text: `Page ${currentPage} of ${pages}`})
+        .addFields(
+            {
                 name: 'User',
-                value: userPageTwo,
+                value: initialPage[0],
                 inline: true,
             },{
-                name: 'Birthday',
-                value: datePageTwo,
+                name: 'Date',
+                value: initialPage[1],
                 inline: true,
-            })
-            .setTitle(`Birthday List for ${interaction.guild!.name}`);
-            embedArray.push(pageTwo);
-        }
-
-        if(userPageThree != ''){
-            const pageThree = new MessageEmbed()
-            .addFields({
-                name: 'User',
-                value: userPageTwo,
-                inline: true,
-            },{
-                name: 'Birthday',
-                value: datePageTwo,
-                inline: true,
-            })
-            .setTitle(`Birthday List for ${interaction.guild!.name}`);
-            embedArray.push(pageThree);
-        }
-        pageOne.setFooter({text: `Page 1 of ${embedArray.length}`});
-        let index = 0
+            }
+        )
+        let index = 0;
         let message = await interaction.editReply({
-            embeds: [embedArray[0]]}) as Message;
+            embeds: [embed]}) as Message;
+
+        if(pages = 1) return; //exit function if server only produces one page
+
         await message.react('⏪');
         await message.react('⏩');
         const filter = (reaction: MessageReaction, user: User) => {
@@ -122,16 +85,28 @@ export class BirthdayList implements SlashCommand {
         });
         collector.on('collect', (reaction, user) => {
             if (reaction.emoji.name == '⏩') {
-                index += 1;
+                currentPage += 1;
             } else if (reaction.emoji.name == '⏪') {
-                index -= 1;
+                currentPage -= 1;
             } else return;
-            if (index > embedArray.length - 1) {
-                index = 0;
-            } else if (index < 0) {
-                index = embedArray.length - 1;
+            if (currentPage > pages) {
+                currentPage = 1;
+            } else if (currentPage < 1) {
+                currentPage = pages;
             }
-            message.edit({ embeds: [embedArray[index]] });
+            initialPage = populatePage(currentPage, list);
+            embed.setFields(
+                {
+                    name: 'User',
+                    value: initialPage[0],
+                    inline: true,
+                },{
+                    name: 'Date',
+                    value: initialPage[1],
+                    inline: true,
+                }
+            )
+            message.edit({ embeds: [embed] });
             reaction.users.remove(user.id); //remove the emoji so the user doesn't have to remove it themselves
         });
     }
@@ -152,4 +127,15 @@ var sort = function(arr: any[]){
 		return 0;
 	})
 	return arr;
+}
+
+var populatePage = function(pageNum: number, arr: any){
+    let names = '';
+    let dates = '';
+    let index = (pageNum - 1) * 24;
+    for(let ct = index; ct + index < arr.length || ct - index > 23; ct++){
+        names += `${arr[ct][0]}\n`
+        dates += `${monthCode[arr[ct][1]]} ${arr[ct][2]}\n`
+    }
+    return [names,dates];
 }
