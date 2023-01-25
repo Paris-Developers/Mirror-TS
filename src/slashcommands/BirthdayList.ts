@@ -39,16 +39,6 @@ export class BirthdayList implements SlashCommand {
         list = sort(list);
         let pages = Math.floor(list.length / 24 + .99);
         let currentPage = 1;
-
-        // let nameString = '';
-        // let dateString = '';
-        // let count = 0;
-        // while(count < 24) {
-        //     if(count >= list.length) break;
-        //     nameString += `${list[count][0]}\n`;
-        //     dateString += `${monthCode[list[count][1]]} ${list[count][2]}\n`;
-        //     count ++;
-        // }
         let initialPage = populatePage(1,list);
 
         let embed = new MessageEmbed()
@@ -133,11 +123,8 @@ var populatePage = function(pageNum: number, arr: any){
     let names = '';
     let dates = '';
     let index = (pageNum - 1) * 24;
-    for(let ct = 0; ct + index <= arr.length -1 && ct < 25; ct++){
+    for(let ct = 0; ct + index <= arr.length -1 && ct < 24; ct++){
         let ctdex = ct + index;
-        console.log(ct);
-        console.log(arr[ctdex][0].displayName);
-        //if(!arr[ct]) break;
         names += `${arr[ctdex][0]}\n`;
         dates += `${monthCode[arr[ctdex][1]]} ${arr[ctdex][2]}\n`;
     }
