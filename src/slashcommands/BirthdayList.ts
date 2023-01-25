@@ -134,11 +134,12 @@ var populatePage = function(pageNum: number, arr: any){
     let dates = '';
     let index = (pageNum - 1) * 24;
     console.log(arr.length)
-    for(let ct = index; ct + index < arr.length || (ct - index) > 22; ct++){
-        console.log(ct)
-        console.log(arr[ct][0].displayName)
-        names += `${arr[ct][0]}\n`
-        dates += `${monthCode[arr[ct][1]]} ${arr[ct][2]}\n`
+    for(let ct = index; ct + index < arr.length || (ct - index) > 23; ct++){
+        console.log(index);
+        console.log(ct);
+        console.log(arr[ct][0].displayName);
+        names += `${arr[ct][0]}\n`;
+        dates += `${monthCode[arr[ct][1]]} ${arr[ct][2]}\n`;
     }
     return [names,dates];
 }
