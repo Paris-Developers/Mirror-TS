@@ -69,7 +69,7 @@ export class BirthdayList implements SlashCommand {
         let message = await interaction.editReply({
             embeds: [embed]}) as Message;
 
-        if(pages = 1) return; //exit function if server only produces one page
+        if(pages == 1) return; //exit function if server only produces one page
 
         await message.react('⏪');
         await message.react('⏩');
@@ -120,7 +120,7 @@ var sort = function(arr: any[]){
 	arr.sort(function (a,b){
 		if(a[1] > b[1]) return 1;
 		if(a[1] < b[1]) return -1;
-        if(a[1] = b[1]){
+        if(a[1] == b[1]){
             if(a[2] > b[2]) return 1
             if(a[2] < b[2]) return -1
         }
