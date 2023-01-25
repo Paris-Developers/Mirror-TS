@@ -134,7 +134,7 @@ var populatePage = function(pageNum: number, arr: any){
     let dates = '';
     let index = (pageNum - 1) * 24;
     console.log(arr.length)
-    for(let ct = index; ct + index < arr.length || ct - index > 23; ct++){
+    for(let ct = index; ct + index < arr.length || (ct - index) > 22; ct++){
         console.log(ct)
         console.log(arr[ct][0].displayName)
         names += `${arr[ct][0]}\n`
