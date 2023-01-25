@@ -133,7 +133,9 @@ var populatePage = function(pageNum: number, arr: any){
     let names = '';
     let dates = '';
     let index = (pageNum - 1) * 24;
-    for(let ct = index; ct + index < arr.length - 1 && ct - index < 23; ct++){
+    for(let ct = index; ct + index <= arr.length -1 && ct - index < 23; ct++){
+        console.log(ct);
+        console.log(arr[ct][0].displayName);
         //if(!arr[ct]) break;
         names += `${arr[ct][0]}\n`;
         dates += `${monthCode[arr[ct][1]]} ${arr[ct][2]}\n`;
