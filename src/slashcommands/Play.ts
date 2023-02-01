@@ -45,6 +45,8 @@ export class Play implements SlashCommand {
 				.catch(() => {});
 			if (!searchResult || !searchResult.tracks.length)
 				return void interaction.editReply('no results were found');
+			
+			bot.logger.info(searchResult.tracks[0].title);
 
 			const queue = await bot.player.createQueue(guild!, bot.player.playOptions);
 
