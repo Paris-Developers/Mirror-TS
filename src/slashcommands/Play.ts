@@ -44,7 +44,9 @@ export class Play implements SlashCommand {
 				})
 				.catch(() => {});
 			if (!searchResult || !searchResult.tracks.length)
-				return void interaction.editReply('no results were found');
+				return void interaction.editReply('No results were found, please send a unprivate Youtube or Soundcloud link');
+			
+			bot.logger.info(searchResult.tracks[0].title);
 
 			const queue = await bot.player.createQueue(guild!, bot.player.playOptions);
 

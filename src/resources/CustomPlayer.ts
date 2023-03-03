@@ -5,6 +5,7 @@ export class CustomPlayer extends Player{
     constructor(private bot: Bot){super(bot.client)};
     
     public playOptions: PlayerOptions = {
+        ytdlOptions:{ filter: "audioonly" }, //fix attempt for WRITE EPIPE error
         leaveOnEnd: false,
         leaveOnEmpty: false,
         leaveOnStop: false,
