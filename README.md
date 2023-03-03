@@ -25,7 +25,7 @@ Find a YouTube video shorter than 10 seconds and paste the link into 'video' fie
 
 ### Music Player
 
-Mirror allows users to listen to songs and playlists from Spotify, YouTube, and Soundcloud.  Using [`/play`](src/slashcommands/Play.ts) or [`/playnext`](src/slashcommands/PlayNext.ts) you can search for songs or paste your own song or playlist and it will add it to the queue.
+Mirror allows users to listen to songs and playlists YouTube or Soundcloud.  Using [`/play`](src/slashcommands/Play.ts) or [`/playnext`](src/slashcommands/PlayNext.ts) you can search for songs or paste your own song or playlist and it will add it to the queue.
 
 The Music functionality includes many commands:
  - [`/shuffle`](src/slashcommands/Shuffle.ts)
