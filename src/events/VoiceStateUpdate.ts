@@ -52,7 +52,7 @@ export class VoiceStateUpdate implements EventHandler {
 		audioPlayer.play(intro);
 
 		//code copied from discord#9185
-		//@ts-expect-error
+		//@ts-ignore
 		connection.on("stateChange", (oldState, newState) => {
 			const oldNetworking = Reflect.get(oldState, 'networking');
 			const newNetworking = Reflect.get(newState, 'networking');
