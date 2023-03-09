@@ -43,6 +43,21 @@ export class VoiceStateUpdate implements EventHandler {
 				guildId: newState.guild.id,
 				adapterCreator: newState.guild.voiceAdapterCreator,
 			});
+			
+			//code copied from discord#9185
+			//@ts-ignore
+			connection.on("stateChange", (oldState, newState) => {
+				const oldNetworking = Reflect.get(oldState, 'networking');
+				const newNetworking = Reflect.get(newState, 'networking');
+			  
+				const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+				  const newUdp = Reflect.get(newNetworkState, 'udp');
+				  clearInterval(newUdp?.keepAliveInterval);
+				}
+			  
+				oldNetworking?.off('stateChange', networkStateChangeHandler);
+				newNetworking?.on('stateChange', networkStateChangeHandler);
+			  });
 		}
 		let audioPlayer = createAudioPlayer();
 		connection.subscribe(audioPlayer);
@@ -51,20 +66,7 @@ export class VoiceStateUpdate implements EventHandler {
 		);
 		audioPlayer.play(intro);
 
-		//code copied from discord#9185
-		//@ts-ignore
-		connection.on("stateChange", (oldState, newState) => {
-			const oldNetworking = Reflect.get(oldState, 'networking');
-			const newNetworking = Reflect.get(newState, 'networking');
-		  
-			const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-			  const newUdp = Reflect.get(newNetworkState, 'udp');
-			  clearInterval(newUdp?.keepAliveInterval);
-			}
-		  
-			oldNetworking?.off('stateChange', networkStateChangeHandler);
-			newNetworking?.on('stateChange', networkStateChangeHandler);
-		  });
+
 		return;
 	}
 }
