@@ -38,12 +38,13 @@ export class VoiceStateUpdate implements EventHandler {
 		if (userArray.includes(newState.member!.id)) return; //if the user is silenced, end
 		let connection = getVoiceConnection(newState.guild.id);
 		if (!connection) {
+			bot.logger.info("Creating connection via VoiceStateUpdate");
 			connection = joinVoiceChannel({
 				channelId: newState.channelId!,
 				guildId: newState.guild.id,
 				adapterCreator: newState.guild.voiceAdapterCreator,
 			});
-			
+
 			//code copied from discord#9185
 			//@ts-ignore
 			connection.on("stateChange", (oldState, newState) => {
@@ -65,8 +66,6 @@ export class VoiceStateUpdate implements EventHandler {
 			`./data/intros/${newState.guild.id}/${newState.member!.id}.mp4`
 		);
 		audioPlayer.play(intro);
-
-
 		return;
 	}
 }

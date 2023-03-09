@@ -88,10 +88,25 @@ export async function launchVoice(bot: Bot): Promise<void> {
 	defaultVc.forEach((channel, guild) => {
 		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
 		if (!guildCheck) return defaultVc.delete(guild);
+		bot.logger.info("Creating connection via Launch")
 		const connection = joinVoiceChannel({
 			channelId: channel,
 			guildId: guildCheck.id,
 			adapterCreator: guildCheck.voiceAdapterCreator,
+		});
+		//code copied from discord#9185
+		//@ts-ignore
+		connection.on("stateChange", (oldState, newState) => {
+			const oldNetworking = Reflect.get(oldState, 'networking');
+			const newNetworking = Reflect.get(newState, 'networking');
+			
+			const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+				const newUdp = Reflect.get(newNetworkState, 'udp');
+				clearInterval(newUdp?.keepAliveInterval);
+			}
+			
+			oldNetworking?.off('stateChange', networkStateChangeHandler);
+			newNetworking?.on('stateChange', networkStateChangeHandler);
 		});
 		let player = createAudioPlayer();
 		connection.subscribe(player);
