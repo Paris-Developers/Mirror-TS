@@ -5,6 +5,7 @@
 import {
 	createAudioPlayer,
 	createAudioResource,
+	DiscordGatewayAdapterCreator,
 	joinVoiceChannel,
 } from '@discordjs/voice';
 import { Message, Permissions, TextChannel } from 'discord.js';
@@ -31,7 +32,7 @@ export class Superidol implements MessageCommand {
 			const connection = joinVoiceChannel({
 				channelId: state.channelId,
 				guildId: channel.guild.id,
-				adapterCreator: channel.guild.voiceAdapterCreator,
+				adapterCreator: channel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
 			});
 			let player = createAudioPlayer();
 			connection.subscribe(player);

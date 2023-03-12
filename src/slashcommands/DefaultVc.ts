@@ -1,4 +1,4 @@
-import { createAudioPlayer, joinVoiceChannel } from '@discordjs/voice';
+import { createAudioPlayer, DiscordGatewayAdapterCreator, joinVoiceChannel } from '@discordjs/voice';
 import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
@@ -91,7 +91,7 @@ export async function launchVoice(bot: Bot): Promise<void> {
 		const connection = joinVoiceChannel({
 			channelId: channel,
 			guildId: guildCheck.id,
-			adapterCreator: guildCheck.voiceAdapterCreator,
+			adapterCreator: guildCheck.voiceAdapterCreator as DiscordGatewayAdapterCreator,
 		});
 		let player = createAudioPlayer();
 		connection.subscribe(player);

@@ -1,4 +1,4 @@
-import { joinVoiceChannel } from "@discordjs/voice";
+import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import { CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
 import { transpileModule } from "typescript";
 import { Bot } from "../Bot";
@@ -23,7 +23,7 @@ export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): bo
             joinVoiceChannel({
                 channelId: state.id!,
                 guildId: interaction.guildId!,
-                adapterCreator: interaction.guild!.voiceAdapterCreator,
+                adapterCreator: interaction.guild!.voiceAdapterCreator as DiscordGatewayAdapterCreator, 
             });
         } else {
             embed.setDescription(

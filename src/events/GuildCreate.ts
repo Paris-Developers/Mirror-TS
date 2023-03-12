@@ -28,9 +28,9 @@ export class GuildCreate implements EventHandler {
 		let channelList = await guild.channels.fetch();
 		for (let channel of channelList) {
 			if (
-				channel[1].permissionsFor(guild.me!).has('VIEW_CHANNEL') &&
-				channel[1].permissionsFor(guild.me!).has('SEND_MESSAGES') &&
-				channel[1].type == 'GUILD_TEXT'
+				channel[1]!.permissionsFor(guild.me!).has('VIEW_CHANNEL') &&
+				channel[1]!.permissionsFor(guild.me!).has('SEND_MESSAGES') &&
+				channel[1]!.type == 'GUILD_TEXT'
 			) {
 				let newChannel = channel[1] as TextChannel;
 				await newChannel.send({ embeds: [embed] });
