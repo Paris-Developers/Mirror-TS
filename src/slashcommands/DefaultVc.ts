@@ -6,7 +6,7 @@ import {
 	VoiceChannel,
 	GuildMember,
 	TextChannel,
-	MessageEmbed,
+	EmbedBuilder,
 	Guild,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
@@ -64,7 +64,7 @@ export class DefaultVc implements SlashCommand {
 				return;
 			}
 			defaultVc.set(interaction.guild!.id, channel.id);
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Sucessfully updated your default voice channel to ${channel}`

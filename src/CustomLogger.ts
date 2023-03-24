@@ -3,7 +3,7 @@ import { appendFile } from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
 import { Bot } from './Bot';
-import { AnyChannel, MessageEmbed, TextChannel } from 'discord.js';
+import { AnyChannel, EmbedBuilder, TextChannel } from 'discord.js';
 import config from '../config.json';
 
 export class CustomLogger extends Logger {
@@ -52,7 +52,7 @@ export class CustomLogger extends Logger {
 		if (commandName) {
 			var errorChannel: AnyChannel;
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setTitle(`Error in command: __${commandName.toUpperCase()}__`)
 				.setColor('RED');
 			if (channelId) {

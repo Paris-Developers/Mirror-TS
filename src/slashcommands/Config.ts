@@ -2,7 +2,7 @@ import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	Permissions,
 	GuildChannel,
 	GuildChannelResolvable,
@@ -38,7 +38,7 @@ export class Config implements SlashCommand {
 	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
 	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setTitle(`:gear: Server Settings for ${interaction.guild?.name}`)
 				.setColor(colorCheck(interaction.guild!.id));
 			let lines: any[][] = [

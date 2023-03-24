@@ -1,4 +1,4 @@
-import { Message, Permissions, MessageEmbed, TextChannel } from 'discord.js';
+import { Message, Permissions, EmbedBuilder, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
 import { MessageCommand } from './MessageCommand';
 import config from '../../config.json';
@@ -18,7 +18,7 @@ export class SendUpdate implements MessageCommand {
 				return; //we dont need to respond because as far as anyone cares this command does not matter
 			}
 			let content = message.content.slice(12); //cuts out "$sendupdate "
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor('#FFFFFF')
 				.setTitle(
 					':mirror: **__Mirror Update!__** <:homies:863998146589360158>'

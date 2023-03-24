@@ -2,7 +2,7 @@ import {
 	CommandInteraction,
 	CacheType,
 	RichPresenceAssets,
-	MessageEmbed,
+	EmbedBuilder,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
@@ -24,7 +24,7 @@ export class Roll implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id));
 			if (interaction.options.getString('roll')) {
 				if (interaction.options.getString('roll') == '1dbbq') {
 					if (Math.floor(Math.random() * 2 + 0.99) == 1) {

@@ -1,5 +1,5 @@
 import { QueueRepeatMode, Track } from "discord-player";
-import { CommandInteraction, CacheType, MessageEmbed } from "discord.js";
+import { CommandInteraction, CacheType, EmbedBuilder } from "discord.js";
 import { Bot } from "../Bot";
 import { colorCheck } from "../resources/embedColorCheck";
 import { Option, Subcommand } from "./Option";
@@ -12,7 +12,7 @@ export class Loop implements SlashCommand{
     requiredPermissions: bigint[] = [];
     run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
         try {
-            const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id));
+            const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id));
 
             let queue = bot.player.getQueue(interaction.guild!.id);
             if(!queue || !queue.playing) {

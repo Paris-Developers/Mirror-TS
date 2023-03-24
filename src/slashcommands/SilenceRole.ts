@@ -3,7 +3,7 @@ import {
 	CommandInteraction,
 	CacheType,
 	Role,
-	MessageEmbed,
+	EmbedBuilder,
 	Interaction,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
@@ -60,14 +60,14 @@ export class SilenceRole implements SlashCommand {
 			silencedRole.set(interaction.guild!.id, badRole?.id);
 			if (currentRole && currentRole != badRole.id) {
 				let getRole = interaction.guild?.roles.cache.get(currentRole);
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(
 						`Replaced role ${getRole} with ${badRole} as silenced role.  Members with this role will not be able to interact with Birthdays, Introthemes or Music Commands.`
 					);
 				return interaction.reply({ embeds: [embed] });
 			}
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Set ${badRole} as silenced, members with this role will not be able to react with Birthdays, Introthemes, and Music Commands`

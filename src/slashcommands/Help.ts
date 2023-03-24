@@ -5,7 +5,7 @@ import {
 	CommandInteraction,
 	CommandOptionChannelResolvableType,
 	Message,
-	MessageEmbed,
+	EmbedBuilder,
 	MessageReaction,
 	Permissions,
 	User,
@@ -31,7 +31,7 @@ export class Help implements SlashCommand {
 			bot.slashCommands.forEach((command)=>{
 				cmds[command.name] = command.description;
 			})
-			const page1 = new MessageEmbed()
+			const page1 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':mirror: **__Mirror__**')
 				.setDescription('Informational and fun discord bot created by Ford, Zac, and Marty')
@@ -53,7 +53,7 @@ export class Help implements SlashCommand {
 					}
 				)
 				.setFooter({ text: 'Page 1 of 5' });
-			const page2 = new MessageEmbed()
+			const page2 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':sound: **__Voice Commands__**')
 				.setDescription(
@@ -82,7 +82,7 @@ export class Help implements SlashCommand {
 					inline:false
 				})
 				.setFooter({ text: 'Page 2 of 5' });
-			const page3 = new MessageEmbed()
+			const page3 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.addFields({
 					name: 'Informative Commands',
@@ -102,7 +102,7 @@ export class Help implements SlashCommand {
 					`\`/roll\`  ${cmds.roll}\n`
 				})
 				.setFooter({ text: 'Page 3 of 5' });
-			const page4 = new MessageEmbed()
+			const page4 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':bell: **__Server Configuration__**')
 				.setDescription(
@@ -119,7 +119,7 @@ export class Help implements SlashCommand {
 					`\`/removeintro\`  ${cmds.removeintro}\n`
 				)
 				.setFooter({ text: 'Page 4 of 5' });
-			const page5 = new MessageEmbed()
+			const page5 = new EmbedBuilder()
 			.setColor(colorCheck(interaction.guild!.id))
 			.setTitle(':bell: **__Other Information__**')
 			.addFields({

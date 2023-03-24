@@ -1,7 +1,7 @@
 import { bdayDates } from '../slashcommands/Birthday';
 import cron from 'node-cron';
 import { Bot } from '../Bot';
-import { MessageEmbed, TextChannel, User } from 'discord.js';
+import { EmbedBuilder, TextChannel, User } from 'discord.js';
 import Enmap from 'enmap';
 import { bdayChannels, bdayTimes } from '../slashcommands/BirthdayConfig';
 import { silencedUsers } from '../slashcommands/SilenceMember';
@@ -61,7 +61,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 				if (!targetChannel) return;
 
 				//create embed and send
-				const bdayEmbed = new MessageEmbed()
+				const bdayEmbed = new EmbedBuilder()
 					.setDescription(`**:birthday: Happy Birthday <@${userId}> :tada:**`)
 					.setColor(member.displayHexColor)
 					.setFooter({

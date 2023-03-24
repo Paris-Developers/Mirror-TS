@@ -4,7 +4,7 @@ import {
 	CacheType,
 	ChatInputApplicationCommandData,
 	CommandInteraction,
-	MessageEmbed,
+	EmbedBuilder,
 	Permissions,
 } from 'discord.js';
 import fetch from 'node-fetch';
@@ -29,7 +29,7 @@ export class Kawaii implements SlashCommand {
 			//fetches the nekos.best api
 			let res = await fetch(`https://nekos.best/api/v2/wink`);
 			let jsonData = await res.json();
-			let embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id)).setImage(jsonData.results[0].url);
+			let embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id)).setImage(jsonData.results[0].url);
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);

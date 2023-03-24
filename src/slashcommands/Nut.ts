@@ -1,4 +1,4 @@
-import { CommandInteraction, CacheType, MessageEmbed, User } from 'discord.js';
+import { CommandInteraction, CacheType, EmbedBuilder, User } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
@@ -51,7 +51,7 @@ export class Nut implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor('#FDA50F');
+			const embed = new EmbedBuilder().setColor('#FDA50F');
 			if (
 				Math.random() == 0.69 ||
 				Math.random() == 0.42 ||

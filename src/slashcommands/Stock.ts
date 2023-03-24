@@ -6,7 +6,7 @@ import {
 	CommandInteraction,
 	CacheType,
 	Permissions,
-	MessageEmbed,
+	EmbedBuilder,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -38,7 +38,7 @@ export class Stock implements SlashCommand {
 		try {
 			//tests to see if the command was passed in with arguements
 			if (!interaction.options.getString('tickers')) {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Please provide a valid ticker(s)');
 				interaction.reply({ embeds: [embed] });
@@ -47,7 +47,7 @@ export class Stock implements SlashCommand {
 			//splits the entry text into separate arguements
 			let args = interaction.options.getString('tickers')!.split(' ');
 			if (args.length > 10) {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Please provide 10 or fewer stocks to call');
 				interaction.reply({ embeds: [embed] });
@@ -95,7 +95,7 @@ export class Stock implements SlashCommand {
 				let low52 = jsonData.week52Low;
 
 				//creates discord message embed and edits the modifiers with the attained variables above
-				embedList[ctr] = new MessageEmbed()
+				embedList[ctr] = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setTitle(`__Summary for ${company}:__`)
 					.setDescription(' ')

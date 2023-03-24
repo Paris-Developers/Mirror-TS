@@ -1,7 +1,7 @@
 //Call: Slash command advpoll
 //Returns a custom in depth poll
 import {
-	MessageEmbed,
+	EmbedBuilder,
 	Message,
 	Permissions,
 	CacheType,
@@ -84,7 +84,7 @@ export class Poll implements SlashCommand {
 				return interaction.reply({content: 'Your poll cannot be longer than 24 hours or 1440 minutes', ephemeral: true});
 			}
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(`__${interaction.options.getString('title')}__`)
 				.setFooter({

@@ -6,7 +6,7 @@
 //actually rent free
 //got me so depressed im actually doing school work, thats a new low
 
-import { Message, Permissions, MessageEmbed } from 'discord.js';
+import { Message, Permissions, EmbedBuilder } from 'discord.js';
 import { Bot } from '../Bot';
 import { MessageCommand } from './MessageCommand';
 import fetch from 'node-fetch';
@@ -31,7 +31,7 @@ export class fuckimissheralready implements MessageCommand {
 			if (nsfw.get(message.guild!.id) != 'on') return;
 			let res = await fetch(`https://nekos.best/api/v1/cry`);
 			let jsonData = await res.json();
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor('#0071b6')
 				.setImage(jsonData.url)
 				.setFooter({ text: 'I feel you bro' });

@@ -1,4 +1,4 @@
-import { CommandInteraction, CacheType, MessageEmbed, ColorResolvable } from "discord.js";
+import { CommandInteraction, CacheType, EmbedBuilder, ColorResolvable } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import Enmap from "enmap";
 import { Bot } from "../Bot";
@@ -25,7 +25,7 @@ export class ServerColor implements SlashCommand {
             try{
                 var colorTest = color as ColorResolvable;
 
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setColor(colorTest)
                     .setDescription('This is your new server color!');
                 serverColors.set(interaction.guild!.id, colorTest);

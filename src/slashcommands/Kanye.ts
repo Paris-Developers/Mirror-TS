@@ -4,7 +4,7 @@ import {
 	CacheType,
 	ChatInputApplicationCommandData,
 	CommandInteraction,
-	MessageEmbed,
+	EmbedBuilder,
 	Permissions,
 } from 'discord.js';
 import fetch from 'node-fetch';
@@ -27,7 +27,7 @@ export class Kanye implements SlashCommand {
 		try {
 			let res = await fetch(`https://api.kanye.rest/`);
 			let jsonData = await res.json();
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(`**${jsonData.quote}**`)
 				.setFooter({

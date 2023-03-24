@@ -6,7 +6,7 @@ import {
 	GuildMember,
 	TextChannel,
 	Guild,
-	MessageEmbed,
+	EmbedBuilder,
 	Options,
 } from 'discord.js';
 import { SlashCommand } from './SlashCommand';
@@ -74,7 +74,7 @@ export class Update implements SlashCommand {
 				});
 			//var enmapChannel = updateChannels.ensure(interaction.guild.id, '');
 			updateChannels.set(interaction.guild.id, channel?.id);
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Sucessfully updated your development messages to ${channel}`

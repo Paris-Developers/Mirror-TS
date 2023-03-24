@@ -4,7 +4,7 @@ import {
 	CacheType,
 	ChatInputApplicationCommandData,
 	Permissions,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
 	GuildChannel,
 	TextChannel,
@@ -62,7 +62,7 @@ export class Nsfw implements SlashCommand {
 				return;
 			}
 			var setting = nsfw.ensure(interaction.guild!.id, 'off');
-			const embed = new MessageEmbed();
+			const embed = new EmbedBuilder();
 			if (interaction.options.getString('toggle') == 'on') {
 				nsfw.set(interaction.guild!.id, 'on');
 				embed.setDescription('NSFW has been toggled `ON`');

@@ -1,4 +1,4 @@
-import { CommandInteraction, CacheType, MessageEmbed, Message, User, MessageReaction } from 'discord.js';
+import { CommandInteraction, CacheType, EmbedBuilder, Message, User, MessageReaction } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand} from './SlashCommand';
@@ -41,7 +41,7 @@ export class BirthdayList implements SlashCommand {
         let currentPage = 1;
         let initialPage = populatePage(1,list);
 
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
         .setTitle(`Birthday List for ${interaction.guild!.name}`)
         .setFooter({text: `Page ${currentPage} of ${pages}`})
         .addFields(

@@ -1,7 +1,7 @@
 //Keyword: 727
 //Reacts to the keyword with WYSI embed
 
-import { Message, Permissions, MessageEmbed } from 'discord.js';
+import { Message, Permissions, EmbedBuilder } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
@@ -20,7 +20,7 @@ export class SevenTwentySeven implements Keyword {
 	): Promise<void> {
 		try {
 			await message.delete();
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor('#ff66aa')
 				.setImage('https://c.tenor.com/zbPLwrk_K44AAAAC/wysi.gif')
 				.setTitle('**__WHEN YOU FUCKING SEE IT__**');

@@ -6,7 +6,7 @@ import {
 	CommandInteraction,
 	CacheType,
 	Permissions,
-	MessageEmbed,
+	EmbedBuilder,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -76,7 +76,7 @@ export class Weather implements SlashCommand {
 	): Promise<void> {
 		try {
 			if (!interaction.options.getString('city')) {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Empty message, please provide a city');
 				interaction.reply({ embeds: [embed] });
@@ -96,7 +96,7 @@ export class Weather implements SlashCommand {
 			);
 			jsonData = await res.json();
 			if (jsonData.cod == '404') {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(`Error: City not found, try again`);
 				interaction.reply({ embeds: [embed] });
@@ -147,7 +147,7 @@ export class Weather implements SlashCommand {
 					' ';
 			}
 			//creates message embed and edits modifiers
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(`**Current Weather in ${str}**`)
 				.addFields(

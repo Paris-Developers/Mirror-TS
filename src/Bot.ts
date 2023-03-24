@@ -1,4 +1,4 @@
-import { Client, Guild, MessageEmbed, TextChannel } from 'discord.js';
+import { Client, Guild, EmbedBuilder, TextChannel } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';

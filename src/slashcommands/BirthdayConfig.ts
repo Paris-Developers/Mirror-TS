@@ -5,7 +5,7 @@ import {
 	GuildMember,
 	TextChannel,
 	GuildChannel,
-	MessageEmbed,
+	EmbedBuilder,
 } from 'discord.js';
 import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
@@ -150,7 +150,7 @@ export class BirthdayConfig implements SlashCommand {
 			let minuteText = minute.toString();
 			if (hour < 10) hourText = '0' + hourText;
 			if (minute < 10) minuteText = '0' + minuteText;
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Successfully scheduled your birthday timer for **\`${hourText}:${minuteText}\` \`${timezone.toUpperCase()}\`** in ${interaction.options.getChannel(
