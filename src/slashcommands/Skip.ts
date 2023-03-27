@@ -5,7 +5,7 @@ import {
 	EmbedBuilder,
 	GuildMember,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
@@ -19,7 +19,7 @@ export class Skip implements SlashCommand {
 		new Option(
 			'number',
 			'How many tracks you want to skip in the queue',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.INTEGER,
 			false
 		)
 	];

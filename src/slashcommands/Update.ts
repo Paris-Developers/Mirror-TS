@@ -13,7 +13,7 @@ import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import Enmap from 'enmap';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import { colorCheck } from '../resources/embedColorCheck';
 
 export let updateChannels = new Enmap({ name: 'updateChannels' });
@@ -26,7 +26,7 @@ export class Update implements SlashCommand {
 		new Option(
 			'channel',
 			'The channel you wish to recieve update messages',
-			ApplicationCommandOptionTypes.CHANNEL,
+			ApplicationCommandOptionType.CHANNEL,
 			true
 		),
 	];

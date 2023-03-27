@@ -13,7 +13,7 @@ import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import fetch from 'node-fetch';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import { colorCheck } from '../resources/embedColorCheck';
 
 export class Stock implements SlashCommand {
@@ -23,7 +23,7 @@ export class Stock implements SlashCommand {
 		new Option(
 			'tickers',
 			'tickers to query, space separated',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.STRING,
 			true
 		),
 	];

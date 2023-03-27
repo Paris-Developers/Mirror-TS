@@ -6,7 +6,7 @@ import {
 	EmbedBuilder,
 	Interaction,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -25,7 +25,7 @@ export class SilenceRole implements SlashCommand {
 		new Option(
 			'role',
 			'The role to silence',
-			ApplicationCommandOptionTypes.ROLE,
+			ApplicationCommandOptionType.ROLE,
 			true
 		),
 	];

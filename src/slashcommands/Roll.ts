@@ -4,7 +4,7 @@ import {
 	RichPresenceAssets,
 	EmbedBuilder,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
@@ -17,7 +17,7 @@ export class Roll implements SlashCommand {
 		new Option(
 			'roll',
 			'the dice you want to roll',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.STRING,
 			false
 		),
 	];

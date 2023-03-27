@@ -5,11 +5,12 @@
 import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
-	Permissions,
+	PermissionsBitField,
 	EmbedBuilder,
 	Options,
+	ApplicationCommandOptionType,
+	CommandInteractionOptionResolver,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -43,7 +44,7 @@ export class Gavin implements SlashCommand {
 			new Option(
 				'lifttype',
 				'the lift to display',
-				ApplicationCommandOptionTypes.STRING,
+				ApplicationCommandOptionType.String,
 				true,
 				'deadlift',
 				liftChoices
@@ -53,7 +54,7 @@ export class Gavin implements SlashCommand {
 			new Option(
 				'lifttype',
 				'the lift to set',
-				ApplicationCommandOptionTypes.STRING,
+				ApplicationCommandOptionType.String,
 				true,
 				'deadlift',
 				liftChoices
@@ -61,19 +62,19 @@ export class Gavin implements SlashCommand {
 			new Option(
 				'lift',
 				'the lift record',
-				ApplicationCommandOptionTypes.NUMBER,
+				ApplicationCommandOptionType.Number,
 				true,
 				1
 			),
 		]),
 	];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.EmbedLinks,
+		PermissionsBitField.Flags.SendMessages
 	];
 	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
 		try {
-			const options = interaction.options;
+			const options = interaction.options as CommandInteractionOptionResolver;
 			if (options.getSubcommand() == 'all') {
 				// subcommand for printing all the data
 				let bench = gav_records.ensure('bench', 365);

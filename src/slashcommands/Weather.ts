@@ -14,7 +14,7 @@ import fetch from 'node-fetch';
 import { find } from 'geo-tz';
 import config from '../../config.json';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import { colorCheck } from '../resources/embedColorCheck';
 
 type emojiConverter = { [index: string]: string };
@@ -56,13 +56,13 @@ export class Weather implements SlashCommand {
 		new Option(
 			'city',
 			'City to query',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.STRING,
 			true
 		),
 		new Option(
 			'state',
 			'Two letter state code',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.STRING,
 			false
 		),
 	];

@@ -6,7 +6,7 @@ import {
 	GuildMember,
 	TextChannel,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -22,7 +22,7 @@ export class SilenceMember implements SlashCommand {
 		new Option(
 			'user',
 			'The user to silence/unsilence',
-			ApplicationCommandOptionTypes.USER,
+			ApplicationCommandOptionType.USER,
 			true
 		),
 	];

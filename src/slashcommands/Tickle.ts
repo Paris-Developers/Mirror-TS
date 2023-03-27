@@ -7,7 +7,7 @@ import {
 import { Bot } from "../Bot";
 import { SlashCommand } from "./SlashCommand";
 import fetch from "node-fetch";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { ApplicationCommandOptionType } from "discord.js/typings/enums";
 import { Subcommand, Option } from "./Option";
 import { colorCheck } from "../resources/embedColorCheck";
 
@@ -18,7 +18,7 @@ export class Tickle implements SlashCommand {
         new Option(
             'user',
             'The user to tickle',
-            ApplicationCommandOptionTypes.USER,
+            ApplicationCommandOptionType.USER,
             false
         ),
     ];

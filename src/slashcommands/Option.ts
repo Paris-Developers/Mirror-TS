@@ -18,7 +18,7 @@ export class Option {
 	_name: string;
 	//Description of the option
 	_description: string;
-	//type of the option, you can use the ApplicationCommandOptionTypes class to make code more readable.
+	//type of the option, you can use the ApplicationCommandOptionType class to make code more readable.
 	_type: number;
 	//whether or not it's a required option
 	_required: boolean;

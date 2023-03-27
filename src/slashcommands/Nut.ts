@@ -1,5 +1,4 @@
-import { CommandInteraction, CacheType, EmbedBuilder, User } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { CommandInteraction, CacheType, EmbedBuilder, ApplicationCommandOptionType, CommandInteractionOptionResolver } from 'discord.js';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -22,13 +21,13 @@ export class Nut implements SlashCommand {
 			new Option(
 				'change',
 				'how many nuts to add',
-				ApplicationCommandOptionTypes.INTEGER,
+				ApplicationCommandOptionType.Integer,
 				false
 			),
 			new Option(
 				'user',
 				'whos jar to add nuts to',
-				ApplicationCommandOptionTypes.USER,
+				ApplicationCommandOptionType.User,
 				false
 			),
 		]),
@@ -36,13 +35,13 @@ export class Nut implements SlashCommand {
 			new Option(
 				'change',
 				'How many nuts to remove',
-				ApplicationCommandOptionTypes.INTEGER,
+				ApplicationCommandOptionType.Integer,
 				false
 			),
 			new Option(
 				'user',
 				'whos jar to subtract nuts from',
-				ApplicationCommandOptionTypes.USER,
+				ApplicationCommandOptionType.User,
 				false
 			),
 		]),
@@ -62,10 +61,11 @@ export class Nut implements SlashCommand {
 				embed.setImage(gifArray[index]);
 			}
 
-			if (interaction.options.getSubcommand() == 'add') {
+			const options = interaction.options as CommandInteractionOptionResolver;
+			if (options.getSubcommand() == 'add') {
 				let messageContent = true;
-				let change = interaction.options.getInteger('change');
-				let jarUser = interaction.options.getUser('user');
+				let change = options.getInteger('change');
+				let jarUser = interaction.options.getUser('user'); //TODO, why does this work
 				if (!change) change = 1; //if no change is provided, set to one.
 				if (!jarUser) {
 					//if no user is provided, set it to the user.
@@ -80,12 +80,13 @@ export class Nut implements SlashCommand {
 						messageContent ? `${jarUser}'s` : 'your'
 					} jar, the new total is ${storage}`
 				);
-				return interaction.reply({ embeds: [embed] });
+				interaction.reply({ embeds: [embed] });
+				return;
 			}
 
-			if (interaction.options.getSubcommand() == 'subtract') {
+			if (options.getSubcommand() == 'subtract') {
 				let messageContent = true;
-				let change = interaction.options.getInteger('change');
+				let change = options.getInteger('change');
 				let jarUser = interaction.options.getUser('user');
 				if (!change) change = 1; //if no change is provided, set to one.
 				if (!jarUser) {
@@ -101,16 +102,18 @@ export class Nut implements SlashCommand {
 						messageContent ? `${jarUser}'s` : 'your'
 					} jar, the new total is ${storage}`
 				);
-				return interaction.reply({ embeds: [embed] });
+				interaction.reply({ embeds: [embed] });
+				return;
 			}
-			if (interaction.options.getSubcommand() == 'reset') {
+			if (options.getSubcommand() == 'reset') {
 				nuts.set(interaction.user.id, 0);
 				embed
 					.setDescription('Your jar has been emptied')
 					.setImage('https://c.tenor.com/injWPZSrCK0AAAAC/bear.gif');
-				return interaction.reply({ embeds: [embed] });
+				interaction.reply({ embeds: [embed] });
+				return;
 			}
-			if(interaction.options.getSubcommand() == 'leaderboard'){
+			if(options.getSubcommand() == 'leaderboard'){
 				nuts.fetchEverything();
 				let guild = interaction.guild!;
 				let leaderboard: any[][] = [];
@@ -149,10 +152,11 @@ export class Nut implements SlashCommand {
 			};
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
 			});
+			return;
 		}
 	}
 

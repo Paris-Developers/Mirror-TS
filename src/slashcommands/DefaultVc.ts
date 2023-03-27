@@ -8,8 +8,9 @@ import {
 	TextChannel,
 	EmbedBuilder,
 	Guild,
+	ApplicationCommandOptionType,
+	CommandInteractionOptionResolver,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -26,7 +27,7 @@ export class DefaultVc implements SlashCommand {
 		new Option(
 			'channel',
 			'The channel you wish to designate as the default',
-			ApplicationCommandOptionTypes.CHANNEL,
+			ApplicationCommandOptionType.Channel,
 			true
 		),
 	];
@@ -39,7 +40,7 @@ export class DefaultVc implements SlashCommand {
 			let member = interaction.member as GuildMember;
 			if (
 				!(interaction.channel instanceof TextChannel) ||
-				!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')
+				!member.permissionsIn(interaction.channel!).has('Administrator')
 			) {
 				interaction.reply({
 					content:
@@ -48,7 +49,9 @@ export class DefaultVc implements SlashCommand {
 				});
 				return;
 			}
-			let channel = interaction.options.getChannel('channel');
+
+			var options = interaction.options as CommandInteractionOptionResolver;
+			let channel = options.getChannel('channel');
 			if (!(channel instanceof VoiceChannel)) {
 				interaction.reply({
 					content: 'Channel must be a voice channel',
@@ -56,7 +59,7 @@ export class DefaultVc implements SlashCommand {
 				});
 				return;
 			}
-			if (!interaction.guild?.me?.permissionsIn(channel.id).has('CONNECT')) {
+			if (!interaction.guild!.members!.me?.permissionsIn(channel.id).has('Connect')) {
 				interaction.reply({
 					content: 'I do not have permission to Connect to that VC',
 					ephemeral: true,

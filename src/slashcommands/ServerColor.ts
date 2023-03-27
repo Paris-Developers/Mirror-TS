@@ -1,5 +1,5 @@
 import { CommandInteraction, CacheType, EmbedBuilder, ColorResolvable } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { ApplicationCommandOptionType } from "discord.js/typings/enums";
 import Enmap from "enmap";
 import { Bot } from "../Bot";
 import { Option, Subcommand } from "./Option";
@@ -14,7 +14,7 @@ export class ServerColor implements SlashCommand {
         new Option(
             'color',
             'The color you want to set',
-            ApplicationCommandOptionTypes.STRING,
+            ApplicationCommandOptionType.STRING,
             true,
         )
     ]
