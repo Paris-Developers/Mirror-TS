@@ -4,8 +4,8 @@ import {
 	CacheType,
 	EmbedBuilder,
 	GuildMember,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { QueryType } from 'discord-player';
@@ -20,7 +20,7 @@ export class Play implements SlashCommand {
 		new Option(
 			'query',
 			'The song or playlist you want to queue',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true
 		),
 	];

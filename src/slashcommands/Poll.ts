@@ -8,8 +8,9 @@ import {
 	CommandInteraction,
 	User,
 	MessageReaction,
+	ApplicationCommandOptionType,
+	PermissionsBitField,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
@@ -47,12 +48,13 @@ export class Poll implements SlashCommand {
 	name: string = 'poll';
 	description: string = 'Create a poll with up to 10 options';
 	//I'm not writing the applicationcommandoptiontype property every time. STRING = 3
+	//good because you just save me a lot of time doing the same
 	options: (Option | Subcommand)[] = [
 		new Option('title', 'Set the poll title', 3, true),
 		new Option(
 			'time',
 			'How many minutes you want the poll open',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.Integer,
 			true
 		),
 		new Option('argument1', 'first poll option', 3, true),
@@ -67,10 +69,10 @@ export class Poll implements SlashCommand {
 		new Option('argument10', 'tenth poll option', 3, false),
 	];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.MANAGE_MESSAGES,
-		Permissions.FLAGS.ADD_REACTIONS,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.ManageMessages,
+		PermissionsBitField.Flags.AddReactions,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
@@ -79,9 +81,12 @@ export class Poll implements SlashCommand {
 		try {
 			let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
 			//TODO: error test for empty arguments
+			
+			options
 			let time = interaction.options.getInteger('time')!;
 			if(time >= 1500){
-				return interaction.reply({content: 'Your poll cannot be longer than 24 hours or 1440 minutes', ephemeral: true});
+				interaction.reply({content: 'Your poll cannot be longer than 24 hours or 1440 minutes', ephemeral: true});
+				return;
 			}
 
 			const embed = new EmbedBuilder()
@@ -174,6 +179,7 @@ export class Poll implements SlashCommand {
 				}
 				message.edit({ embeds: [embed] });
 			});
+
 			//when the collectors end send a message to the console.
 			collector.on('end', (collected) => {
 				embed.footer = {

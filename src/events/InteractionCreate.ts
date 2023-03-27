@@ -1,5 +1,5 @@
 import { joinVoiceChannel } from '@discordjs/voice';
-import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, TextBasedChannel, GuildChannel } from 'discord.js';
+import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, TextBasedChannel, GuildChannel, Interaction } from 'discord.js';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
 import { voiceCommandCheck } from '../resources/voiceCommandCheck';
@@ -9,7 +9,7 @@ import { EventHandler } from './EventHandler';
 export class InteractionCreate implements EventHandler {
 	eventName = 'interactionCreate';
 
-	async process(bot: Bot, interaction: CommandInteraction) {
+	async process(bot: Bot, interaction: Interaction) {
 		if (!interaction.isCommand()) return;
 
 		//attempt to find the command from the array of all of them
