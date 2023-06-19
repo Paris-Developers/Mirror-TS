@@ -17,7 +17,7 @@ export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): bo
     }
 
     //if mirror is not connected to voice
-    if (!interaction.guild!.me?.voice.channel) {
+    if (!interaction.guild!.members.me?.voice.channel) {
         const cmdCatches = ["play","playNext","join","sicko"];
         if(cmdCatches.includes(interaction.commandName)){
             joinVoiceChannel({
@@ -34,7 +34,7 @@ export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): bo
         }
     }
     //if the user is not connected to the correct voice, end
-    else if (interaction.guild!.me?.voice.channel!.id != state.id) {
+    else if (interaction.guild!.members.me?.voice.channel!.id != state.id) {
         embed.setDescription(
             'Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call'
         );
