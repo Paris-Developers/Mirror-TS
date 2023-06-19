@@ -1,4 +1,4 @@
-import { Message, Permissions, EmbedBuilder, TextChannel } from 'discord.js';
+import { Message, EmbedBuilder, TextChannel, PermissionsBitField } from 'discord.js';
 import { Bot } from '../Bot';
 import { MessageCommand } from './MessageCommand';
 import config from '../../config.json';
@@ -6,7 +6,7 @@ import { updateChannels } from '../slashcommands/Update';
 
 export class SendUpdate implements MessageCommand {
 	name: string = 'sendupdate';
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionsBitField.Flags.SendMessages];
 	async run(
 		bot: Bot,
 		message: Message<boolean>,
