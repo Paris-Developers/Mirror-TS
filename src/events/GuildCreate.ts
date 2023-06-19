@@ -7,6 +7,8 @@ import {
 	Permissions,
 	GuildChannel,
 	NonThreadGuildBasedChannel,
+	BaseGuildTextChannel,
+	ChannelType,
 } from 'discord.js';
 
 export class GuildCreate implements EventHandler {
@@ -19,8 +21,8 @@ export class GuildCreate implements EventHandler {
 			)
 			.setColor('#FFFFFF');
 		if(guild.systemChannel){
-			if(guild.systemChannel.permissionsFor(guild.me!).has('VIEW_CHANNEL') &&
-			guild.systemChannel.permissionsFor(guild.me!).has('SEND_MESSAGES')){
+			if(guild.systemChannel.permissionsFor(guild.members.me!).has('ViewChannel') &&
+			guild.systemChannel.permissionsFor(guild.members.me!).has('SendMessages')){
 				await guild.systemChannel.send({embeds: [embed]});
 				return;
 			}
@@ -28,9 +30,9 @@ export class GuildCreate implements EventHandler {
 		let channelList = await guild.channels.fetch();
 		for (let channel of channelList) {
 			if (
-				channel[1].permissionsFor(guild.me!).has('VIEW_CHANNEL') &&
-				channel[1].permissionsFor(guild.me!).has('SEND_MESSAGES') &&
-				channel[1].type == 'GUILD_TEXT'
+				channel[1]!.permissionsFor(guild.members.me!).has('ViewChannel') &&
+				channel[1]!.permissionsFor(guild.members.me!).has('SendMessages') &&
+				channel[1]!.type == ChannelType.GuildText
 			) {
 				let newChannel = channel[1] as TextChannel;
 				await newChannel.send({ embeds: [embed] });

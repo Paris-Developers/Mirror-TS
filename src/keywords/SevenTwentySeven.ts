@@ -1,17 +1,17 @@
 //Keyword: 727
 //Reacts to the keyword with WYSI embed
 
-import { Message, Permissions, EmbedBuilder } from 'discord.js';
+import { Message, PermissionsBitField, EmbedBuilder } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class SevenTwentySeven implements Keyword {
 	name: string = '727';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.MANAGE_MESSAGES,
-		Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.ManageMessages,
+		PermissionsBitField.Flags.UseExternalEmojis,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,

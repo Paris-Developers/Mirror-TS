@@ -13,15 +13,15 @@ let cringeDict = [
 	'https://tenor.com/view/shrek-frog-dies-from-cringe-gif-21051437',
 ]; //frog
 
-import { Message, Permissions } from 'discord.js';
+import { Message, PermissionsBitField } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class Cringe implements Keyword {
 	name: string = 'cringe';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,

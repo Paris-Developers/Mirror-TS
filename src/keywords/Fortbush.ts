@@ -1,15 +1,15 @@
 //keyword: fortbush emoji;
 //Reacts to the fortbush with a fortbush :D
 
-import { Message, Permissions } from 'discord.js';
+import { Message, PermissionsBitField } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class Fortbush implements Keyword {
 	name: string = '<:fortbush:816549663812485151>';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.ADD_REACTIONS,
-		Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
+		PermissionsBitField.Flags.AddReactions,
+		PermissionsBitField.Flags.UseExternalEmojis,
 	];
 	async run(
 		bot: Bot,
