@@ -1,10 +1,7 @@
 import {
-	ApplicationCommandDataResolvable,
 	CommandInteraction,
 	CacheType,
 	EmbedBuilder,
-	GuildMember,
-	Embed,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';

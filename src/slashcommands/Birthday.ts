@@ -4,7 +4,6 @@ import {
 	CacheType,
 	EmbedBuilder,
 	ApplicationCommandOptionType,
-	//ApplicationCommandOptionType,
 } from 'discord.js';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';

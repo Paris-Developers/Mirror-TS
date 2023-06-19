@@ -6,6 +6,7 @@ import {
 	CommandInteraction,
 	EmbedBuilder,
 	Permissions,
+	PermissionsBitField,
 } from 'discord.js';
 import fetch from 'node-fetch';
 import { Bot } from '../Bot';
@@ -17,8 +18,8 @@ export class Kanye implements SlashCommand {
 	description: string = 'Kanye';
 	options = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,

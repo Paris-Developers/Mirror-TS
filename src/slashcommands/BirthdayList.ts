@@ -55,7 +55,6 @@ export class BirthdayList implements SlashCommand {
                 inline: true,
             }
         )
-        let index = 0;
         let message = await interaction.editReply({
             embeds: [embed]}) as Message;
 

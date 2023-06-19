@@ -14,7 +14,7 @@ export class ClearQueue implements SlashCommand {
 	description = 'Clear the music queue';
 	options = [];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
@@ -23,17 +23,20 @@ export class ClearQueue implements SlashCommand {
 				embed.setDescription(
 					'There are no songs in the queue or the player is not playing'
 				);
-				return interaction.reply({ embeds: [embed], ephemeral: true });
+				interaction.reply({ embeds: [embed], ephemeral: true });
+				return;
 			}
 			queue.clear();
 			embed.setDescription(`Queue has been cleared by ${interaction.user}`);
-			return interaction.reply({ embeds: [embed] });
+			interaction.reply({ embeds: [embed] });
+			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
 			});
+			return;
 		}
 	}
 	guildRequired?: boolean | undefined = true;

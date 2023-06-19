@@ -14,13 +14,15 @@ export class DestroyQueue implements SlashCommand {
 			if (queue) {
 				queue.destroy();
 			}
-			return interaction.reply('Reset the queue');
+			interaction.reply('Reset the queue');
+			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
 			});
+			return;
 		}
 	}
 	guildRequired?: boolean | undefined = true;

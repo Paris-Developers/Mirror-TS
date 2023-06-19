@@ -4,6 +4,7 @@ import {
 	CommandInteraction,
 	EmbedBuilder,
 	Permissions,
+	PermissionsBitField,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -14,8 +15,8 @@ export class Invite implements SlashCommand {
 	description: string = 'Invite link for mirror';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,

@@ -1,5 +1,5 @@
 import { joinVoiceChannel } from '@discordjs/voice';
-import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, TextBasedChannel, GuildChannel, Interaction } from 'discord.js';
+import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, TextBasedChannel, GuildChannel, Interaction, ChatInputCommandInteraction } from 'discord.js';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
 import { voiceCommandCheck } from '../resources/voiceCommandCheck';
@@ -11,6 +11,9 @@ export class InteractionCreate implements EventHandler {
 
 	async process(bot: Bot, interaction: Interaction) {
 		if (!interaction.isCommand()) return;
+
+		//if its not a chatInputCommandInteraction, exit
+		if(!interaction.isChatInputCommand()) return;
 
 		//attempt to find the command from the array of all of them
 		let command = bot.slashCommands.find(
@@ -30,20 +33,22 @@ export class InteractionCreate implements EventHandler {
 		}
 		if (command.managerRequired) {
 			if (!(await managerCheck(interaction))) {
-				return interaction.reply({
+				interaction.reply({
 					content:
 						'This command can only be used by designated managers or admininstrators',
 					ephemeral: true,
 				});
+				return;
 			}
 		}
 		if(command.blockSilenced) {
 			if(await silenceCheck(interaction)){				
-				return interaction.reply({
+				interaction.reply({
 					content:
 						'This command cannot be used by silenced members',
 					ephemeral: true,
 				});
+				return;
 			}
 		}
 		if(command.musicCommand){
@@ -75,6 +80,6 @@ export class InteractionCreate implements EventHandler {
 				return;
 			}
 		}
-		command.run(bot, interaction);
+		command.run(bot, interaction as ChatInputCommandInteraction);
 	}
 }

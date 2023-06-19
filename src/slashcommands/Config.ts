@@ -8,6 +8,7 @@ import {
 	GuildChannelResolvable,
 	PermissionOverwriteManager,
 	PermissionResolvable,
+	PermissionsBitField,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -21,21 +22,21 @@ import { serverColors } from './ServerColor';
 import { colorCheck } from '../resources/embedColorCheck';
 
 const permList = [
-	['ADD_REACTIONS', Permissions.FLAGS.ADD_REACTIONS],
-	['CONNECT', Permissions.FLAGS.CONNECT],
-	['EMBED_LINKS', Permissions.FLAGS.EMBED_LINKS],
-	['MANAGE_MESSAGES',Permissions.FLAGS.MANAGE_MESSAGES],
-	['MOVE_MEMBERS', Permissions.FLAGS.MOVE_MEMBERS],
-	['SEND_MESSAGES', Permissions.FLAGS.SEND_MESSAGES],
-	['SPEAK', Permissions.FLAGS.SPEAK],
-	['USE_EXTERNAL_EMOJIS',Permissions.FLAGS.USE_EXTERNAL_EMOJIS],
-	['VIEW_CHANNEL',Permissions.FLAGS.VIEW_CHANNEL]]
+	['ADD_REACTIONS', PermissionsBitField.Flags.AddReactions],
+	['CONNECT', PermissionsBitField.Flags.Connect],
+	['EMBED_LINKS', PermissionsBitField.Flags.EmbedLinks],
+	['MANAGE_MESSAGES',PermissionsBitField.Flags.ManageMessages],
+	['MOVE_MEMBERS', PermissionsBitField.Flags.MoveMembers],
+	['SEND_MESSAGES', PermissionsBitField.Flags.SendMessages],
+	['SPEAK', PermissionsBitField.Flags.Speak],
+	['USE_EXTERNAL_EMOJIS',PermissionsBitField.Flags.UseExternalEmojis],
+	['VIEW_CHANNEL',PermissionsBitField.Flags.ViewChannel]]
 	
 export class Config implements SlashCommand {
 	name: string = 'config';
 	description = 'See the configuration settings for this server';
 	options = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionsBitField.Flags.SendMessages];
 	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			let embed = new EmbedBuilder()
@@ -133,14 +134,19 @@ export class Config implements SlashCommand {
 				}
 				permString += '\n' + 'Assign mirror the missing permissions to ensure full functionality'
 			}
-			embed.addField('Permissions', permString);
-			return interaction.reply({ embeds: [embed] });
+			embed.addFields({
+				name:'Permissions', 
+				value:permString
+			});
+			interaction.reply({ embeds: [embed] });
+			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			interaction.reply({
 				content: 'Error detected, contact an admin to investigate.',
 				ephemeral: true,
 			});
+			return;
 		}
 	}
 	guildRequired?: boolean | undefined = true;

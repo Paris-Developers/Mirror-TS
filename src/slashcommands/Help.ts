@@ -9,6 +9,7 @@ import {
 	MessageReaction,
 	Permissions,
 	User,
+	PermissionsBitField,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -19,10 +20,10 @@ export class Help implements SlashCommand {
 	description: string = 'Information about the bot';
 	options = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS, 
-		Permissions.FLAGS.MANAGE_MESSAGES,
-		Permissions.FLAGS.ADD_REACTIONS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks, 
+		PermissionsBitField.Flags.ManageMessages,
+		PermissionsBitField.Flags.AddReactions,
 	];
 	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
 		try {

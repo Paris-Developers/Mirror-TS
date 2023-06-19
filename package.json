@@ -32,6 +32,7 @@
 	},
 	"devDependencies": {
 		"@types/mkdirp": "^1.0.2",
-		"@types/node-cron": "^3.0.1"
+		"@types/node-cron": "^3.0.1",
+		"@types/node-fetch": "^2.6.3"
 	}
 }

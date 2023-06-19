@@ -5,6 +5,7 @@ import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
 	Permissions,
+	PermissionsBitField,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -15,8 +16,8 @@ export class Leave implements SlashCommand {
 	description: string = 'Have Mirror leave your voice channel';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.MOVE_MEMBERS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.MoveMembers,
 	];
 	async run(
 		bot: Bot,

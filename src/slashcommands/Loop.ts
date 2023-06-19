@@ -17,7 +17,8 @@ export class Loop implements SlashCommand{
             let queue = bot.player.getQueue(interaction.guild!.id);
             if(!queue || !queue.playing) {
                 embed.setDescription('There is no music playing!');
-                return interaction.reply({embeds: [embed]});
+                interaction.reply({embeds: [embed]});
+                return;
             }
             if(queue.repeatMode){
                 embed.setDescription('Stopped looping');
