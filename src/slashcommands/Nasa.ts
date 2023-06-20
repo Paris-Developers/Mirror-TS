@@ -5,7 +5,7 @@ import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
 	EmbedBuilder,
-	Permissions,
+	PermissionsBitField,
 } from 'discord.js';
 import fetch from 'node-fetch';
 import { Bot } from '../Bot';
@@ -19,8 +19,8 @@ export class Nasa implements SlashCommand {
 	description: string = 'NASA\'s astronomy picture of the day';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,

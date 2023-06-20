@@ -24,11 +24,13 @@ export class Shuffle implements SlashCommand {
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
 				embed.setDescription('There is no music playing!');
-				return interaction.reply({ embeds: [embed], ephemeral: true });
+				interaction.reply({ embeds: [embed], ephemeral: true });
+				return;
 			}
 			await queue.shuffle();
 			embed.setDescription(`Queue has been shuffled by ${interaction.user}`);
-			return interaction.reply({ embeds: [embed] });
+			interaction.reply({ embeds: [embed] });
+			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({

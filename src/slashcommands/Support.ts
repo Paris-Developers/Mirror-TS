@@ -2,7 +2,7 @@ import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
 	CacheType,
-	Permissions,
+	PermissionsBitField,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -13,8 +13,8 @@ export class Support implements SlashCommand {
 	description: string = 'Join Mirrors public support server';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,

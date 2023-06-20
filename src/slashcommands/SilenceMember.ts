@@ -5,8 +5,8 @@ import {
 	Guild,
 	GuildMember,
 	TextChannel,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -22,19 +22,20 @@ export class SilenceMember implements SlashCommand {
 		new Option(
 			'user',
 			'The user to silence/unsilence',
-			ApplicationCommandOptionType.USER,
+			ApplicationCommandOptionType.User,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			let badUser = interaction.options.getUser('user');
 			if (badUser?.bot) {
-				return interaction.reply({
+				interaction.reply({
 					content: 'Bots cannot be silenced',
 					ephemeral: true,
 				});
+				return;
 			}
 			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
 			//if the user is already silenced, we want to unsilence them
@@ -42,41 +43,46 @@ export class SilenceMember implements SlashCommand {
 				let ptr = userArray.indexOf(badUser!.id);
 				userArray.splice(ptr);
 				silencedUsers.set(interaction.guild!.id, userArray);
-				return interaction.reply({
+				interaction.reply({
 					content: `Successfully unsilenced ${badUser}`,
 					ephemeral: true,
 				});
+				return;
 			}
 
 			let badMember = interaction.guild!.members.cache.get(badUser!.id); //need to pull member object for .permissionsIn()
 			if (
-				badMember!.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')
+				badMember!.permissionsIn(interaction.channel!.id).has('Administrator')
 			) {
-				return interaction.reply({
+				interaction.reply({
 					content: 'Administrators cannot be silenced',
 					ephemeral: true,
 				});
+				return;
 			}
 
 			if (userArray.length > 100) {
-				return interaction.reply({
+				interaction.reply({
 					content:
 						'Servers are limited to 100 members silenced. Please unsilence somemembers before silencing more.  If this is not possible please contact a developeer for more options',
 					ephemeral: true,
 				});
+				return;
 			}
 			userArray.push(badUser?.id);
 			silencedUsers.set(interaction.guild!.id, userArray);
-			return interaction.reply({
+			interaction.reply({
 				content: `Successfully silenced ${badUser}`,
 				ephemeral: true,
 			});
+			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
 			});
+			return;
 		}
 	}
 	guildRequired?: boolean | undefined = true;

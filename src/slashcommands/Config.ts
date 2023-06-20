@@ -14,7 +14,6 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { bdayChannels } from './BirthdayConfig';
 import { defaultVc } from './DefaultVc';
-import { updateChannels } from './Update';
 import { nsfw } from './Nsfw';
 import { managerRoles } from './ManagerRole';
 import { silencedRole } from './SilenceRole';
@@ -52,14 +51,9 @@ export class Config implements SlashCommand {
 			];
 			let bday = bdayChannels.get(interaction.guild!.id);
 			let defaultVoice = defaultVc.get(interaction.guild!.id);
-			let update = updateChannels.get(interaction.guild!.id);
 			let nsfwToggle = nsfw.get(interaction.guild!.id);
 			let silence = silencedRole.get(interaction.guild!.id);
 			let serverColor = serverColors.get(interaction.guild!.id);
-			if (update) {
-				update = bot.client.channels.cache.get(update);
-				lines[1][2] = update;
-			}
 			if (bday) {
 				bday = bot.client.channels.cache.get(bday);
 				lines[2][2] = bday;

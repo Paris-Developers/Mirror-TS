@@ -3,8 +3,8 @@ import {
 	CacheType,
 	RichPresenceAssets,
 	EmbedBuilder,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
@@ -17,16 +17,16 @@ export class Roll implements SlashCommand {
 		new Option(
 			'roll',
 			'the dice you want to roll',
-			ApplicationCommandOptionType.STRING,
+			ApplicationCommandOptionType.String,
 			false
 		),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
 			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id));
-			if (interaction.options.getString('roll')) {
-				if (interaction.options.getString('roll') == '1dbbq') {
+			if (interaction.options.get('roll')) {
+				if (interaction.options.get('roll')?.value == '1dbbq') {
 					if (Math.floor(Math.random() * 2 + 0.99) == 1) {
 						embed
 							.setDescription('Let there be barbeque :smiling_imp:')
@@ -36,24 +36,28 @@ export class Roll implements SlashCommand {
 					} else {
 						embed.setDescription('No barbeque :sob:');
 					}
-					return interaction.reply({ embeds: [embed] });
+					interaction.reply({ embeds: [embed] });
+					return;
 				}
-				let array = interaction.options.getString('roll')?.split('+');
+				let ptrArr = interaction.options.get('roll')!.value as String;
+				let array = ptrArr.split('+')
 				let rollTotal = 0;
 				let rollString = '';
 				for (let x of array!) {
 					let subStrings = x.split('-');
 					if (subStrings.length != 1) {
-						return interaction.reply('L');
+						interaction.reply('L');
+						return;
 					}
 					let dStrings = x.split('d');
 					let y = 0;
 					while (y < parseInt(dStrings[0])) {
 						let one = Math.floor((Math.random() * 100) / parseInt(dStrings[1]));
 						if (isNaN(one)) {
-							return interaction.reply({
+							interaction.reply({
 								content: 'Invalid syntax, try something like "2d12"',
 							});
+							return;
 						}
 						rollTotal += one;
 						if (rollString.length > -0) rollString += ' + ';
@@ -64,17 +68,21 @@ export class Roll implements SlashCommand {
 				rollString += ' = ';
 				rollString += rollTotal.toString();
 				embed
-					.setTitle(interaction.options.getString('roll')!)
+					//.setTitle(interaction.options.get('roll')!.value?)
+					.setTitle("TODO: Placeholder")
 					.setDescription(rollString);
-				return interaction.reply({ embeds: [embed] });
+				interaction.reply({ embeds: [embed] });
+				return;
 			}
-			return interaction.reply(Math.floor(Math.random() * 6 + 0.99).toString());
+			interaction.reply(Math.floor(Math.random() * 6 + 0.99).toString());
+			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
 			});
+			return;
 		}
 	}
 	guildRequired?: boolean | undefined;

@@ -5,7 +5,7 @@ import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
 	CacheType,
-	Permissions,
+	PermissionsBitField,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -15,7 +15,7 @@ export class Mirror implements SlashCommand {
 	name: string = 'mirror';
 	description: string = 'Mirror go brrrr';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionsBitField.Flags.SendMessages];
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>

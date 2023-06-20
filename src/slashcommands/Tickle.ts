@@ -1,13 +1,13 @@
 import {
     CommandInteraction,
     CacheType,
-    Permissions,
+    PermissionsBitField,
     EmbedBuilder,
+    ApplicationCommandOptionType,
 } from "discord.js";
 import { Bot } from "../Bot";
 import { SlashCommand } from "./SlashCommand";
 import fetch from "node-fetch";
-import { ApplicationCommandOptionType } from "discord.js/typings/enums";
 import { Subcommand, Option } from "./Option";
 import { colorCheck } from "../resources/embedColorCheck";
 
@@ -18,13 +18,13 @@ export class Tickle implements SlashCommand {
         new Option(
             'user',
             'The user to tickle',
-            ApplicationCommandOptionType.USER,
+            ApplicationCommandOptionType.User,
             false
         ),
     ];
     requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
     async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
         try {
@@ -37,10 +37,11 @@ export class Tickle implements SlashCommand {
             interaction.reply({embeds: [tickleEmbed] });
         } catch (err) {
             bot.logger.commandError(interaction.channel!.id, this.name, err);
-            return interaction.reply({
+            interaction.reply({
                 content: 'Error: contact a developer to investigate',
                 ephemeral: true,
             });
+            return;
         }
     }
 }

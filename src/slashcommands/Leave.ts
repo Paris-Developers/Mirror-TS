@@ -24,7 +24,7 @@ export class Leave implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			let mirrorVoice = interaction.guild!.me!.voice;
+			let mirrorVoice = interaction.guild!.members.me!.voice;
 			if (!mirrorVoice.channel) {
 				interaction.reply({
 					content: 'Not in a voice channel',

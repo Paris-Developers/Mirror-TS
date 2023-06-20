@@ -1,7 +1,7 @@
 //Call: Slash command test
 //Returns a greeting reply to the user
 import { Bot } from '../Bot';
-import { Permissions, CommandInteraction, CacheType } from 'discord.js';
+import { PermissionsBitField, CommandInteraction, CacheType } from 'discord.js';
 import { SlashCommand } from './SlashCommand';
 import { Option, Subcommand } from './Option';
 
@@ -9,7 +9,7 @@ export class Test implements SlashCommand {
 	public name = 'test';
 	description: string = 'Replies with your name!';
 	options: (Option | Subcommand)[] = [];
-	public requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
+	public requiredPermissions = [PermissionsBitField.Flags.SendMessages];
 
 	public async run(
 		bot: Bot,

@@ -5,8 +5,8 @@ import {
 	Role,
 	EmbedBuilder,
 	Interaction,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -25,37 +25,39 @@ export class SilenceRole implements SlashCommand {
 		new Option(
 			'role',
 			'The role to silence',
-			ApplicationCommandOptionType.ROLE,
+			ApplicationCommandOptionType.Role,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
-			let badRole = interaction.options.getRole('role') as Role;
-
+			let badRole = interaction.options.get('role')?.role as Role;
 			if (
-				badRole?.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')
+				badRole?.permissionsIn(interaction.channel!.id).has('Administrator')
 			) {
-				return interaction.reply({
+				interaction.reply({
 					content: 'Roles with administrator permissions cannot be silenced!',
 				});
+				return;
 			}
 			let managedRoles = managerRoles.ensure(interaction.guild!.id, []);
 			for (let role of managedRoles) {
 				if (role == badRole?.id) {
-					return interaction.reply({
+					interaction.reply({
 						content: 'Manager Roles cannot be silenced!',
 						ephemeral: true,
 					});
+					return;
 				}
 			}
 			let currentRole = silencedRole.get(interaction.guild!.id) as string;
 			if (badRole.id == currentRole) {
 				silencedRole.delete(interaction.guild!.id);
-				return interaction.reply({
+				interaction.reply({
 					content: `Removed ${badRole} as silenced role`,
 				});
+				return;
 			}
 			silencedRole.set(interaction.guild!.id, badRole?.id);
 			if (currentRole && currentRole != badRole.id) {
@@ -65,20 +67,23 @@ export class SilenceRole implements SlashCommand {
 					.setDescription(
 						`Replaced role ${getRole} with ${badRole} as silenced role.  Members with this role will not be able to interact with Birthdays, Introthemes or Music Commands.`
 					);
-				return interaction.reply({ embeds: [embed] });
+				interaction.reply({ embeds: [embed] });
+				return;
 			}
 			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Set ${badRole} as silenced, members with this role will not be able to react with Birthdays, Introthemes, and Music Commands`
 				);
-			return interaction.reply({ embeds: [embed] });
+			interaction.reply({ embeds: [embed] });
+			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
 			});
+			return;
 		}
 	}
 	guildRequired?: boolean | undefined = true;
@@ -87,7 +92,7 @@ export class SilenceRole implements SlashCommand {
 
 export function silenceCheck(interaction: Interaction): boolean {
 	let member = interaction.guild!.members.cache.get(interaction.user.id);
-	if (member?.permissions.toArray().includes('ADMINISTRATOR')) return false;
+	if (member?.permissions.toArray().includes('Administrator')) return false;
 	let silenced = silencedRole.get(interaction.guild!.id);
 	if (member?.roles.cache.has(silenced)) return true;
 	silenced = silencedUsers.get(interaction.guild!.id);

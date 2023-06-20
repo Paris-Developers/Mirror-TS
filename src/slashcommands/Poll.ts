@@ -83,7 +83,7 @@ export class Poll implements SlashCommand {
 			//TODO: error test for empty arguments
 			
 			options
-			let time = interaction.options.getInteger('time')!;
+			let time = interaction.options.get('time')!.value as number;
 			if(time >= 1500){
 				interaction.reply({content: 'Your poll cannot be longer than 24 hours or 1440 minutes', ephemeral: true});
 				return;
@@ -91,7 +91,7 @@ export class Poll implements SlashCommand {
 
 			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
-				.setTitle(`__${interaction.options.getString('title')}__`)
+				.setTitle(`__${interaction.options.get('title')?.value}__`)
 				.setFooter({
 					text: `Poll created by ${
 						interaction.user.tag
@@ -116,11 +116,11 @@ export class Poll implements SlashCommand {
 			//fill and send embed with fields for each poll option selected
 			let ctr = 0;
 			for (let arg of options) {
-				embed.addField(
-					`${emoteKeys[ctr]} ${arg.value}`,
-					`${progBar[0]} **0%**`,
-					false
-				);
+				embed.addFields({
+					name: `${emoteKeys[ctr]} ${arg.value}`,
+					value:`${progBar[0]} **0%**`,
+					inline: false
+			});
 				ctr += 1;
 			}
 			let message = (await interaction.reply({
@@ -151,13 +151,13 @@ export class Poll implements SlashCommand {
 				ctr = 0;
 				for (let arg of options) {
 					//rewrite the embed and send the edits
-					embed.fields[ctr] = {
+					embed.addFields({
 						name: `${emoteKeys[ctr]} ${arg.value}`,
 						value: `${
 							progBar[Math.round((emoteVal[emoteKeys[ctr]] / total) * 10)]
 						} **${Math.round((emoteVal[emoteKeys[ctr]] / total) * 100)}%**`,
 						inline: false,
-					};
+					});
 					ctr += 1;
 				}
 				message.edit({ embeds: [embed] });
@@ -168,13 +168,13 @@ export class Poll implements SlashCommand {
 				ctr = 0;
 				for (let arg of options) {
 					//rewrite the embed and send the edits
-					embed.fields[ctr] = {
+					embed.addFields({
 						name: `${emoteKeys[ctr]} ${arg.value}`,
 						value: `${
 							progBar[Math.round((emoteVal[emoteKeys[ctr]] / total) * 10)]
 						} ${Math.round((emoteVal[emoteKeys[ctr]] / total) * 100)}%`,
 						inline: false,
-					};
+					});
 					ctr += 1;
 				}
 				message.edit({ embeds: [embed] });
@@ -182,9 +182,9 @@ export class Poll implements SlashCommand {
 
 			//when the collectors end send a message to the console.
 			collector.on('end', (collected) => {
-				embed.footer = {
+				embed.setFooter({
 					text: `Poll created by ${interaction.user.tag}, poll closed.`,
-				};
+				});
 				bot.logger.debug(
 					`Ending collection, Collected ${total} items. ${emoteVal}`
 				);

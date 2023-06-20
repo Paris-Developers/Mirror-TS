@@ -30,7 +30,7 @@ export class Update implements SlashCommand {
 			true
 		),
 	];
-	public requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
+	public requiredPermissions = [PermissionsBitField.Flags.SEND_MESSAGES];
 
 	public async run(
 		bot: Bot,

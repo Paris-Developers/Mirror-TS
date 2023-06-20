@@ -13,11 +13,9 @@ import {
 } from './resources/dynamicImports';
 import Enmap from 'enmap';
 import { registerEvents } from './resources/registerEvents';
-import { CustomPlayer } from './resources/CustomPlayer';
 
 export class Bot {
 	public logger: CustomLogger;
-	public player = new CustomPlayer(this);
 
 	//helper functions
 	public permissionsCheck = permissionsCheck;
@@ -57,6 +55,5 @@ export class Bot {
 		await importMessageCommands(this);
 		await importKeywords(this);
 		this.client.login(this.token);
-		this.player.registerPlayerEvents();
 	}
 }

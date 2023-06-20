@@ -5,15 +5,15 @@ import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
 	CacheType,
-	Permissions,
+	PermissionsBitField,
 	EmbedBuilder,
+	ApplicationCommandOptionType,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import fetch from 'node-fetch';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import { colorCheck } from '../resources/embedColorCheck';
 
 export class Stock implements SlashCommand {
@@ -23,13 +23,13 @@ export class Stock implements SlashCommand {
 		new Option(
 			'tickers',
 			'tickers to query, space separated',
-			ApplicationCommandOptionType.STRING,
+			ApplicationCommandOptionType.String,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
@@ -37,7 +37,7 @@ export class Stock implements SlashCommand {
 	): Promise<void> {
 		try {
 			//tests to see if the command was passed in with arguements
-			if (!interaction.options.getString('tickers')) {
+			if (!interaction.options.get('tickers')) {
 				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Please provide a valid ticker(s)');
@@ -45,7 +45,8 @@ export class Stock implements SlashCommand {
 				return;
 			}
 			//splits the entry text into separate arguements
-			let args = interaction.options.getString('tickers')!.split(' ');
+			let str = interaction.options.get('tickers')!.value as String;
+			let args = str.split(' ');
 			if (args.length > 10) {
 				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
