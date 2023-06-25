@@ -107,7 +107,7 @@ export class Birthday implements SlashCommand {
 			ApplicationCommandOptionType.String,
 			true,
 			'may',
-			months
+			months,
 		),
 		new Option(
 			'day',

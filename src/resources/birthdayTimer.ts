@@ -58,7 +58,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 				let targetChannel = bot.client.channels!.cache.get(
 					bdayChannels.get(guild)
 				) as TextChannel;
-				if (!targetChannel) return;
+				if (!targetChannel) return; //TODO, remove channel and send a log
 
 				//create embed and send
 				const bdayEmbed = new EmbedBuilder()
