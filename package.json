@@ -28,7 +28,7 @@
 		"tweetnacl": "latest",
 		"typescript": "^4.5.5",
 		"ytdl": "latest",
-		"ytdl-core": "^4.10.0"
+		"ytdl-core": "git+ssh://git@github.com:khlevon/node-ytdl-core.git#v4.11.4-patch.2"
 	},
 	"devDependencies": {
 		"@types/mkdirp": "^1.0.2",
