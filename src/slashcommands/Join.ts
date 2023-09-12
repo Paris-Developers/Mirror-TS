@@ -29,7 +29,6 @@ export class Join implements SlashCommand {
 		try {
 			let member = interaction.member as GuildMember;
 			let state = member.voice;
-			bot.logger.info("Creating connection via Join")
 			const connection = joinVoiceChannel({
 				channelId: state.channelId!,
 				guildId: interaction.guildId!,

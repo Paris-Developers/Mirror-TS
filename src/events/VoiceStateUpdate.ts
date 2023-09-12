@@ -38,7 +38,6 @@ export class VoiceStateUpdate implements EventHandler {
 		if (userArray.includes(newState.member!.id)) return; //if the user is silenced, end
 		let connection = getVoiceConnection(newState.guild.id);
 		if (!connection) {
-			bot.logger.info("Creating connection via VoiceStateUpdate");
 			connection = joinVoiceChannel({
 				channelId: newState.channelId!,
 				guildId: newState.guild.id,

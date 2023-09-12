@@ -88,7 +88,6 @@ export async function launchVoice(bot: Bot): Promise<void> {
 	defaultVc.forEach((channel, guild) => {
 		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
 		if (!guildCheck) return defaultVc.delete(guild);
-		bot.logger.info("Creating connection via Launch")
 		const connection = joinVoiceChannel({
 			channelId: channel,
 			guildId: guildCheck.id,
