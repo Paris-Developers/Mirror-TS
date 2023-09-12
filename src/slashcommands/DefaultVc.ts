@@ -93,6 +93,20 @@ export async function launchVoice(bot: Bot): Promise<void> {
 			guildId: guildCheck.id,
 			adapterCreator: guildCheck.voiceAdapterCreator,
 		});
+		//code copied from discord#9185
+		//@ts-ignore
+		connection.on("stateChange", (oldState, newState) => {
+			const oldNetworking = Reflect.get(oldState, 'networking');
+			const newNetworking = Reflect.get(newState, 'networking');
+			
+			const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+				const newUdp = Reflect.get(newNetworkState, 'udp');
+				clearInterval(newUdp?.keepAliveInterval);
+			}
+			
+			oldNetworking?.off('stateChange', networkStateChangeHandler);
+			newNetworking?.on('stateChange', networkStateChangeHandler);
+		});
 		let player = createAudioPlayer();
 		connection.subscribe(player);
 	});
