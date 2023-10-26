@@ -1,6 +1,6 @@
 import { ILogObject, Logger, TLogLevelName } from 'tslog';
 import { appendFile } from 'fs';
-import mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 import path from 'path';
 import { Bot } from './Bot';
 import { Channel, EmbedBuilder, TextChannel } from 'discord.js';
