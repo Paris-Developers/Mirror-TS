@@ -4,7 +4,7 @@
 import { Client, Message, TextChannel, GuildMember } from 'discord.js';
 import { Bot } from '../Bot';
 
-//Permissions.FLAGS properties are all bigints, thus we take an array of them for permissionsToCheck
+//PermissionsBitField.Flags properties are all bigints, thus we take an array of them for permissionsToCheck
 export async function msgPermsCheck(
 	bot: Bot,
 	message: Message,

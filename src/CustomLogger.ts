@@ -1,9 +1,9 @@
 import { ILogObject, Logger, TLogLevelName } from 'tslog';
 import { appendFile } from 'fs';
-import mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 import path from 'path';
 import { Bot } from './Bot';
-import { AnyChannel, MessageEmbed, TextChannel } from 'discord.js';
+import { Channel, EmbedBuilder, TextChannel } from 'discord.js';
 import config from '../config.json';
 
 export class CustomLogger extends Logger {
@@ -50,15 +50,15 @@ export class CustomLogger extends Logger {
 		...args: unknown[]
 	): ILogObject {
 		if (commandName) {
-			var errorChannel: AnyChannel;
+			var errorChannel: TextChannel;
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setTitle(`Error in command: __${commandName.toUpperCase()}__`)
-				.setColor('RED');
+				.setColor('Red');
 			if (channelId) {
 				errorChannel = this.bot.client.channels.cache.get(
 					channelId
-				) as AnyChannel;
+				) as TextChannel;
 				embed.setDescription(
 					`Error Message: ${args.join(' ')}\n\n Channel: ${errorChannel}`
 				);

@@ -1,15 +1,16 @@
 //Call: Slash command advpoll
 //Returns a custom in depth poll
 import {
-	MessageEmbed,
+	EmbedBuilder,
 	Message,
 	Permissions,
 	CacheType,
 	CommandInteraction,
 	User,
 	MessageReaction,
+	ApplicationCommandOptionType,
+	PermissionsBitField,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
@@ -47,12 +48,13 @@ export class Poll implements SlashCommand {
 	name: string = 'poll';
 	description: string = 'Create a poll with up to 10 options';
 	//I'm not writing the applicationcommandoptiontype property every time. STRING = 3
+	//good because you just save me a lot of time doing the same
 	options: (Option | Subcommand)[] = [
 		new Option('title', 'Set the poll title', 3, true),
 		new Option(
 			'time',
 			'How many minutes you want the poll open',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.Integer,
 			true
 		),
 		new Option('argument1', 'first poll option', 3, true),
@@ -67,10 +69,10 @@ export class Poll implements SlashCommand {
 		new Option('argument10', 'tenth poll option', 3, false),
 	];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.MANAGE_MESSAGES,
-		Permissions.FLAGS.ADD_REACTIONS,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.ManageMessages,
+		PermissionsBitField.Flags.AddReactions,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
@@ -79,14 +81,17 @@ export class Poll implements SlashCommand {
 		try {
 			let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
 			//TODO: error test for empty arguments
-			let time = interaction.options.getInteger('time')!;
+			
+			options
+			let time = interaction.options.get('time')!.value as number;
 			if(time >= 1500){
-				return interaction.reply({content: 'Your poll cannot be longer than 24 hours or 1440 minutes', ephemeral: true});
+				interaction.reply({content: 'Your poll cannot be longer than 24 hours or 1440 minutes', ephemeral: true});
+				return;
 			}
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
-				.setTitle(`__${interaction.options.getString('title')}__`)
+				.setTitle(`__${interaction.options.get('title')?.value}__`)
 				.setFooter({
 					text: `Poll created by ${
 						interaction.user.tag
@@ -111,11 +116,11 @@ export class Poll implements SlashCommand {
 			//fill and send embed with fields for each poll option selected
 			let ctr = 0;
 			for (let arg of options) {
-				embed.addField(
-					`${emoteKeys[ctr]} ${arg.value}`,
-					`${progBar[0]} **0%**`,
-					false
-				);
+				embed.addFields({
+					name: `${emoteKeys[ctr]} ${arg.value}`,
+					value:`${progBar[0]} **0%**`,
+					inline: false
+			});
 				ctr += 1;
 			}
 			let message = (await interaction.reply({
@@ -146,13 +151,13 @@ export class Poll implements SlashCommand {
 				ctr = 0;
 				for (let arg of options) {
 					//rewrite the embed and send the edits
-					embed.fields[ctr] = {
+					embed.addFields({
 						name: `${emoteKeys[ctr]} ${arg.value}`,
 						value: `${
 							progBar[Math.round((emoteVal[emoteKeys[ctr]] / total) * 10)]
 						} **${Math.round((emoteVal[emoteKeys[ctr]] / total) * 100)}%**`,
 						inline: false,
-					};
+					});
 					ctr += 1;
 				}
 				message.edit({ embeds: [embed] });
@@ -163,22 +168,23 @@ export class Poll implements SlashCommand {
 				ctr = 0;
 				for (let arg of options) {
 					//rewrite the embed and send the edits
-					embed.fields[ctr] = {
+					embed.addFields({
 						name: `${emoteKeys[ctr]} ${arg.value}`,
 						value: `${
 							progBar[Math.round((emoteVal[emoteKeys[ctr]] / total) * 10)]
 						} ${Math.round((emoteVal[emoteKeys[ctr]] / total) * 100)}%`,
 						inline: false,
-					};
+					});
 					ctr += 1;
 				}
 				message.edit({ embeds: [embed] });
 			});
+
 			//when the collectors end send a message to the console.
 			collector.on('end', (collected) => {
-				embed.footer = {
+				embed.setFooter({
 					text: `Poll created by ${interaction.user.tag}, poll closed.`,
-				};
+				});
 				bot.logger.debug(
 					`Ending collection, Collected ${total} items. ${emoteVal}`
 				);

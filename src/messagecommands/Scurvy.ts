@@ -1,15 +1,16 @@
 //Hidden command $scurvy, pretty lit
 
-import { Message, Permissions } from 'discord.js';
+import { Message, PermissionsBitField } from 'discord.js';
 import { Bot } from '../Bot';
 import { MessageCommand } from './MessageCommand';
 
 export class Scurvy implements MessageCommand {
 	name: string = 'scurvy';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
-		Permissions.FLAGS.MANAGE_MESSAGES,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
+		PermissionsBitField.Flags.ManageMessages,
+
 	];
 	async run(
 		bot: Bot,

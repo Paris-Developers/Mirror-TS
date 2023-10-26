@@ -2,10 +2,10 @@ import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { QueryType } from 'discord-player';
@@ -20,7 +20,7 @@ export class Play implements SlashCommand {
 		new Option(
 			'query',
 			'The song or playlist you want to queue',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true
 		),
 	];
@@ -30,7 +30,7 @@ export class Play implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let member = interaction.member as GuildMember; //need this for later
 

@@ -7,16 +7,16 @@ import {
 	createAudioResource,
 	joinVoiceChannel,
 } from '@discordjs/voice';
-import { Message, Permissions, TextChannel } from 'discord.js';
+import { Message, PermissionsBitField, TextChannel } from 'discord.js';
 import { Bot } from '../Bot';
 import { MessageCommand } from './MessageCommand';
 
 export class Superidol implements MessageCommand {
 	name: string = 'superidol105';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.MANAGE_MESSAGES,
-		Permissions.FLAGS.SPEAK,
-		Permissions.FLAGS.CONNECT,
+		PermissionsBitField.Flags.ManageMessages,
+		PermissionsBitField.Flags.Speak,
+		PermissionsBitField.Flags.Connect,
 	];
 	async run(
 		bot: Bot,

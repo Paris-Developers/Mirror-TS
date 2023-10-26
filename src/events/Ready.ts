@@ -5,7 +5,7 @@ import { birthdayTimer } from '../resources/birthdayTimer';
 import { registerSlashCommands } from '../resources/registerSlashCommands';
 import { launchVoice } from '../slashcommands/DefaultVc';
 import config from '../../config.json';
-import { TextChannel } from 'discord.js';
+import { ActivityType, TextChannel } from 'discord.js';
 
 export class Ready implements EventHandler {
 	eventName = 'ready';
@@ -13,7 +13,7 @@ export class Ready implements EventHandler {
 		bot.logger.info('Logged in');
 		await registerSlashCommands(bot);
 		bot.client.user?.setActivity(config.message, {
-			type: 'LISTENING',
+			type: ActivityType.Listening,
 		});
 		bdayTimes.forEach(async (info, guild) => {
 			birthdayTimer(guild.toString(), bot);

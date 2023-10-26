@@ -4,15 +4,16 @@ import {
 	CacheType,
 	ChatInputApplicationCommandData,
 	CommandInteraction,
+	ApplicationCommandOptionType,
+	CommandInteractionOptionResolver,
 } from 'discord.js';
 import fs from 'fs';
 import ytdl from 'ytdl-core';
-import mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 import { SlashCommand } from './SlashCommand';
 import { Bot } from '../Bot';
 import { silencedUsers } from './SilenceMember';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 
 interface Format {
 	approxDurationMs: number;
@@ -25,7 +26,7 @@ export class Intro implements SlashCommand {
 		new Option(
 			'video',
 			'Youtube link to intro',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true
 		),
 	];
@@ -37,13 +38,15 @@ export class Intro implements SlashCommand {
 		try {
 			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
 			if (userArray.includes(interaction.user.id)) {
-				return interaction.reply({
+				interaction.reply({
 					content: 'Silenced users cannot use this command',
 					ephemeral: true,
 				});
+				return;
 			}
 			await interaction.deferReply({ ephemeral: true });
-			const url = interaction.options.getString('video');
+			var options = interaction.options as CommandInteractionOptionResolver;
+			const url = options.getString('video');
 			//TODO: validate the correct videos.
 			const info = await ytdl.getInfo(url!);
 			let format = info.player_response.streamingData.formats[0] as Format;

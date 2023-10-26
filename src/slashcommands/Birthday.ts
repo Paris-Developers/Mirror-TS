@@ -1,10 +1,10 @@
 import {
 	CommandInteraction,
+	CommandInteractionOptionResolver,
 	CacheType,
-	MessageEmbed,
-	ApplicationCommandDataResolvable,
+	EmbedBuilder,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -104,15 +104,15 @@ export class Birthday implements SlashCommand {
 		new Option(
 			'month',
 			'Your Birth Month',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true,
 			'may',
-			months
+			months,
 		),
 		new Option(
 			'day',
 			'The date of your birthday',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.Integer,
 			true
 		),
 	];
@@ -124,36 +124,41 @@ export class Birthday implements SlashCommand {
 		try {
 			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
 			if (userArray.includes(interaction.user.id)) {
-				return interaction.reply({
+				interaction.reply({
 					content: 'Silenced users cannot use this command',
 					ephemeral: true,
 				});
+				return;
 			}
 
+			//Manually typecasting to avoid errors TODO: test this
+			var options = interaction.options as CommandInteractionOptionResolver; 
 			if (
-				interaction.options.getInteger('day')! >
-					dayCap[interaction.options.getString('month')!] ||
-				interaction.options.getInteger('day')! < 1
+				options.getInteger('day')! >
+					dayCap[options.getString('month')!] ||
+				options.getInteger('day')! < 1
 			) {
-				return interaction.reply({
+				interaction.reply({
 					content: 'Please enter a valid date',
 					ephemeral: true,
 				});
+				return;
 			}
 
 			//store the date of birth in numerical form  DD-MM
-			let formattedBirthday = `${interaction.options.getInteger('day')}-${
-				monthCode[interaction.options.getString('month')!]
+			let formattedBirthday = `${options.getInteger('day')}-${
+				monthCode[options.getString('month')!]
 			}`;
+			
 
 			//set the new birthday into the enmap
 			bdayDates.set(interaction.user.id, formattedBirthday);
 			let monthCap =
-				interaction.options.getString('month')!.charAt(0).toUpperCase() +
-				interaction.options.getString('month')!.slice(1);
-			let embed = new MessageEmbed()
+				options.getString('month')!.charAt(0).toUpperCase() +
+				options.getString('month')!.slice(1);
+			let embed = new EmbedBuilder()
 				.setDescription(
-					`Successfully set your birthday to: ${monthCap} ${interaction.options.getInteger(
+					`Successfully set your birthday to: ${monthCap} ${options.getInteger(
 						'day'
 					)}`
 				)

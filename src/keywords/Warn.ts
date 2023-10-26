@@ -1,10 +1,10 @@
-import { Message, Permissions } from 'discord.js';
+import { Message, PermissionsBitField } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class Warn implements Keyword {
 	name: string = '!warn';
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionsBitField.Flags.SendMessages];
 	async run(
 		bot: Bot,
 		message: Message<boolean>,

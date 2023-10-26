@@ -2,7 +2,7 @@ import {
 	ChatInputApplicationCommandData,
 	CommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -17,7 +17,7 @@ export class Github implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor('#FFFFFF')
 				.setTitle(':lock: __Mirror-TS Codebase and Privacy__')
 				.setDescription(

@@ -1,5 +1,5 @@
 import { joinVoiceChannel } from "@discordjs/voice";
-import { CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
+import { CommandInteraction, GuildMember, EmbedBuilder } from "discord.js";
 import { transpileModule } from "typescript";
 import { Bot } from "../Bot";
 import { colorCheck } from "./embedColorCheck";
@@ -7,7 +7,7 @@ import { colorCheck } from "./embedColorCheck";
 export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): boolean {
     let member = interaction.member as GuildMember;
     let state = member.voice.channel;
-    var embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+    var embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
     //if user is not connected
     if (!state) {
@@ -17,7 +17,7 @@ export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): bo
     }
 
     //if mirror is not connected to voice
-    if (!interaction.guild!.me?.voice.channel) {
+    if (!interaction.guild!.members.me?.voice.channel) {
         const cmdCatches = ["play","playNext","join","sicko"];
         if(cmdCatches.includes(interaction.commandName)){
             joinVoiceChannel({
@@ -34,7 +34,7 @@ export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): bo
         }
     }
     //if the user is not connected to the correct voice, end
-    else if (interaction.guild!.me?.voice.channel!.id != state.id) {
+    else if (interaction.guild!.members.me?.voice.channel!.id != state.id) {
         embed.setDescription(
             'Mirror is not in your voice channel! To use voice commands join the channel mirror is sitting in, or use `join` to move it to your call'
         );

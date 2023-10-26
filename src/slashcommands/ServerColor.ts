@@ -1,5 +1,4 @@
-import { CommandInteraction, CacheType, MessageEmbed, ColorResolvable } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { CommandInteraction, CacheType, EmbedBuilder, ColorResolvable, ApplicationCommandOptionType } from "discord.js";
 import Enmap from "enmap";
 import { Bot } from "../Bot";
 import { Option, Subcommand } from "./Option";
@@ -14,32 +13,34 @@ export class ServerColor implements SlashCommand {
         new Option(
             'color',
             'The color you want to set',
-            ApplicationCommandOptionTypes.STRING,
+            ApplicationCommandOptionType.String,
             true,
         )
     ]
     requiredPermissions: bigint[] = [];
-    run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+    async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
         try{
-            let color = interaction.options.getString('color')?.toUpperCase();
+            let color = interaction.options.get('color')?.value as string;
             try{
                 var colorTest = color as ColorResolvable;
 
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setColor(colorTest)
                     .setDescription('This is your new server color!');
                 serverColors.set(interaction.guild!.id, colorTest);
-                return interaction.reply({embeds: [embed]});
+                interaction.reply({embeds: [embed]});
+                return;
             } catch (err){
-                return interaction.reply({content: 'Invalid color, please try again with format: \'#ABC123\' or BLUE or RANDOM'});
+                interaction.reply({content: 'Invalid color, please try again with format: \'#ABC123\' or BLUE or RANDOM'});
+                return;
             }
         } catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			interaction.reply({
 				content: 'Error: contact a developer to investigate',
 				ephemeral: true,
 			});
-			
+            return;
 		}
     }
     guildRequired?: boolean | undefined = true;

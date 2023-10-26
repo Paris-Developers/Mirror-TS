@@ -5,8 +5,8 @@ import {
 	CacheType,
 	GuildMember,
 	TextChannel,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { unlink } from 'fs';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -20,7 +20,7 @@ export class RemoveIntro implements SlashCommand {
 		new Option(
 			'user',
 			'Member to remove intro',
-			ApplicationCommandOptionTypes.USER,
+			ApplicationCommandOptionType.User,
 			true
 		),
 	];

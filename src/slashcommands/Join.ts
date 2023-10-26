@@ -12,6 +12,7 @@ import {
 	CommandInteraction,
 	GuildMember,
 	Permissions,
+	PermissionsBitField,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -21,7 +22,7 @@ export class Join implements SlashCommand {
 	name: string = 'join';
 	description: string = 'Have Mirror join your voice channel';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionsBitField.Flags.SendMessages];
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>

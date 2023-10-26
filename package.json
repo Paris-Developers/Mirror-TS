@@ -10,28 +10,29 @@
 	"author": "Ford Friedel",
 	"license": "ISC",
 	"dependencies": {
-		"@discordjs/opus": "^0.8.0",
+		"@discordjs/opus": "latest",
 		"@discordjs/voice": "latest",
 		"chrono-node": "latest",
 		"cron": "latest",
 		"discord-player": "latest",
-		"discord.js": "latest",
+		"discord.js": "^14.8.0",
 		"enmap": "latest",
 		"ffmpeg": "latest",
 		"ffmpeg-static": "^4.4.1",
 		"geo-tz": "latest",
 		"mkdirp": "latest",
 		"node-cron": "latest",
-		"node-fetch": "^2.6.1",
+		"node-fetch": "^2.7.0",
 		"pm2": "^5.2.0",
 		"tslog": "^3.3.2",
 		"tweetnacl": "latest",
-		"typescript": "^4.5.5",
+		"typescript": "^5.2.2",
 		"ytdl": "latest",
 		"ytdl-core": "git+ssh://git@github.com:khlevon/node-ytdl-core.git#v4.11.4-patch.2"
 	},
 	"devDependencies": {
 		"@types/mkdirp": "^1.0.2",
-		"@types/node-cron": "^3.0.1"
+		"@types/node-cron": "^3.0.1",
+		"@types/node-fetch": "^2.6.7"
 	}
 }

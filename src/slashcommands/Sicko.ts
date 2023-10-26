@@ -11,7 +11,7 @@ import {
 	CommandInteraction,
 	CacheType,
 	GuildMember,
-	Permissions,
+	PermissionsBitField,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -21,7 +21,7 @@ export class Sicko implements SlashCommand {
 	name: string = 'sicko';
 	description: string = 'Have Mirror join your voice channel, but sicko mode';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionsBitField.Flags.SendMessages];
 	async run(
 		bot: Bot,
 		interaction: CommandInteraction<CacheType>
@@ -31,11 +31,6 @@ export class Sicko implements SlashCommand {
 			let state = member.voice;
 			if (!state.channel) {
 				interaction.reply('you are not in a valid voice channel!');
-				return;
-			}
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (queue) {
-				interaction.reply('Cant go sicko while music is playing :sob:');
 				return;
 			}
 			const connection = joinVoiceChannel({

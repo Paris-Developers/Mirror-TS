@@ -4,8 +4,9 @@ import {
 	CacheType,
 	ChatInputApplicationCommandData,
 	CommandInteraction,
-	MessageEmbed,
+	EmbedBuilder,
 	Permissions,
+	PermissionsBitField,
 } from 'discord.js';
 import fetch from 'node-fetch';
 import { Bot } from '../Bot';
@@ -17,8 +18,8 @@ export class Kanye implements SlashCommand {
 	description: string = 'Kanye';
 	options = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
@@ -27,7 +28,7 @@ export class Kanye implements SlashCommand {
 		try {
 			let res = await fetch(`https://api.kanye.rest/`);
 			let jsonData = await res.json();
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(`**${jsonData.quote}**`)
 				.setFooter({

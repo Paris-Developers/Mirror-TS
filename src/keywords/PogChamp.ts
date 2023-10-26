@@ -1,15 +1,15 @@
 //Keyword: pogchamp
 //Reacts to the keyword with JamesChamp
 
-import { Message, Permissions } from 'discord.js';
+import { Message, PermissionsBitField } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class PogChamp implements Keyword {
 	name: string = 'pogchamp';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.ADD_REACTIONS,
-		Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
+		PermissionsBitField.Flags.AddReactions,
+		PermissionsBitField.Flags.UseExternalEmojis,
 	];
 	async run(
 		bot: Bot,

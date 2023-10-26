@@ -3,7 +3,7 @@ import {
 	CommandInteraction,
 	CacheType,
 	Message,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
 } from 'discord.js';
 import { Bot } from '../Bot';
@@ -17,7 +17,7 @@ export class Queue implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing || queue.tracks.length == 0)

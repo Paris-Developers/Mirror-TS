@@ -2,13 +2,13 @@
 //man....
 //what could have been
 
-import { Message, Permissions } from 'discord.js';
+import { Message, Permissions, PermissionsBitField } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class whydidntitalktoher implements Keyword {
 	name: string = 'whydidntitalktoher';
-	requiredPermissions: bigint[] = [Permissions.FLAGS.ADD_REACTIONS];
+	requiredPermissions: bigint[] = [PermissionsBitField.Flags.AddReactions];
 	async run(
 		bot: Bot,
 		message: Message<boolean>,

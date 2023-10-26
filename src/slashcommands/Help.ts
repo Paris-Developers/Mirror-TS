@@ -5,10 +5,11 @@ import {
 	CommandInteraction,
 	CommandOptionChannelResolvableType,
 	Message,
-	MessageEmbed,
+	EmbedBuilder,
 	MessageReaction,
 	Permissions,
 	User,
+	PermissionsBitField,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -19,10 +20,10 @@ export class Help implements SlashCommand {
 	description: string = 'Information about the bot';
 	options = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS, 
-		Permissions.FLAGS.MANAGE_MESSAGES,
-		Permissions.FLAGS.ADD_REACTIONS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks, 
+		PermissionsBitField.Flags.ManageMessages,
+		PermissionsBitField.Flags.AddReactions,
 	];
 	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
 		try {
@@ -31,7 +32,7 @@ export class Help implements SlashCommand {
 			bot.slashCommands.forEach((command)=>{
 				cmds[command.name] = command.description;
 			})
-			const page1 = new MessageEmbed()
+			const page1 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':mirror: **__Mirror__**')
 				.setDescription('Informational and fun discord bot created by Ford, Zac, and Marty')
@@ -53,7 +54,7 @@ export class Help implements SlashCommand {
 					}
 				)
 				.setFooter({ text: 'Page 1 of 5' });
-			const page2 = new MessageEmbed()
+			const page2 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':sound: **__Voice Commands__**')
 				.setDescription(
@@ -82,7 +83,7 @@ export class Help implements SlashCommand {
 					inline:false
 				})
 				.setFooter({ text: 'Page 2 of 5' });
-			const page3 = new MessageEmbed()
+			const page3 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.addFields({
 					name: 'Informative Commands',
@@ -102,7 +103,7 @@ export class Help implements SlashCommand {
 					`\`/roll\`  ${cmds.roll}\n`
 				})
 				.setFooter({ text: 'Page 3 of 5' });
-			const page4 = new MessageEmbed()
+			const page4 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':bell: **__Server Configuration__**')
 				.setDescription(
@@ -119,7 +120,7 @@ export class Help implements SlashCommand {
 					`\`/removeintro\`  ${cmds.removeintro}\n`
 				)
 				.setFooter({ text: 'Page 4 of 5' });
-			const page5 = new MessageEmbed()
+			const page5 = new EmbedBuilder()
 			.setColor(colorCheck(interaction.guild!.id))
 			.setTitle(':bell: **__Other Information__**')
 			.addFields({

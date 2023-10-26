@@ -4,8 +4,8 @@ import {
 	CacheType,
 	ChatInputApplicationCommandData,
 	CommandInteraction,
-	MessageEmbed,
-	Permissions,
+	EmbedBuilder,
+	PermissionsBitField,
 } from 'discord.js';
 import fetch from 'node-fetch';
 import { Bot } from '../Bot';
@@ -19,8 +19,8 @@ export class Nasa implements SlashCommand {
 	description: string = 'NASA\'s astronomy picture of the day';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
@@ -34,7 +34,7 @@ export class Nasa implements SlashCommand {
 			let jsonData = await res.json();
 			let footer = `${jsonData.date} NASA Astronomy Picture of the day`; //we need this for the deprecation error we are getting with .setFooter()
 			bot.logger.debug(jsonData); // <- remove eventually;
-			var embed = new MessageEmbed()
+			var embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(`${jsonData.explanation.substr(0, 200)}...`)
 				.setFooter({ text: footer })

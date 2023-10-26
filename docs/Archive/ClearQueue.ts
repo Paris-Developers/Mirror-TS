@@ -2,33 +2,34 @@ import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { SlashCommand } from './SlashCommand';
 
-export class Shuffle implements SlashCommand {
-	name: string = 'shuffle';
-	description: string = 'Shuffle the music queue';
+export class ClearQueue implements SlashCommand {
+	name: string = 'clearqueue';
+	description = 'Clear the music queue';
 	options = [];
 	requiredPermissions: bigint[] = [];
-	async run(
-		bot: Bot,
-		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
-				embed.setDescription('There is no music playing!');
-				return interaction.reply({ embeds: [embed], ephemeral: true });
+				embed.setDescription(
+					'There are no songs in the queue or the player is not playing'
+				);
+				interaction.reply({ embeds: [embed], ephemeral: true });
+				return;
 			}
-			await queue.shuffle();
-			embed.setDescription(`Queue has been shuffled by ${interaction.user}`);
-			return interaction.reply({ embeds: [embed] });
+			queue.clear();
+			embed.setDescription(`Queue has been cleared by ${interaction.user}`);
+			interaction.reply({ embeds: [embed] });
+			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
@@ -39,6 +40,7 @@ export class Shuffle implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean | undefined = true;
+	managerRequired?: boolean | undefined;
 	blockSilenced?: boolean | undefined = true;
 	musicCommand?: boolean | undefined = true;
 }

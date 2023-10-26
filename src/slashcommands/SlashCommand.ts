@@ -11,7 +11,7 @@ export interface SlashCommand {
 	name: string;
 	description: string;
 	options: Array<Option | Subcommand>;
-	//an array of Permissions.FLAGS
+	//an array of PermissionsBitField.Flags
 	requiredPermissions: Array<bigint>;
 	//function that will run on command execution
 	run(bot: Bot, interaction: CommandInteraction): Promise<void>;

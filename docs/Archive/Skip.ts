@@ -2,10 +2,10 @@ import {
 	ApplicationCommandDataResolvable,
 	CommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
@@ -19,7 +19,7 @@ export class Skip implements SlashCommand {
 		new Option(
 			'number',
 			'How many tracks you want to skip in the queue',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.INTEGER,
 			false
 		)
 	];
@@ -29,7 +29,7 @@ export class Skip implements SlashCommand {
 		interaction: CommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
