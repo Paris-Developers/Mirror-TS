@@ -4,7 +4,8 @@
 	"description": "Mirror `Discord` Bot TypeScript edition",
 	"main": "built/index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "jest",
+		"test:watch": "jest --watch",
 		"start": "node ./built/src/index.js"
 	},
 	"author": "Ford Friedel",
@@ -12,6 +13,7 @@
 	"dependencies": {
 		"@discordjs/opus": "^0.8.0",
 		"@discordjs/voice": "latest",
+		"@types/jest": "^27.4.1",
 		"chrono-node": "latest",
 		"cron": "latest",
 		"discord-player": "latest",
@@ -32,6 +34,7 @@
 	},
 	"devDependencies": {
 		"@types/mkdirp": "^1.0.2",
-		"@types/node-cron": "^3.0.1"
+		"@types/node-cron": "^3.0.1",
+		"ts-jest": "^27.1.4"
 	}
 }
