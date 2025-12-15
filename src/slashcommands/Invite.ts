@@ -1,9 +1,9 @@
+
 import {
+	ChatInputCommandInteraction,
 	CacheType,
-	ChatInputApplicationCommandData,
-	CommandInteraction,
-	MessageEmbed,
-	Permissions,
+	EmbedBuilder,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -14,15 +14,15 @@ export class Invite implements SlashCommand {
 	description: string = 'Invite link for mirror';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setDescription(
 					'Want to invite Mirror to your own server? Click [here](https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=139606649936&scope=bot%20applications.commands).'
 				)

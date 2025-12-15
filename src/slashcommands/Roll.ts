@@ -1,10 +1,12 @@
+
 import {
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	RichPresenceAssets,
-	MessageEmbed,
+	EmbedBuilder,
+	ApplicationCommandOptionType,
+	ColorResolvable,
+	PermissionFlagsBits
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
@@ -17,14 +19,17 @@ export class Roll implements SlashCommand {
 		new Option(
 			'roll',
 			'the dice you want to roll',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			false
 		),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(
+		bot: Bot,
+		interaction: ChatInputCommandInteraction<CacheType>
+	): Promise<any> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id));
 			if (interaction.options.getString('roll')) {
 				if (interaction.options.getString('roll') == '1dbbq') {
 					if (Math.floor(Math.random() * 2 + 0.99) == 1) {

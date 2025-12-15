@@ -3,13 +3,12 @@
 //Returns Gavins gym PR's, options to allow you to set new PRs from the text channel.
 
 import {
-	ChatInputApplicationCommandData,
-	CommandInteraction,
-	Permissions,
-	MessageEmbed,
-	Options,
+	ChatInputCommandInteraction,
+	CacheType,
+	EmbedBuilder,
+	PermissionFlagsBits,
+	ApplicationCommandOptionType
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -43,7 +42,7 @@ export class Gavin implements SlashCommand {
 			new Option(
 				'lifttype',
 				'the lift to display',
-				ApplicationCommandOptionTypes.STRING,
+				ApplicationCommandOptionType.String,
 				true,
 				'deadlift',
 				liftChoices
@@ -53,7 +52,7 @@ export class Gavin implements SlashCommand {
 			new Option(
 				'lifttype',
 				'the lift to set',
-				ApplicationCommandOptionTypes.STRING,
+				ApplicationCommandOptionType.String,
 				true,
 				'deadlift',
 				liftChoices
@@ -61,17 +60,20 @@ export class Gavin implements SlashCommand {
 			new Option(
 				'lift',
 				'the lift record',
-				ApplicationCommandOptionTypes.NUMBER,
+				ApplicationCommandOptionType.Number,
 				true,
 				1
 			),
 		]),
 	];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
 	];
-	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
+	async run(
+		bot: Bot,
+		interaction: ChatInputCommandInteraction<CacheType>
+	): Promise<void> {
 		try {
 			const options = interaction.options;
 			if (options.getSubcommand() == 'all') {
@@ -79,7 +81,7 @@ export class Gavin implements SlashCommand {
 				let bench = gav_records.ensure('bench', 365);
 				let squat = gav_records.ensure('squat', 445);
 				let deadlift = gav_records.ensure('deadlift', 605);
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(
 						`GAVIN'S CURRENT PRS:\n BENCH: ${bench} LB \n SQUAT: ${squat} LB \n DEADLIFT: ${deadlift} LB \n`
@@ -100,10 +102,12 @@ export class Gavin implements SlashCommand {
 					interaction.reply('INVALID LOOKUP');
 					return;
 				}
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
+					.setImage('attachment://gavin.png')
 					.setColor(colorCheck(interaction.guild!.id))
-					.setDescription(`GAVIN'S ${type!.toUpperCase()} PR: ${toprint}`);
-				interaction.reply({ embeds: [embed] });
+					.setDescription(`GAVIN'S ${type!.toUpperCase()} PR: ${toprint}`)
+					.setFooter({ text: `Requested by ${interaction.user.tag}` });
+				interaction.reply({ embeds: [embed], files: ['./img/gavin.png'] });
 				return;
 			}
 			if (options.getSubcommand() == 'setlift') {
@@ -114,7 +118,7 @@ export class Gavin implements SlashCommand {
 				if (type == 'squat') gav_records.set('squat', lift);
 				if (type == 'deadlift') gav_records.set('deadlift', lift);
 
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(
 						`UPDATED GAVIN'S ${type!.toUpperCase()} PR TO: ${lift}\nGOOD JOB SOLDIER`

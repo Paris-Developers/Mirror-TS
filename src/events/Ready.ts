@@ -2,22 +2,25 @@ import { EventHandler } from './EventHandler';
 import { Bot } from '../Bot';
 import { bdayTimes } from '../slashcommands/BirthdayConfig';
 import { birthdayTimer } from '../resources/birthdayTimer';
+
 import { registerSlashCommands } from '../resources/registerSlashCommands';
 import { launchVoice } from '../slashcommands/DefaultVc';
 import config from '../../config.json';
-import { TextChannel } from 'discord.js';
+import { TextChannel, ActivityType } from 'discord.js';
 
 export class Ready implements EventHandler {
 	eventName = 'ready';
 	async process(bot: Bot): Promise<void> {
 		bot.logger.info('Logged in');
 		await registerSlashCommands(bot);
-		bot.client.user?.setActivity(config.message, {
-			type: 'LISTENING',
+		//set the bot status
+		bot.client.user!.setActivity('to your cries', {
+			type: ActivityType.Listening,
 		});
-		bdayTimes.forEach(async (info, guild) => {
-			birthdayTimer(guild.toString(), bot);
-		});
+		// Enmap iterator fix
+		for (const [guild, info] of Array.from(bdayTimes.entries())) {
+			await birthdayTimer(guild.toString(), bot);
+		}
 		launchVoice(bot);
 		let now = new Date();
 		let channel = bot.client.channels.cache.get(config.error_channel) as TextChannel;

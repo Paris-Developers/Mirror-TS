@@ -1,20 +1,16 @@
+
 //Call: Slash command weather or w
 //Returns weather from a single specified city
 
 import {
-	ChatInputApplicationCommandData,
-	CommandInteraction,
-	CacheType,
-	Permissions,
-	MessageEmbed,
+	ChatInputCommandInteraction, CacheType, EmbedBuilder, PermissionFlagsBits,
+	ApplicationCommandOptionType
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
-import fetch from 'node-fetch';
 import { find } from 'geo-tz';
 import config from '../../config.json';
-import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { colorCheck } from '../resources/embedColorCheck';
 
 type emojiConverter = { [index: string]: string };
@@ -56,27 +52,27 @@ export class Weather implements SlashCommand {
 		new Option(
 			'city',
 			'City to query',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true
 		),
 		new Option(
 			'state',
 			'Two letter state code',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			false
 		),
 	];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			if (!interaction.options.getString('city')) {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Empty message, please provide a city');
 				interaction.reply({ embeds: [embed] });
@@ -87,8 +83,9 @@ export class Weather implements SlashCommand {
 
 			let query = interaction.options.getString('state') //if we have a state lets add it to the string
 				? `${interaction.options.getString(
-						'city'
-				  )},US-${interaction.options.getString('state')}`
+					'city'
+				)
+				}, US - ${interaction.options.getString('state')} `
 				: interaction.options.getString('city');
 			//Pulls data from the API and stores as a JSON object
 			let res = await fetch(
@@ -96,7 +93,7 @@ export class Weather implements SlashCommand {
 			);
 			jsonData = await res.json();
 			if (jsonData.cod == '404') {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(`Error: City not found, try again`);
 				interaction.reply({ embeds: [embed] });
@@ -147,7 +144,7 @@ export class Weather implements SlashCommand {
 					' ';
 			}
 			//creates message embed and edits modifiers
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(`**Current Weather in ${str}**`)
 				.addFields(

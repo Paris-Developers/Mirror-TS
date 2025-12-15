@@ -1,12 +1,13 @@
+
 import {
-	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
+	EmbedBuilder,
+	PermissionFlagsBits,
+	ApplicationCommandOptionType,
 	Role,
-	MessageEmbed,
-	Interaction,
+	PermissionResolvable
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -15,7 +16,7 @@ import { silencedUsers } from './SilenceMember';
 import { Option, Subcommand } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
 
-export const silencedRole = new Enmap('SilencedRole');
+export const silencedRole = new Enmap({ name: 'SilencedRole' });
 
 export class SilenceRole implements SlashCommand {
 	name: string = 'silencerole';
@@ -25,18 +26,19 @@ export class SilenceRole implements SlashCommand {
 		new Option(
 			'role',
 			'The role to silence',
-			ApplicationCommandOptionTypes.ROLE,
+			ApplicationCommandOptionType.Role,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(
+		bot: Bot,
+		interaction: ChatInputCommandInteraction<CacheType>
+	): Promise<any> {
 		try {
 			let badRole = interaction.options.getRole('role') as Role;
 
-			if (
-				badRole?.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')
-			) {
+			if (badRole?.permissionsIn(interaction.channel!.id).has(PermissionFlagsBits.Administrator)) {
 				return interaction.reply({
 					content: 'Roles with administrator permissions cannot be silenced!',
 				});
@@ -60,14 +62,14 @@ export class SilenceRole implements SlashCommand {
 			silencedRole.set(interaction.guild!.id, badRole?.id);
 			if (currentRole && currentRole != badRole.id) {
 				let getRole = interaction.guild?.roles.cache.get(currentRole);
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(
-						`Replaced role ${getRole} with ${badRole} as silenced role.  Members with this role will not be able to interact with Birthdays, Introthemes or Music Commands.`
+						`Replaced role ${getRole} with ${badRole} as silenced role.Members with this role will not be able to interact with Birthdays, Introthemes or Music Commands.`
 					);
 				return interaction.reply({ embeds: [embed] });
 			}
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Set ${badRole} as silenced, members with this role will not be able to react with Birthdays, Introthemes, and Music Commands`
@@ -85,13 +87,13 @@ export class SilenceRole implements SlashCommand {
 	managerRequired?: boolean | undefined = true;
 }
 
-export function silenceCheck(interaction: Interaction): boolean {
+export function silenceCheck(interaction: ChatInputCommandInteraction): boolean {
 	let member = interaction.guild!.members.cache.get(interaction.user.id);
-	if (member?.permissions.toArray().includes('ADMINISTRATOR')) return false;
+	if (member?.permissions.has(PermissionFlagsBits.Administrator)) return false;
 	let silenced = silencedRole.get(interaction.guild!.id);
 	if (member?.roles.cache.has(silenced)) return true;
 	silenced = silencedUsers.get(interaction.guild!.id);
-	if(!silenced) return false;
+	if (!silenced) return false;
 	for (let user of silenced) {
 		if (user == member!.id) return true;
 	}

@@ -1,18 +1,21 @@
+
 import {
-	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	Guild,
+	EmbedBuilder,
+	PermissionFlagsBits,
+	ApplicationCommandOptionType,
 	GuildMember,
 	TextChannel,
+	GuildChannel,
+	PermissionResolvable
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
-export const silencedUsers = new Enmap('silencedUsers');
+export const silencedUsers = new Enmap({ name: 'silencedUsers' });
 
 export class SilenceMember implements SlashCommand {
 	name: string = 'silencemember';
@@ -22,17 +25,23 @@ export class SilenceMember implements SlashCommand {
 		new Option(
 			'user',
 			'The user to silence/unsilence',
-			ApplicationCommandOptionTypes.USER,
+			ApplicationCommandOptionType.User,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(
+		bot: Bot,
+		interaction: ChatInputCommandInteraction<CacheType>
+	): Promise<any> {
 		try {
 			let badUser = interaction.options.getUser('user');
 			if (badUser?.bot) {
+				const embed = new EmbedBuilder()
+					.setColor('Red')
+					.setDescription('Bots cannot be silenced');
 				return interaction.reply({
-					content: 'Bots cannot be silenced',
+					embeds: [embed],
 					ephemeral: true,
 				});
 			}
@@ -40,17 +49,17 @@ export class SilenceMember implements SlashCommand {
 			//if the user is already silenced, we want to unsilence them
 			if (userArray.includes(badUser!.id)) {
 				let ptr = userArray.indexOf(badUser!.id);
-				userArray.splice(ptr);
+				userArray.splice(ptr, 1);
 				silencedUsers.set(interaction.guild!.id, userArray);
 				return interaction.reply({
-					content: `Successfully unsilenced ${badUser}`,
+					content: `Successfully unsilenced ${badUser} `,
 					ephemeral: true,
 				});
 			}
 
 			let badMember = interaction.guild!.members.cache.get(badUser!.id); //need to pull member object for .permissionsIn()
 			if (
-				badMember!.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')
+				badMember!.permissionsIn(interaction.channel!.id).has(PermissionFlagsBits.Administrator)
 			) {
 				return interaction.reply({
 					content: 'Administrators cannot be silenced',
@@ -68,7 +77,7 @@ export class SilenceMember implements SlashCommand {
 			userArray.push(badUser?.id);
 			silencedUsers.set(interaction.guild!.id, userArray);
 			return interaction.reply({
-				content: `Successfully silenced ${badUser}`,
+				content: `Successfully silenced ${badUser} `,
 				ephemeral: true,
 			});
 		} catch (err) {

@@ -1,13 +1,16 @@
 //Keyword: Mirror emoji
 //Reacts to the Mirror Emoji with the Mirror Emoji
 
-import { Message, Permissions } from 'discord.js';
+import {
+	Message, PermissionFlagsBits,
+	EmbedBuilder
+} from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class MirrorEmoji implements Keyword {
 	name: string = '🪞';
-	requiredPermissions: bigint[] = [Permissions.FLAGS.ADD_REACTIONS];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.AddReactions];
 	async run(
 		bot: Bot,
 		message: Message<boolean>,

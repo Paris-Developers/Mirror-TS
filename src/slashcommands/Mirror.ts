@@ -1,11 +1,15 @@
+
 //Call: slash command Mirror
 //returns a dank image
 
 import {
-	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	Permissions,
+	EmbedBuilder,
+	GuildMember,
+	PermissionFlagsBits,
+	ApplicationCommandOptionType,
+	AttachmentBuilder
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -15,10 +19,10 @@ export class Mirror implements SlashCommand {
 	name: string = 'mirror';
 	description: string = 'Mirror go brrrr';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			interaction.reply(
@@ -34,3 +38,4 @@ export class Mirror implements SlashCommand {
 		}
 	}
 }
+

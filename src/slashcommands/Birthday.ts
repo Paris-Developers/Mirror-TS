@@ -1,14 +1,15 @@
+
 import {
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
-	ApplicationCommandDataResolvable,
+	EmbedBuilder,
+	PermissionFlagsBits,
+	ApplicationCommandOptionType
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
-import { Option } from './Option';
+import { Option, Subcommand } from './Option';
 import { silencedUsers } from './SilenceMember';
 import { SlashCommand } from './SlashCommand';
 
@@ -98,29 +99,31 @@ export let bdayDates = new Enmap({ name: 'bdayDates' });
 
 export class Birthday implements SlashCommand {
 	name: string = 'birthday';
-	description =
-		'Set your birthday to recieve a special message on your birthday!';
-	options = [
-		new Option(
-			'month',
-			'Your Birth Month',
-			ApplicationCommandOptionTypes.STRING,
-			true,
-			'may',
-			months
-		),
-		new Option(
-			'day',
-			'The date of your birthday',
-			ApplicationCommandOptionTypes.INTEGER,
-			true
-		),
+	description: string = 'Set your birthday to receive a birthday message';
+	options: (Option | Subcommand)[] = [
+		new Subcommand('set', 'set your birthday', [
+			new Option(
+				'day',
+				'The day of your birthday',
+				ApplicationCommandOptionType.Integer,
+				true
+			),
+			new Option(
+				'month',
+				'The month of your birthday',
+				ApplicationCommandOptionType.String,
+				true,
+				undefined,
+				months
+			),
+		]),
+		new Subcommand('upcoming', 'view upcoming birthdays')
 	];
-	requiredPermissions: bigint[] = [];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+		interaction: ChatInputCommandInteraction<CacheType>
+	): Promise<any> {
 		try {
 			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
 			if (userArray.includes(interaction.user.id)) {
@@ -130,43 +133,67 @@ export class Birthday implements SlashCommand {
 				});
 			}
 
-			if (
-				interaction.options.getInteger('day')! >
-					dayCap[interaction.options.getString('month')!] ||
-				interaction.options.getInteger('day')! < 1
-			) {
-				return interaction.reply({
-					content: 'Please enter a valid date',
-					ephemeral: true,
-				});
+			if (interaction.options.getSubcommand() === 'set') {
+				let day = interaction.options.getInteger('day');
+				let month = interaction.options.getString('month');
+
+				if (
+					day! > dayCap[month!] ||
+					day! < 1
+				) {
+					return interaction.reply({
+						content: 'Please enter a valid date',
+						ephemeral: true,
+					});
+				}
+
+				//store the date of birth in numerical form  DD-MM
+				let formattedBirthday = `${day} -${monthCode[month!]} `;
+
+				//set the new birthday into the enmap
+				bdayDates.set(interaction.user.id, { day: day, month: month });
+				let monthCap =
+					month!.charAt(0).toUpperCase() +
+					month!.slice(1);
+				let embed = new EmbedBuilder()
+					.setColor(colorCheck(interaction.guild!.id))
+					.setDescription(`Successfully set your birthday to ${monthCap} ${day} `);
+				return interaction.reply({ embeds: [embed] });
 			}
-
-			//store the date of birth in numerical form  DD-MM
-			let formattedBirthday = `${interaction.options.getInteger('day')}-${
-				monthCode[interaction.options.getString('month')!]
-			}`;
-
-			//set the new birthday into the enmap
-			bdayDates.set(interaction.user.id, formattedBirthday);
-			let monthCap =
-				interaction.options.getString('month')!.charAt(0).toUpperCase() +
-				interaction.options.getString('month')!.slice(1);
-			let embed = new MessageEmbed()
-				.setDescription(
-					`Successfully set your birthday to: ${monthCap} ${interaction.options.getInteger(
-						'day'
-					)}`
-				)
-				.setColor(colorCheck(interaction.guild!.id));
-			interaction.reply({ embeds: [embed] });
-			return;
+			if (interaction.options.getSubcommand() === 'upcoming') {
+				let birthdaysMap = bdayDates; // Use the existing bdayDates Enmap
+				let birthdays = Array.from(birthdaysMap.entries()); // [[id, {day, month}]]
+				//sort by day and month
+				birthdays.sort((a: any, b: any) => {
+					let monthA = months.find((m) => m.value === a[1].month);
+					let monthB = months.find((m) => m.value === b[1].month);
+					if (months.indexOf(monthA!) < months.indexOf(monthB!)) return -1;
+					if (months.indexOf(monthA!) > months.indexOf(monthB!)) return 1;
+					if (a[1].day < b[1].day) return -1;
+					if (a[1].day > b[1].day) return 1;
+					return 0;
+				});
+				let embed = new EmbedBuilder()
+					.setTitle('Upcoming Birthdays')
+					.setColor(colorCheck(interaction.guild!.id));
+				let description = '';
+				birthdays.forEach((entry: any) => {
+					let user = interaction.guild!.members.cache.get(entry[0]);
+					if (user) {
+						let monthCap = entry[1].month.charAt(0).toUpperCase() + entry[1].month.slice(1);
+						description += `${user.displayName} - ${monthCap} ${entry[1].day} \n`;
+					}
+				});
+				embed.setDescription(description);
+				return interaction.reply({ embeds: [embed] });
+			}
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
+			return interaction.reply({
+				content: 'Error, contact a developer to investigate',
 				ephemeral: true,
 			});
-			return;
 		}
 	}
 }
+

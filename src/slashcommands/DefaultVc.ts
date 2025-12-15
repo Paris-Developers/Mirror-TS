@@ -1,22 +1,22 @@
+
 import { createAudioPlayer, joinVoiceChannel } from '@discordjs/voice';
 import {
-	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
+	EmbedBuilder,
+	PermissionFlagsBits,
+	ApplicationCommandOptionType,
+	ChannelType,
 	VoiceChannel,
-	GuildMember,
-	TextChannel,
-	MessageEmbed,
-	Guild,
+	Guild
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
-export let defaultVc = new Enmap('defaultVc');
+export let defaultVc = new Enmap({ name: 'defaultVc' });
 
 export class DefaultVc implements SlashCommand {
 	name: string = 'defaultvc';
@@ -26,20 +26,19 @@ export class DefaultVc implements SlashCommand {
 		new Option(
 			'channel',
 			'The channel you wish to designate as the default',
-			ApplicationCommandOptionTypes.CHANNEL,
+			ApplicationCommandOptionType.Channel,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			let member = interaction.member as GuildMember;
+			let member = interaction.member;
 			if (
-				!(interaction.channel instanceof TextChannel) ||
-				!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')
+				!(member as any).permissions.has(PermissionFlagsBits.Administrator)
 			) {
 				interaction.reply({
 					content:
@@ -49,25 +48,25 @@ export class DefaultVc implements SlashCommand {
 				return;
 			}
 			let channel = interaction.options.getChannel('channel');
-			if (!(channel instanceof VoiceChannel)) {
+			if (!channel || channel.type !== ChannelType.GuildVoice) {
 				interaction.reply({
 					content: 'Channel must be a voice channel',
 					ephemeral: true,
 				});
 				return;
 			}
-			if (!interaction.guild?.me?.permissionsIn(channel.id).has('CONNECT')) {
+			if (!channel || !interaction.guild?.members.me?.permissionsIn(channel.id).has(PermissionFlagsBits.Connect)) {
 				interaction.reply({
 					content: 'I do not have permission to Connect to that VC',
 					ephemeral: true,
 				});
 				return;
 			}
-			defaultVc.set(interaction.guild!.id, channel.id);
-			let embed = new MessageEmbed()
+			defaultVc.set(interaction.guild!.id, channel!.id);
+			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
-					`Sucessfully updated your default voice channel to ${channel}`
+					`Sucessfully updated your default voice channel to ${channel} `
 				);
 			interaction.reply({ embeds: [embed] });
 			return;
@@ -85,7 +84,7 @@ export class DefaultVc implements SlashCommand {
 }
 
 export async function launchVoice(bot: Bot): Promise<void> {
-	defaultVc.forEach((channel, guild) => {
+	(defaultVc as any).forEach((channel: string, guild: string) => {
 		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
 		if (!guildCheck) return defaultVc.delete(guild);
 		const connection = joinVoiceChannel({
@@ -98,12 +97,12 @@ export async function launchVoice(bot: Bot): Promise<void> {
 		connection.on("stateChange", (oldState, newState) => {
 			const oldNetworking = Reflect.get(oldState, 'networking');
 			const newNetworking = Reflect.get(newState, 'networking');
-			
+
 			const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
 				const newUdp = Reflect.get(newNetworkState, 'udp');
 				clearInterval(newUdp?.keepAliveInterval);
 			}
-			
+
 			oldNetworking?.off('stateChange', networkStateChangeHandler);
 			newNetworking?.on('stateChange', networkStateChangeHandler);
 		});

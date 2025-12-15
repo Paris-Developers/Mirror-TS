@@ -1,13 +1,14 @@
+
 //Call: Slash command help
 //Returns the info command
 import {
-	ChatInputApplicationCommandData,
+	ChatInputCommandInteraction,
+	CacheType,
+	EmbedBuilder,
+	PermissionFlagsBits,
 	CommandInteraction,
-	CommandOptionChannelResolvableType,
 	Message,
-	MessageEmbed,
 	MessageReaction,
-	Permissions,
 	User,
 } from 'discord.js';
 import { Bot } from '../Bot';
@@ -19,19 +20,22 @@ export class Help implements SlashCommand {
 	description: string = 'Information about the bot';
 	options = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS, 
-		Permissions.FLAGS.MANAGE_MESSAGES,
-		Permissions.FLAGS.ADD_REACTIONS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
+		PermissionFlagsBits.ManageMessages,
+		PermissionFlagsBits.AddReactions,
 	];
-	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
+	async run(
+		bot: Bot,
+		interaction: ChatInputCommandInteraction<CacheType>
+	): Promise<void> {
 		try {
-			type cmdList = {[index:string]: string};
+			type cmdList = { [index: string]: string };
 			let cmds = {} as cmdList;
-			bot.slashCommands.forEach((command)=>{
+			bot.slashCommands.forEach((command) => {
 				cmds[command.name] = command.description;
 			})
-			const page1 = new MessageEmbed()
+			const page1 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':mirror: **__Mirror__**')
 				.setDescription('Informational and fun discord bot created by Ford, Zac, and Marty')
@@ -53,56 +57,56 @@ export class Help implements SlashCommand {
 					}
 				)
 				.setFooter({ text: 'Page 1 of 5' });
-			const page2 = new MessageEmbed()
+			const page2 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':sound: **__Voice Commands__**')
 				.setDescription(
 					`\`/join\`  ${cmds.join}\n` +
-					`\`/leave\`  ${cmds.leave}\n` + 
+					`\`/leave\`  ${cmds.leave}\n` +
 					`\`/defaultvc\`  ${cmds.defaultvc}\n`
 				)
 				.addFields({
 					name: 'Introtheme Commands',
 					value: `\`/intro\`  ${cmds.intro}\n` +
-					`\`/removeintro\`  ${cmds.removeintro}\n`,
-					inline: false	
-				},{
+						`\`/removeintro\`  ${cmds.removeintro}\n`,
+					inline: false
+				}, {
 					name: 'Music Commands',
 					value: `\`/play\`  ${cmds.play}\n` +
-					`\`/playnext\`  ${cmds.playnext}\n` +
-					`\`/nowplaying\`  ${cmds.nowplaying}\n` +
-					`\`/queue\`  ${cmds.queue}\n` +
-					`\`/clearqueue\`  ${cmds.clearqueue}\n` +
-					`\`/shuffle\`  ${cmds.shuffle}\n` +
-					`\`/pause\`  ${cmds.pause}\n` +
-					`\`/resume\`  ${cmds.resume}\n` +
-					`\`/loop\` ${cmds.loop}\n` +
-					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
-					`\`/sicko\`  ${cmds.sicko}\n`,
-					inline:false
+						`\`/playnext\`  ${cmds.playnext}\n` +
+						`\`/nowplaying\`  ${cmds.nowplaying}\n` +
+						`\`/queue\`  ${cmds.queue}\n` +
+						`\`/clearqueue\`  ${cmds.clearqueue}\n` +
+						`\`/shuffle\`  ${cmds.shuffle}\n` +
+						`\`/pause\`  ${cmds.pause}\n` +
+						`\`/resume\`  ${cmds.resume}\n` +
+						`\`/loop\` ${cmds.loop}\n` +
+						`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
+						`\`/sicko\`  ${cmds.sicko}\n`,
+					inline: false
 				})
 				.setFooter({ text: 'Page 2 of 5' });
-			const page3 = new MessageEmbed()
+			const page3 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.addFields({
 					name: 'Informative Commands',
 					value: `\`/weather\`  ${cmds.weather}\n` +
-					`\`/stock\`  ${cmds.stock}\n` +
-					`\`/nasa\`  ${cmds.nasa}\n` +
-					`\`/github\`  ${cmds.github}\n`,
-				},{
+						`\`/stock\`  ${cmds.stock}\n` +
+						`\`/nasa\`  ${cmds.nasa}\n` +
+						`\`/github\`  ${cmds.github}\n`,
+				}, {
 					name: 'Fun Commands',
 					value: `\`/birthday\`  ${cmds.birthday}\n` +
-					`\`/kanye\`  ${cmds.kanye}\n` +
-					`\`/poll\`  ${cmds.poll}\n` +
-					`\`/kawaii\`  ${cmds.kawaii}\n` +
-					`\`/tickle\`  ${cmds.tickle}\n` +
-					`\`/mirror\`  ${cmds.mirror}\n` +
-					`\`/nut\`  ${cmds.nut}\n` +
-					`\`/roll\`  ${cmds.roll}\n`
+						`\`/kanye\`  ${cmds.kanye}\n` +
+						`\`/poll\`  ${cmds.poll}\n` +
+						`\`/kawaii\`  ${cmds.kawaii}\n` +
+						`\`/tickle\`  ${cmds.tickle}\n` +
+						`\`/mirror\`  ${cmds.mirror}\n` +
+						`\`/nut\`  ${cmds.nut}\n` +
+						`\`/roll\`  ${cmds.roll}\n`
 				})
 				.setFooter({ text: 'Page 3 of 5' });
-			const page4 = new MessageEmbed()
+			const page4 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':bell: **__Server Configuration__**')
 				.setDescription(
@@ -112,27 +116,27 @@ export class Help implements SlashCommand {
 					`\`/birthdayconfig\`  ${cmds.birthdayconfig}\n` +
 					`\`/managerrole\`  ${cmds.managerrole}\n` +
 					`\`/silencemember\`  ${cmds.silencemember}\n` +
-					`\`/silencerole\`  ${cmds.silencerole}\n` + 
+					`\`/silencerole\`  ${cmds.silencerole}\n` +
 					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
 					`\`/nsfw\`  ${cmds.nsfw}\n` +
 					`\`/servercolor\`  ${cmds.servercolor}\n` +
 					`\`/removeintro\`  ${cmds.removeintro}\n`
 				)
 				.setFooter({ text: 'Page 4 of 5' });
-			const page5 = new MessageEmbed()
-			.setColor(colorCheck(interaction.guild!.id))
-			.setTitle(':bell: **__Other Information__**')
-			.addFields({
-				name: 'Commands',
-				value: `\`/github\`  ${cmds.github}\n` +
-				`\`/invite\`  ${cmds.invite}\n` +
-				`\`/support\`  ${cmds.support}\n` +
-				`\`/test\`  ${cmds.test}\n`
-			},{
-				name: 'Thank You!',
-				value: 'Thank you for using Mirror! On behalf of the developer team we appreciate you taking time to learn and improve our bot.  If you have any questions regarding Mirror, reach out to us using our [Support Server](https://discord.gg/uvdg2R5PAU)'
-			})
-			.setFooter({ text: 'Page 5 of 5' });
+			const page5 = new EmbedBuilder()
+				.setColor(colorCheck(interaction.guild!.id))
+				.setTitle(':bell: **__Other Information__**')
+				.addFields({
+					name: 'Commands',
+					value: `\`/github\`  ${cmds.github}\n` +
+						`\`/invite\`  ${cmds.invite}\n` +
+						`\`/support\`  ${cmds.support}\n` +
+						`\`/test\`  ${cmds.test}\n`
+				}, {
+					name: 'Thank You!',
+					value: 'Thank you for using Mirror! On behalf of the developer team we appreciate you taking time to learn and improve our bot.  If you have any questions regarding Mirror, reach out to us using our [Support Server](https://discord.gg/uvdg2R5PAU)'
+				})
+				.setFooter({ text: 'Page 5 of 5' });
 			let embedArray = [page1, page2, page3, page4, page5];
 			let index = 0;
 			let message = (await interaction.reply({

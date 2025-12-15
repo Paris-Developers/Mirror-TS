@@ -1,13 +1,12 @@
 import {
-	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	GuildMember,
-	TextChannel,
-	GuildChannel,
-	MessageEmbed,
+	EmbedBuilder,
+	PermissionFlagsBits,
+	ApplicationCommandOptionType,
+	ChannelType,
+	TextChannel
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
@@ -46,25 +45,25 @@ export class BirthdayConfig implements SlashCommand {
 		new Option(
 			'channel',
 			'Set the channel where the birthday messages are sent to',
-			ApplicationCommandOptionTypes.CHANNEL,
+			ApplicationCommandOptionType.Channel,
 			true
 		),
 		new Option(
 			'hour',
 			'The hour you want to send Birthday messages in local time, military format (0-23)',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.Integer,
 			true
 		),
 		new Option(
 			'minute',
 			'The minute you want to send Birthday messages',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.Integer,
 			true
 		),
 		new Option(
 			'timezone',
 			'Your local timezone',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true,
 			'cst',
 			timezones
@@ -73,41 +72,35 @@ export class BirthdayConfig implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
-		let member = interaction.member as GuildMember;
+		interaction: ChatInputCommandInteraction<CacheType>
+	): Promise<any> {
 		try {
-			//check if the user is an administrator
-			if (!(interaction.channel instanceof TextChannel)) {
-				interaction.reply('Command must be used in a server');
-				return;
-			}
-			if (!member.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
-				interaction.reply({
+			if (
+				!(interaction.member as any).permissions.has(PermissionFlagsBits.Administrator)
+			) {
+				return interaction.reply({
 					content:
 						'This command is only for people with Administrator permissions',
 					ephemeral: true,
 				});
-				return;
 			}
 
 			//recieve the provided channel and check if its a text channel
 			var guildChannel = interaction.options.getChannel(
 				'channel'
-			) as GuildChannel;
-			if (guildChannel.type != 'GUILD_TEXT') {
-				interaction.reply({
+			) as TextChannel;
+			if (guildChannel.type !== ChannelType.GuildText) {
+				return interaction.reply({
 					content: 'Please enter a valid text channel',
 					ephemeral: true,
 				});
-				return;
 			}
 
 			//set the channel in the enmap
 			bdayChannels.set(interaction.guild!.id, guildChannel.id);
 
 			//get the hour and ensure that it is valid
-			let hour = interaction.options.getInteger('hour')!;
+			let hour = interaction.options.getInteger('hour', true);
 			if (hour > 23 || hour < 0) {
 				return interaction.reply({
 					content:
@@ -116,7 +109,7 @@ export class BirthdayConfig implements SlashCommand {
 				});
 			}
 			//get the minute and ensure that it is valid
-			let minute = interaction.options.getInteger('minute')!;
+			let minute = interaction.options.getInteger('minute', true);
 			if (minute > 60 || minute < 0) {
 				return interaction.reply({
 					content: 'Invalid minute, please provide an integer between 0 and 60',
@@ -150,7 +143,7 @@ export class BirthdayConfig implements SlashCommand {
 			let minuteText = minute.toString();
 			if (hour < 10) hourText = '0' + hourText;
 			if (minute < 10) minuteText = '0' + minuteText;
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Successfully scheduled your birthday timer for **\`${hourText}:${minuteText}\` \`${timezone.toUpperCase()}\`** in ${interaction.options.getChannel(

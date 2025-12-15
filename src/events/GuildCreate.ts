@@ -2,41 +2,42 @@ import { EventHandler } from './EventHandler';
 import { Bot } from '../Bot';
 import {
 	Guild,
-	MessageEmbed,
+	EmbedBuilder,
 	TextChannel,
 	Permissions,
 	GuildChannel,
 	NonThreadGuildBasedChannel,
+	PermissionFlagsBits,
+	ChannelType
 } from 'discord.js';
 
 export class GuildCreate implements EventHandler {
 	eventName = 'guildCreate';
 	async process(bot: Bot, guild: Guild): Promise<void> {
-		let embed = new MessageEmbed()
+		let embed = new EmbedBuilder()
 			.setTitle('**:mirror: Mirror has arrived!**')
 			.setDescription(
 				'Thanks for inviting Mirror to your server! \n\n To get started with Mirror use **`/help`** for more information about commands and functionality\n\nUse **`/config`** to see what else you can do before Mirror is fully functional'
 			)
 			.setColor('#FFFFFF');
-		if(guild.systemChannel){
-			if(guild.systemChannel.permissionsFor(guild.me!).has('VIEW_CHANNEL') &&
-			guild.systemChannel.permissionsFor(guild.me!).has('SEND_MESSAGES')){
-				await guild.systemChannel.send({embeds: [embed]});
+		if (guild.systemChannel) {
+			if (guild.systemChannel.permissionsFor(guild.members.me!).has(PermissionFlagsBits.ViewChannel) &&
+				guild.systemChannel.permissionsFor(guild.members.me!).has(PermissionFlagsBits.SendMessages)) {
+				await guild.systemChannel.send({ embeds: [embed] });
 				return;
 			}
 		}
-		let channelList = await guild.channels.fetch();
-		for (let channel of channelList) {
-			if (
-				channel[1].permissionsFor(guild.me!).has('VIEW_CHANNEL') &&
-				channel[1].permissionsFor(guild.me!).has('SEND_MESSAGES') &&
-				channel[1].type == 'GUILD_TEXT'
-			) {
-				let newChannel = channel[1] as TextChannel;
-				await newChannel.send({ embeds: [embed] });
-				break;
+		let channels = await guild.channels.fetch();
+		for (const channel of channels) {
+			if (!channel[1]) continue;
+			if (channel[1].permissionsFor(guild.members.me!).has(PermissionFlagsBits.ViewChannel) &&
+				channel[1].permissionsFor(guild.members.me!).has(PermissionFlagsBits.SendMessages) &&
+				channel[1].type == ChannelType.GuildText) {
+				await (channel[1] as TextChannel).send({ embeds: [embed] });
+				return;
 			}
 		}
 		return;
 	}
 }
+

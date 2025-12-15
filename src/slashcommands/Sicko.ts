@@ -7,11 +7,10 @@ import {
 	joinVoiceChannel,
 } from '@discordjs/voice';
 import {
-	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	GuildMember,
-	Permissions,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -21,10 +20,10 @@ export class Sicko implements SlashCommand {
 	name: string = 'sicko';
 	description: string = 'Have Mirror join your voice channel, but sicko mode';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let member = interaction.member as GuildMember;
@@ -33,11 +32,7 @@ export class Sicko implements SlashCommand {
 				interaction.reply('you are not in a valid voice channel!');
 				return;
 			}
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (queue) {
-				interaction.reply('Cant go sicko while music is playing :sob:');
-				return;
-			}
+
 			const connection = joinVoiceChannel({
 				channelId: state.channelId!,
 				guildId: interaction.guildId!,

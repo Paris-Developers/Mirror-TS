@@ -1,23 +1,24 @@
 //Keyword: pogchamp
 //Reacts to the keyword with JamesChamp
 
-import { Message, Permissions } from 'discord.js';
+import { Message, PermissionFlagsBits } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class PogChamp implements Keyword {
 	name: string = 'pogchamp';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.ADD_REACTIONS,
-		Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
+		PermissionFlagsBits.AddReactions,
+		PermissionFlagsBits.UseExternalEmojis,
 	];
 	async run(
 		bot: Bot,
 		message: Message<boolean>,
 		args: String[]
 	): Promise<void> {
+		if (message.member?.permissions.has(PermissionFlagsBits.ManageMessages)) return;
 		try {
-			const num =(Math.random())
+			const num = (Math.random())
 			if (num > .5) {
 				message.react('<:fordpog:972224310951428176>');
 				return;

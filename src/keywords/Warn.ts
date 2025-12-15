@@ -1,15 +1,19 @@
-import { Message, Permissions } from 'discord.js';
+import {
+	Message, PermissionFlagsBits,
+	EmbedBuilder
+} from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class Warn implements Keyword {
 	name: string = '!warn';
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(
 		bot: Bot,
 		message: Message<boolean>,
 		args: String[]
 	): Promise<void> {
+		if (message.member?.permissions.has(PermissionFlagsBits.ManageMessages)) return;
 		try {
 			message.reply(
 				'https://tenor.com/view/discord-meme-spooked-scared-mod-gif-18361254'

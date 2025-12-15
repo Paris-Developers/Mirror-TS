@@ -1,11 +1,11 @@
-import { CommandInteraction, CacheType, MessageEmbed, ColorResolvable } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { ChatInputCommandInteraction, CacheType, EmbedBuilder, ColorResolvable } from "discord.js";
+import { ApplicationCommandOptionType } from "discord.js";
 import Enmap from "enmap";
 import { Bot } from "../Bot";
 import { Option, Subcommand } from "./Option";
 import { SlashCommand } from "./SlashCommand";
 
-export const serverColors = new Enmap('serverColors');
+export const serverColors = new Enmap({ name: 'serverColors' });
 
 export class ServerColor implements SlashCommand {
     name: string = 'servercolor';
@@ -14,37 +14,40 @@ export class ServerColor implements SlashCommand {
         new Option(
             'color',
             'The color you want to set',
-            ApplicationCommandOptionTypes.STRING,
+            ApplicationCommandOptionType.String,
             true,
         )
     ]
     requiredPermissions: bigint[] = [];
-    run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
-        try{
+    async run(
+        bot: Bot,
+        interaction: ChatInputCommandInteraction<CacheType>
+    ): Promise<any> {
+        try {
             let color = interaction.options.getString('color')?.toUpperCase();
-            try{
+            try {
                 var colorTest = color as ColorResolvable;
 
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setColor(colorTest)
                     .setDescription('This is your new server color!');
                 serverColors.set(interaction.guild!.id, colorTest);
-                return interaction.reply({embeds: [embed]});
-            } catch (err){
-                return interaction.reply({content: 'Invalid color, please try again with format: \'#ABC123\' or BLUE or RANDOM'});
+                return interaction.reply({ embeds: [embed] });
+            } catch (err) {
+                return interaction.reply({ content: 'Invalid color, please try again with format: \'#ABC123\' or BLUE or RANDOM' });
             }
         } catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
-			});
-			
-		}
+            bot.logger.commandError(interaction.channel!.id, this.name, err);
+            return interaction.reply({
+                content: 'Error: contact a developer to investigate',
+                ephemeral: true,
+            });
+
+        }
     }
     guildRequired?: boolean | undefined = true;
     managerRequired?: boolean | undefined = true;
     blockSilenced?: boolean | undefined;
     musicCommand?: boolean | undefined;
-    
+
 }

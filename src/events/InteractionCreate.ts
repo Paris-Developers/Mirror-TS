@@ -1,16 +1,16 @@
 import { joinVoiceChannel } from '@discordjs/voice';
-import { CommandInteraction, GuildMember, MessageEmbed, TextChannel, TextBasedChannel, GuildChannel } from 'discord.js';
+import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, TextBasedChannel, GuildChannel, ChatInputCommandInteraction } from 'discord.js';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
-import { voiceCommandCheck } from '../resources/voiceCommandCheck';
+
 import { silenceCheck } from '../slashcommands/SilenceRole';
 import { EventHandler } from './EventHandler';
 
 export class InteractionCreate implements EventHandler {
 	eventName = 'interactionCreate';
 
-	async process(bot: Bot, interaction: CommandInteraction) {
-		if (!interaction.isCommand()) return;
+	async process(bot: Bot, interaction: ChatInputCommandInteraction) {
+		if (!interaction.isChatInputCommand()) return;
 
 		//attempt to find the command from the array of all of them
 		let command = bot.slashCommands.find(
@@ -30,25 +30,25 @@ export class InteractionCreate implements EventHandler {
 		}
 		if (command.managerRequired) {
 			if (!(await managerCheck(interaction))) {
-				return interaction.reply({
+				await interaction.reply({
 					content:
 						'This command can only be used by designated managers or admininstrators',
 					ephemeral: true,
 				});
+				return;
 			}
 		}
-		if(command.blockSilenced) {
-			if(await silenceCheck(interaction)){				
-				return interaction.reply({
+		if (command.blockSilenced) {
+			if (await silenceCheck(interaction)) {
+				await interaction.reply({
 					content:
 						'This command cannot be used by silenced members',
 					ephemeral: true,
 				});
+				return;
 			}
 		}
-		if(command.musicCommand){
-			if(!(await voiceCommandCheck(bot, interaction))) return;
-		}
+
 		//if the command requires permissions
 		if (command.requiredPermissions) {
 			if (
@@ -67,14 +67,13 @@ export class InteractionCreate implements EventHandler {
 					);
 				} else {
 					bot.logger.warn(
-						`Missing permissions to use ${command.name} in channel: ${
-							interaction.channel!.name
+						`Missing permissions to use ${command.name} in channel: ${interaction.channel!.name
 						}, in ${interaction.guild!.name}`
 					);
 				}
 				return;
 			}
 		}
-		command.run(bot, interaction);
+		await command.run(bot, interaction);
 	}
 }

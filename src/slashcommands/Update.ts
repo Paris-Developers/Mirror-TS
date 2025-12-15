@@ -1,19 +1,21 @@
+
 import { Bot } from '../Bot';
+
 import {
-	Permissions,
-	CommandInteraction,
 	CacheType,
-	GuildMember,
+	EmbedBuilder,
+	PermissionFlagsBits,
 	TextChannel,
-	Guild,
-	MessageEmbed,
-	Options,
+	GuildMember,
+	ChatInputCommandInteraction,
+	ApplicationCommandOptionType,
+	ChannelType
 } from 'discord.js';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import Enmap from 'enmap';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+
 import { colorCheck } from '../resources/embedColorCheck';
 
 export let updateChannels = new Enmap({ name: 'updateChannels' });
@@ -26,15 +28,15 @@ export class Update implements SlashCommand {
 		new Option(
 			'channel',
 			'The channel you wish to recieve update messages',
-			ApplicationCommandOptionTypes.CHANNEL,
+			ApplicationCommandOptionType.Channel,
 			true
 		),
 	];
-	public requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
+	public requiredPermissions = [PermissionFlagsBits.SendMessages];
 
 	public async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			if (!(interaction.channel instanceof TextChannel)) {
@@ -43,7 +45,7 @@ export class Update implements SlashCommand {
 			}
 			let member = interaction.member as GuildMember;
 			if (
-				!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR') &&
+				!member.permissionsIn(interaction.channel!).has(PermissionFlagsBits.Administrator,) &&
 				member.id != config.owner
 			) {
 				interaction.reply({
@@ -54,11 +56,11 @@ export class Update implements SlashCommand {
 				return;
 			}
 			let channel = interaction.options.getChannel('channel');
+			if (!interaction.guild?.members.me) return;
+
 			if (
-				!interaction.guild?.me
-					?.permissionsIn(channel?.id!)
-					.has('SEND_MESSAGES') ||
-				!interaction.guild?.me?.permissionsIn(channel?.id!).has('EMBED_LINKS')
+				!interaction.guild?.members.me?.permissionsIn(channel?.id!).has(PermissionFlagsBits.SendMessages) ||
+				!interaction.guild?.members.me?.permissionsIn(channel?.id!).has(PermissionFlagsBits.EmbedLinks)
 			) {
 				interaction.reply({
 					content:
@@ -67,17 +69,17 @@ export class Update implements SlashCommand {
 				});
 				return;
 			}
-			if (channel!.type != 'GUILD_TEXT')
-				return interaction.reply({
+			if (channel!.type !== ChannelType.GuildText)
+				interaction.reply({
 					content: 'Channel must be a text channel',
 					ephemeral: true,
 				});
 			//var enmapChannel = updateChannels.ensure(interaction.guild.id, '');
 			updateChannels.set(interaction.guild.id, channel?.id);
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
-					`Sucessfully updated your development messages to ${channel}`
+					`Sucessfully updated your development messages to ${channel} `
 				);
 			interaction.reply({ embeds: [embed] });
 			return;

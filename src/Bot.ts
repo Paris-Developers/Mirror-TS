@@ -1,4 +1,4 @@
-import { Client, Guild, MessageEmbed, TextChannel } from 'discord.js';
+import { Client, Guild, EmbedBuilder, TextChannel } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
@@ -13,11 +13,11 @@ import {
 } from './resources/dynamicImports';
 import Enmap from 'enmap';
 import { registerEvents } from './resources/registerEvents';
-import { CustomPlayer } from './resources/CustomPlayer';
+
 
 export class Bot {
 	public logger: CustomLogger;
-	public player = new CustomPlayer(this);
+
 
 	//helper functions
 	public permissionsCheck = permissionsCheck;
@@ -39,14 +39,13 @@ export class Bot {
 		//initialize logger
 		let now = new Date();
 		//have the logs sit outside the built directory as it gets removed during building
-		let logfileName = `./logs/${
-			now.getMonth() + 1
-		}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
+		let logfileName = `./logs/${now.getMonth() + 1
+			}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
 		let logLevel: TLogLevelName = this.mode == 'debug' ? 'debug' : 'info';
 		this.logger = new CustomLogger(logfileName, logLevel, this);
 
 		//fetch enmaps
-		this.songRecs.fetchEverything();
+		//this.songRecs.fetchEverything();
 	}
 
 	public async start(): Promise<void> {
@@ -57,6 +56,6 @@ export class Bot {
 		await importMessageCommands(this);
 		await importKeywords(this);
 		this.client.login(this.token);
-		this.player.registerPlayerEvents();
+
 	}
 }

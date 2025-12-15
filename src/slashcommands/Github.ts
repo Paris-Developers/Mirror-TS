@@ -1,11 +1,12 @@
 import {
-	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
+import { colorCheck } from '../resources/embedColorCheck';
 
 export class Github implements SlashCommand {
 	name: string = 'github';
@@ -14,15 +15,26 @@ export class Github implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed()
-				.setColor('#FFFFFF')
-				.setTitle(':lock: __Mirror-TS Codebase and Privacy__')
-				.setDescription(
-					'Mirror reads all sent messages in a server by default, but does not store them.\n\nIf you want to prevent Mirror from scanning messages, reinvite it without the "read messages" permissions in the [Oauth portal](https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=139606649936&scope=bot%20applications.commands). \n\nInterested in our open source code? Visit our [github](https://github.com/paris-developers/Mirror-TS)\n\nStill have questions? Join our [support server](https://discord.gg/uvdg2R5PAU)'
-				);
+			const response = await fetch('https://api.github.com/repos/paris-developers/Mirror-TS');
+			const jsonData: any = await response.json();
+			const embed = new EmbedBuilder()
+				.setTitle(jsonData.name)
+				.setURL(jsonData.html_url)
+				.setDescription(jsonData.description)
+				.setThumbnail(jsonData.owner.avatar_url)
+				.addFields([
+					{ name: 'Stars', value: `${jsonData.stargazers_count}`, inline: true },
+					{ name: 'Forks', value: `${jsonData.forks_count}`, inline: true },
+					{ name: 'Issues', value: `${jsonData.open_issues_count}`, inline: true },
+					{ name: 'Language', value: `${jsonData.language}`, inline: true },
+					{ name: 'Created At', value: `${new Date(jsonData.created_at).toLocaleDateString()}`, inline: true },
+					{ name: 'Last Push', value: `${new Date(jsonData.pushed_at).toLocaleDateString()}`, inline: true },
+				])
+				.setColor(colorCheck(interaction.guild!.id))
+				.setFooter({ text: `Requested by ${interaction.user.tag}` });
 			interaction.reply({ embeds: [embed] });
 			return;
 		} catch (err) {

@@ -2,20 +2,18 @@
 //Call it when you're leaving to go eat food 
 
 import {
-    getVoiceConnection,
-    joinVoiceChannel,
-    createAudioPlayer,
-    createAudioResource,
-    AudioPlayerStatus,
-    AudioPlayerError,
+	getVoiceConnection,
+	joinVoiceChannel,
+	createAudioPlayer,
+	createAudioResource,
+	AudioPlayerStatus,
+	AudioPlayerError,
 } from '@discordjs/voice';
 import {
-	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
+	PermissionFlagsBits,
 	GuildMember,
-	Permissions,
-	VoiceState,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -25,10 +23,10 @@ export class Munch implements SlashCommand {
 	name: string = 'munch';
 	description: string = 'Time to go munch some grub. But I will return.';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.DEAFEN_MEMBERS];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages, PermissionFlagsBits.DeafenMembers];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let member = interaction.member as GuildMember;
@@ -37,11 +35,13 @@ export class Munch implements SlashCommand {
 				interaction.reply('you are not in a valid voice channel!');
 				return;
 			}
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (queue) {
-				interaction.reply('Cant go munch while music is playing :sob:');
-				return;
-			}
+			// Music logic removed
+			// let queue = bot.player.getQueue(interaction.guild!.id);
+			// if (queue) {
+			// 	interaction.reply('Cant go munch while music is playing :sob:');
+			// 	return;
+			// }
+			interaction.reply('Audio munching not fully supported without audio player');
 			const connection = joinVoiceChannel({
 				channelId: state.channelId!,
 				guildId: interaction.guildId!,
@@ -51,17 +51,17 @@ export class Munch implements SlashCommand {
 			connection.subscribe(audio);
 			const munchmp3 = createAudioResource('./music/minecraft-eating-sound.mp3');
 			audio.play(munchmp3);
-			if(state.deaf){
+			if (state.deaf) {
 				interaction.reply(`<@${interaction.user.id}>` + 'had a nice lunch.');
 				state.setDeaf(false, "no longer eating")
 				return;
 			}
-			else{
+			else {
 				interaction.reply(`<@${interaction.user.id}>` + 'has gone to munch a lunch.');
 				state.setDeaf(true, "eating")
-			return;
+				return;
 			}
-			
+
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({

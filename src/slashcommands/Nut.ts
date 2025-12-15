@@ -1,16 +1,26 @@
-import { CommandInteraction, CacheType, MessageEmbed, User } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+
+import {
+	ChatInputCommandInteraction,
+	CacheType,
+	EmbedBuilder,
+	PermissionFlagsBits,
+	ApplicationCommandOptionType,
+	User
+} from 'discord.js';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
-const nuts = new Enmap({name:'nuts', fetchAll: true});
+const nuts = new Enmap({
+	name: 'nut',
+	dataDir: './db/nut',
+});
 const gifArray = [
 	'https://media.giphy.com/media/j6ZW4QRTVTuWNsDlUV/giphy.gif',
 	'https://i.imgur.com/Fi6pnvQ.gif',
 	'https://c.tenor.com/injWPZSrCK0AAAAC/bear.gif',
-	'https://w7.pngwing.com/pngs/449/874/png-transparent-javaserver-pages-computer-icons-jar-icon-text-rectangle-logo-thumbnail.png',
+	'https://w7.pngwing.com/pngs/449/874/png-thumbnail.png',
 ];
 
 export class Nut implements SlashCommand {
@@ -22,13 +32,13 @@ export class Nut implements SlashCommand {
 			new Option(
 				'change',
 				'how many nuts to add',
-				ApplicationCommandOptionTypes.INTEGER,
+				ApplicationCommandOptionType.Integer,
 				false
 			),
 			new Option(
 				'user',
 				'whos jar to add nuts to',
-				ApplicationCommandOptionTypes.USER,
+				ApplicationCommandOptionType.User,
 				false
 			),
 		]),
@@ -36,22 +46,25 @@ export class Nut implements SlashCommand {
 			new Option(
 				'change',
 				'How many nuts to remove',
-				ApplicationCommandOptionTypes.INTEGER,
+				ApplicationCommandOptionType.Integer,
 				false
 			),
 			new Option(
 				'user',
 				'whos jar to subtract nuts from',
-				ApplicationCommandOptionTypes.USER,
+				ApplicationCommandOptionType.User,
 				false
 			),
 		]),
 		new Subcommand('leaderboard', 'View the servers nut leaderboard', []),
 	];
-	requiredPermissions: bigint[] = [];
-	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
+	async run(
+		bot: Bot,
+		interaction: ChatInputCommandInteraction<CacheType>
+	): Promise<any> {
 		try {
-			const embed = new MessageEmbed().setColor('#FDA50F');
+			const embed = new EmbedBuilder().setColor('#FDA50F');
 			if (
 				Math.random() == 0.69 ||
 				Math.random() == 0.42 ||
@@ -76,9 +89,8 @@ export class Nut implements SlashCommand {
 				storage += change;
 				nuts.set(jarUser.id, storage);
 				embed.setDescription(
-					`Successfully added ${change} to ${
-						messageContent ? `${jarUser}'s` : 'your'
-					} jar, the new total is ${storage}`
+					`Successfully added ${change} to ${messageContent ? `${jarUser}'s` : 'your'
+					} jar, the new total is ${storage} `
 				);
 				return interaction.reply({ embeds: [embed] });
 			}
@@ -97,9 +109,8 @@ export class Nut implements SlashCommand {
 				storage -= change;
 				nuts.set(jarUser.id, storage);
 				embed.setDescription(
-					`Successfully subtracted ${change} from ${
-						messageContent ? `${jarUser}'s` : 'your'
-					} jar, the new total is ${storage}`
+					`Successfully subtracted ${change} from ${messageContent ? `${jarUser}'s` : 'your'
+					} jar, the new total is ${storage} `
 				);
 				return interaction.reply({ embeds: [embed] });
 			}
@@ -110,41 +121,41 @@ export class Nut implements SlashCommand {
 					.setImage('https://c.tenor.com/injWPZSrCK0AAAAC/bear.gif');
 				return interaction.reply({ embeds: [embed] });
 			}
-			if(interaction.options.getSubcommand() == 'leaderboard'){
-				nuts.fetchEverything();
+			if (interaction.options.getSubcommand() == 'leaderboard') {
+				//nuts.fetchEverything(); // Enmap 5 caches everything by default or doesn't support this
 				let guild = interaction.guild!;
 				let leaderboard: any[][] = [];
-				for(const item of nuts){
-					try{
+				for (const item of Array.from(nuts.values())) {
+					try {
 						let member = await guild.members.fetch(item[0].toString());
 						leaderboard.push([member.user.username, item[1]]);
-					} catch(err) {
+					} catch (err) {
 					}
 				}
 				leaderboard = sort(leaderboard);
 				var userString = '';
 				var nutString = '';
 				let ctr = 1;
-				for(let x of leaderboard){
-					if(x[0]==interaction.user.username){
-						embed.setFooter({text: `Your rank: ${ctr} of ${leaderboard.length}`, iconURL: interaction.user.avatarURL()!});
+				for (let x of leaderboard) {
+					if (x[0] == interaction.user.username) {
+						embed.setFooter({ text: `Your rank: ${ctr} of ${leaderboard.length} `, iconURL: interaction.user.avatarURL()! });
 					}
 					userString += x[0] + '\n';
 					nutString += x[1] + '\n';
-					ctr ++;
-					if(ctr >=16) break;
+					ctr++;
+					if (ctr >= 16) break;
 				}
 				embed.addFields({
-					name:'🤓 Users',
+					name: '🤓 Users',
 					value: userString,
 					inline: true
-				},{
+				}, {
 					name: '🥜 Nuts',
 					value: nutString,
 					inline: true,
 				});
 				embed.setTitle(`Nut leaderboard for ${interaction.guild!.name}`);
-				interaction.reply({embeds:[embed]});
+				interaction.reply({ embeds: [embed] });
 				return;
 			};
 		} catch (err) {
@@ -160,12 +171,12 @@ export class Nut implements SlashCommand {
 	managerRequired?: boolean | undefined;
 	blockSilenced?: boolean | undefined = true;
 }
-var sort = function(arr: any[]){
-	arr.sort(function (a,b){
-		if(a[1] <b[1]){
+var sort = function (arr: any[]) {
+	arr.sort(function (a, b) {
+		if (a[1] < b[1]) {
 			return 1;
 		}
-		if(a[1] > b[1]){
+		if (a[1] > b[1]) {
 			return -1;
 		}
 		return 0;

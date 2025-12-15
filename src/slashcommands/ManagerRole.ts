@@ -1,18 +1,17 @@
 import {
-	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	TextChannel,
-	GuildMember,
-	Role,
+	PermissionFlagsBits,
+	EmbedBuilder,
+	ApplicationCommandOptionType,
+	Role
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
-export const managerRoles = new Enmap('managerRoles');
+export const managerRoles = new Enmap({ name: 'managerRoles' });
 
 export class ManagerRole implements SlashCommand {
 	name: string = 'managerrole';
@@ -21,15 +20,15 @@ export class ManagerRole implements SlashCommand {
 		new Option(
 			'role',
 			'The role you want to add or remove as a manager',
-			ApplicationCommandOptionTypes.ROLE,
+			ApplicationCommandOptionType.Role,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
-	): Promise<void> {
+		interaction: ChatInputCommandInteraction<CacheType>
+	): Promise<any> {
 		let role = interaction.options.getRole('role') as Role;
 		if (role.managed) {
 			return interaction.reply({

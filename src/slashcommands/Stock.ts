@@ -3,17 +3,17 @@
 
 import {
 	ChatInputApplicationCommandData,
-	CommandInteraction,
+
 	CacheType,
-	Permissions,
-	MessageEmbed,
+	PermissionFlagsBits,
+	EmbedBuilder,
+	ChatInputCommandInteraction,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
-import fetch from 'node-fetch';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js';
 import { colorCheck } from '../resources/embedColorCheck';
 
 export class Stock implements SlashCommand {
@@ -23,22 +23,22 @@ export class Stock implements SlashCommand {
 		new Option(
 			'tickers',
 			'tickers to query, space separated',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			//tests to see if the command was passed in with arguements
 			if (!interaction.options.getString('tickers')) {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Please provide a valid ticker(s)');
 				interaction.reply({ embeds: [embed] });
@@ -47,7 +47,7 @@ export class Stock implements SlashCommand {
 			//splits the entry text into separate arguements
 			let args = interaction.options.getString('tickers')!.split(' ');
 			if (args.length > 10) {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Please provide 10 or fewer stocks to call');
 				interaction.reply({ embeds: [embed] });
@@ -95,7 +95,7 @@ export class Stock implements SlashCommand {
 				let low52 = jsonData.week52Low;
 
 				//creates discord message embed and edits the modifiers with the attained variables above
-				embedList[ctr] = new MessageEmbed()
+				embedList[ctr] = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setTitle(`__Summary for ${company}:__`)
 					.setDescription(' ')

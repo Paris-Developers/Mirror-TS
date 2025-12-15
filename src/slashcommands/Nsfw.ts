@@ -1,15 +1,13 @@
+
 import {
-	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	ChatInputApplicationCommandData,
-	Permissions,
-	MessageEmbed,
+	EmbedBuilder,
+	PermissionFlagsBits,
+	ApplicationCommandOptionType,
 	GuildMember,
-	GuildChannel,
 	TextChannel,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -36,16 +34,16 @@ export class Nsfw implements SlashCommand {
 		new Option(
 			'toggle',
 			'Switch your servers NSFW status to ON or OFF',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			false,
 			'off',
 			choices
 		),
 	];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let member = interaction.member as GuildMember;
@@ -53,7 +51,7 @@ export class Nsfw implements SlashCommand {
 				interaction.reply('Command must be used in a server');
 				return;
 			}
-			if (!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')) {
+			if (!member.permissionsIn(interaction.channel!.id).has(PermissionFlagsBits.Administrator)) {
 				interaction.reply({
 					content:
 						'This command is only for people with Administrator permissions',
@@ -62,7 +60,7 @@ export class Nsfw implements SlashCommand {
 				return;
 			}
 			var setting = nsfw.ensure(interaction.guild!.id, 'off');
-			const embed = new MessageEmbed();
+			const embed = new EmbedBuilder();
 			if (interaction.options.getString('toggle') == 'on') {
 				nsfw.set(interaction.guild!.id, 'on');
 				embed.setDescription('NSFW has been toggled `ON`');
