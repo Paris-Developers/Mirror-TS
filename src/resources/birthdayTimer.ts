@@ -1,12 +1,12 @@
 import { bdayDates } from '../slashcommands/Birthday';
 import cron from 'node-cron';
 import { Bot } from '../Bot';
-import { MessageEmbed, TextChannel, User } from 'discord.js';
-import Enmap from 'enmap';
+import { EmbedBuilder, TextChannel, User } from 'discord.js';
 import { bdayChannels, bdayTimes } from '../slashcommands/BirthdayConfig';
 import { silencedUsers } from '../slashcommands/SilenceMember';
 
-export let bdayCrons = new Enmap();
+//running cron jobs can't be saved to disk, so they live in a plain Map
+export let bdayCrons = new Map<string, ReturnType<typeof cron.schedule>>();
 
 export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 	//grab the stored infostring from the enmap, if empty: return
@@ -38,7 +38,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 		dayString = `${today.getDate()}-${today.getMonth() + 1}`;
 
 		//for every birthday in the enmap, check if it matches the current date
-		bdayDates.forEach(async (bday, userId) => {
+		bdayDates.entries().forEach(async ([userId, bday]) => {
 			//if a persons birthday matches the current date we are checking
 			if (dayString == bday) {
 				//TODO: check if the user exists in the guild
@@ -61,7 +61,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
 				if (!targetChannel) return;
 
 				//create embed and send
-				const bdayEmbed = new MessageEmbed()
+				const bdayEmbed = new EmbedBuilder()
 					.setDescription(`**:birthday: Happy Birthday <@${userId}> :tada:**`)
 					.setColor(member.displayHexColor)
 					.setFooter({

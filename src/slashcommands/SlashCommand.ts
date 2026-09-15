@@ -2,7 +2,7 @@
 import { Bot } from '../Bot';
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 } from 'discord.js';
 import { Option, Subcommand } from './Option';
 
@@ -11,10 +11,10 @@ export interface SlashCommand {
 	name: string;
 	description: string;
 	options: Array<Option | Subcommand>;
-	//an array of Permissions.FLAGS
+	//an array of PermissionFlagsBits
 	requiredPermissions: Array<bigint>;
 	//function that will run on command execution
-	run(bot: Bot, interaction: CommandInteraction): Promise<void>;
+	run(bot: Bot, interaction: ChatInputCommandInteraction): Promise<void>;
 	//if the command needs to be run inside a guild
 	guildRequired?: boolean;
 	//if the command needs to be run by a manager or admin

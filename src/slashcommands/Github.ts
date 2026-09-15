@@ -1,8 +1,9 @@
 import {
 	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
+	MessageFlags,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -14,10 +15,10 @@ export class Github implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor('#FFFFFF')
 				.setTitle(':lock: __Mirror-TS Codebase and Privacy__')
 				.setDescription(
@@ -29,7 +30,7 @@ export class Github implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

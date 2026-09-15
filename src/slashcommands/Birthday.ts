@@ -1,10 +1,11 @@
 import {
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	ApplicationCommandDataResolvable,
+	MessageFlags,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -104,7 +105,7 @@ export class Birthday implements SlashCommand {
 		new Option(
 			'month',
 			'Your Birth Month',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true,
 			'may',
 			months
@@ -112,21 +113,21 @@ export class Birthday implements SlashCommand {
 		new Option(
 			'day',
 			'The date of your birthday',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.Integer,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
 			if (userArray.includes(interaction.user.id)) {
-				return interaction.reply({
+				return void interaction.reply({
 					content: 'Silenced users cannot use this command',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 			}
 
@@ -135,9 +136,9 @@ export class Birthday implements SlashCommand {
 					dayCap[interaction.options.getString('month')!] ||
 				interaction.options.getInteger('day')! < 1
 			) {
-				return interaction.reply({
+				return void interaction.reply({
 					content: 'Please enter a valid date',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 			}
 
@@ -151,7 +152,7 @@ export class Birthday implements SlashCommand {
 			let monthCap =
 				interaction.options.getString('month')!.charAt(0).toUpperCase() +
 				interaction.options.getString('month')!.slice(1);
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setDescription(
 					`Successfully set your birthday to: ${monthCap} ${interaction.options.getInteger(
 						'day'
@@ -164,7 +165,7 @@ export class Birthday implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

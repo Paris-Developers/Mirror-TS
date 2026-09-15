@@ -1,12 +1,14 @@
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	Role,
-	MessageEmbed,
+	EmbedBuilder,
 	Interaction,
+	MessageFlags,
+	ApplicationCommandOptionType,
+	PermissionFlagsBits,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -15,7 +17,7 @@ import { silencedUsers } from './SilenceMember';
 import { Option, Subcommand } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
 
-export const silencedRole = new Enmap('SilencedRole');
+export const silencedRole = new Enmap({ name: 'SilencedRole' });
 
 export class SilenceRole implements SlashCommand {
 	name: string = 'silencerole';
@@ -25,59 +27,59 @@ export class SilenceRole implements SlashCommand {
 		new Option(
 			'role',
 			'The role to silence',
-			ApplicationCommandOptionTypes.ROLE,
+			ApplicationCommandOptionType.Role,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
 		try {
 			let badRole = interaction.options.getRole('role') as Role;
 
 			if (
-				badRole?.permissionsIn(interaction.channel!.id).has('ADMINISTRATOR')
+				badRole?.permissionsIn(interaction.channel!.id).has(PermissionFlagsBits.Administrator)
 			) {
-				return interaction.reply({
+				return void interaction.reply({
 					content: 'Roles with administrator permissions cannot be silenced!',
 				});
 			}
 			let managedRoles = managerRoles.ensure(interaction.guild!.id, []);
 			for (let role of managedRoles) {
 				if (role == badRole?.id) {
-					return interaction.reply({
+					return void interaction.reply({
 						content: 'Manager Roles cannot be silenced!',
-						ephemeral: true,
+						flags: MessageFlags.Ephemeral,
 					});
 				}
 			}
 			let currentRole = silencedRole.get(interaction.guild!.id) as string;
 			if (badRole.id == currentRole) {
 				silencedRole.delete(interaction.guild!.id);
-				return interaction.reply({
+				return void interaction.reply({
 					content: `Removed ${badRole} as silenced role`,
 				});
 			}
 			silencedRole.set(interaction.guild!.id, badRole?.id);
 			if (currentRole && currentRole != badRole.id) {
 				let getRole = interaction.guild?.roles.cache.get(currentRole);
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(
 						`Replaced role ${getRole} with ${badRole} as silenced role.  Members with this role will not be able to interact with Birthdays, Introthemes or Music Commands.`
 					);
-				return interaction.reply({ embeds: [embed] });
+				return void interaction.reply({ embeds: [embed] });
 			}
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Set ${badRole} as silenced, members with this role will not be able to react with Birthdays, Introthemes, and Music Commands`
 				);
-			return interaction.reply({ embeds: [embed] });
+			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			return void interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 	}
@@ -87,7 +89,7 @@ export class SilenceRole implements SlashCommand {
 
 export function silenceCheck(interaction: Interaction): boolean {
 	let member = interaction.guild!.members.cache.get(interaction.user.id);
-	if (member?.permissions.toArray().includes('ADMINISTRATOR')) return false;
+	if (member?.permissions.has(PermissionFlagsBits.Administrator)) return false;
 	let silenced = silencedRole.get(interaction.guild!.id);
 	if (member?.roles.cache.has(silenced)) return true;
 	silenced = silencedUsers.get(interaction.guild!.id);

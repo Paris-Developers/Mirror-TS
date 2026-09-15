@@ -19,17 +19,17 @@ export class VoiceStateUpdate implements EventHandler {
 		newState: VoiceState
 	): Promise<void> {
 		if (newState.member!.user.bot){ 
-			if(newState.member?.user.id == newState.guild.me!.id){
+			if(newState.member?.user.id == newState.guild.members.me!.id){
 				if(!newState.channelId){
 					if(bot.player.getQueue(newState.guild)){
-						bot.player.getQueue(newState.guild).destroy();
+						bot.player.getQueue(newState.guild)?.destroy();
 						return; //if mirror disconnects, destroy the queue. the player.on('disconnect') event is not reliable
 					}
 				}
 			}
 			return; //ignores bots
 		}
-		let ourId = newState.guild.me!.voice.channelId; //checks the voice channel id that mirror is sitting in
+		let ourId = newState.guild.members.me!.voice.channelId; //checks the voice channel id that mirror is sitting in
 		if (newState.channelId != ourId) return; //if the new channel of the user doesnt match mirrors, end
 		if (oldState.channelId == newState.channelId) return; //if the new channel and the old channel are the same, end
 		if (newState.serverMute == true || newState.serverDeaf == true) return; //if the user is server muted or server deafened, end

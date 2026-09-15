@@ -9,9 +9,10 @@ import {
 import {
 	CacheType,
 	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	GuildMember,
-	Permissions,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -21,10 +22,10 @@ export class Join implements SlashCommand {
 	name: string = 'join';
 	description: string = 'Have Mirror join your voice channel';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let member = interaction.member as GuildMember;
@@ -52,13 +53,13 @@ export class Join implements SlashCommand {
 			connection.subscribe(player);
 			const mirrormp3 = createAudioResource('./music/mirror.mp3');
 			player.play(mirrormp3);
-			interaction.reply({ content: 'success', ephemeral: true }); //hides the reply to anyone but the user
+			interaction.reply({ content: 'success', flags: MessageFlags.Ephemeral }); //hides the reply to anyone but the user
 			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

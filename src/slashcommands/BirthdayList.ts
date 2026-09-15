@@ -1,4 +1,4 @@
-import { CommandInteraction, CacheType, MessageEmbed, Message, User, MessageReaction } from 'discord.js';
+import { ChatInputCommandInteraction, CacheType, EmbedBuilder, Message, User, MessageReaction } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand} from './SlashCommand';
@@ -25,9 +25,8 @@ export class BirthdayList implements SlashCommand {
     description: string = '[MANAGER] See all the birthdays in the current guild'
     options: (Option | Subcommand)[] = [];
     requiredPermissions: bigint[] = [];
-    async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+    async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
         await interaction.deferReply();
-        bdayDates.fetchEverything();
         let list: any[][] = [];
         let memberFetch = await interaction.guild!.members.fetch();
         memberFetch.forEach(async (member) => {
@@ -41,7 +40,7 @@ export class BirthdayList implements SlashCommand {
         let currentPage = 1;
         let initialPage = populatePage(1,list);
 
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
         .setTitle(`Birthday List for ${interaction.guild!.name}`)
         .setFooter({text: `Page ${currentPage} of ${pages}`})
         .addFields(

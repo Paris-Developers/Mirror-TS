@@ -3,18 +3,18 @@
 
 import {
 	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	Permissions,
-	MessageEmbed,
+	EmbedBuilder,
+	MessageFlags,
+	ApplicationCommandOptionType,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
-import fetch from 'node-fetch';
 import { find } from 'geo-tz';
 import config from '../../config.json';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { colorCheck } from '../resources/embedColorCheck';
 
 type emojiConverter = { [index: string]: string };
@@ -56,27 +56,27 @@ export class Weather implements SlashCommand {
 		new Option(
 			'city',
 			'City to query',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true
 		),
 		new Option(
 			'state',
 			'Two letter state code',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			false
 		),
 	];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			if (!interaction.options.getString('city')) {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription('Empty message, please provide a city');
 				interaction.reply({ embeds: [embed] });
@@ -96,7 +96,7 @@ export class Weather implements SlashCommand {
 			);
 			jsonData = await res.json();
 			if (jsonData.cod == '404') {
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(`Error: City not found, try again`);
 				interaction.reply({ embeds: [embed] });
@@ -147,7 +147,7 @@ export class Weather implements SlashCommand {
 					' ';
 			}
 			//creates message embed and edits modifiers
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(`**Current Weather in ${str}**`)
 				.addFields(
@@ -177,7 +177,7 @@ export class Weather implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

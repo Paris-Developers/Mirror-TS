@@ -1,8 +1,9 @@
 import {
 	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	Permissions,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -13,12 +14,12 @@ export class Support implements SlashCommand {
 	description: string = 'Join Mirrors public support server';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			interaction.reply('discord.gg/uvdg2R5PAU');
@@ -27,7 +28,7 @@ export class Support implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

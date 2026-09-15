@@ -1,13 +1,14 @@
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
-	Permissions,
+	EmbedBuilder,
 	GuildChannel,
 	GuildChannelResolvable,
 	PermissionOverwriteManager,
 	PermissionResolvable,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -21,24 +22,24 @@ import { serverColors } from './ServerColor';
 import { colorCheck } from '../resources/embedColorCheck';
 
 const permList = [
-	['ADD_REACTIONS', Permissions.FLAGS.ADD_REACTIONS],
-	['CONNECT', Permissions.FLAGS.CONNECT],
-	['EMBED_LINKS', Permissions.FLAGS.EMBED_LINKS],
-	['MANAGE_MESSAGES',Permissions.FLAGS.MANAGE_MESSAGES],
-	['MOVE_MEMBERS', Permissions.FLAGS.MOVE_MEMBERS],
-	['SEND_MESSAGES', Permissions.FLAGS.SEND_MESSAGES],
-	['SPEAK', Permissions.FLAGS.SPEAK],
-	['USE_EXTERNAL_EMOJIS',Permissions.FLAGS.USE_EXTERNAL_EMOJIS],
-	['VIEW_CHANNEL',Permissions.FLAGS.VIEW_CHANNEL]]
+	['ADD_REACTIONS', PermissionFlagsBits.AddReactions],
+	['CONNECT', PermissionFlagsBits.Connect],
+	['EMBED_LINKS', PermissionFlagsBits.EmbedLinks],
+	['MANAGE_MESSAGES',PermissionFlagsBits.ManageMessages],
+	['MOVE_MEMBERS', PermissionFlagsBits.MoveMembers],
+	['SEND_MESSAGES', PermissionFlagsBits.SendMessages],
+	['SPEAK', PermissionFlagsBits.Speak],
+	['USE_EXTERNAL_EMOJIS',PermissionFlagsBits.UseExternalEmojis],
+	['VIEW_CHANNEL',PermissionFlagsBits.ViewChannel]]
 	
 export class Config implements SlashCommand {
 	name: string = 'config';
 	description = 'See the configuration settings for this server';
 	options = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
-	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
+	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
 		try {
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setTitle(`:gear: Server Settings for ${interaction.guild?.name}`)
 				.setColor(colorCheck(interaction.guild!.id));
 			let lines: any[][] = [
@@ -133,13 +134,13 @@ export class Config implements SlashCommand {
 				}
 				permString += '\n' + 'Assign mirror the missing permissions to ensure full functionality'
 			}
-			embed.addField('Permissions', permString);
-			return interaction.reply({ embeds: [embed] });
+			embed.addFields({ name: 'Permissions', value: permString });
+			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			return void interaction.reply({
 				content: 'Error detected, contact an admin to investigate.',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 	}

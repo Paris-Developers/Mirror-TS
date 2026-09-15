@@ -1,13 +1,16 @@
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	GuildMember,
 	TextChannel,
 	GuildChannel,
-	MessageEmbed,
+	EmbedBuilder,
+	MessageFlags,
+	ChannelType,
+	ApplicationCommandOptionType,
+	PermissionFlagsBits,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
@@ -46,25 +49,25 @@ export class BirthdayConfig implements SlashCommand {
 		new Option(
 			'channel',
 			'Set the channel where the birthday messages are sent to',
-			ApplicationCommandOptionTypes.CHANNEL,
+			ApplicationCommandOptionType.Channel,
 			true
 		),
 		new Option(
 			'hour',
 			'The hour you want to send Birthday messages in local time, military format (0-23)',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.Integer,
 			true
 		),
 		new Option(
 			'minute',
 			'The minute you want to send Birthday messages',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.Integer,
 			true
 		),
 		new Option(
 			'timezone',
 			'Your local timezone',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true,
 			'cst',
 			timezones
@@ -73,7 +76,7 @@ export class BirthdayConfig implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		let member = interaction.member as GuildMember;
 		try {
@@ -82,11 +85,11 @@ export class BirthdayConfig implements SlashCommand {
 				interaction.reply('Command must be used in a server');
 				return;
 			}
-			if (!member.permissionsIn(interaction.channel).has('ADMINISTRATOR')) {
+			if (!member.permissionsIn(interaction.channel).has(PermissionFlagsBits.Administrator)) {
 				interaction.reply({
 					content:
 						'This command is only for people with Administrator permissions',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			}
@@ -95,10 +98,10 @@ export class BirthdayConfig implements SlashCommand {
 			var guildChannel = interaction.options.getChannel(
 				'channel'
 			) as GuildChannel;
-			if (guildChannel.type != 'GUILD_TEXT') {
+			if (guildChannel.type !== ChannelType.GuildText) {
 				interaction.reply({
 					content: 'Please enter a valid text channel',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			}
@@ -109,18 +112,18 @@ export class BirthdayConfig implements SlashCommand {
 			//get the hour and ensure that it is valid
 			let hour = interaction.options.getInteger('hour')!;
 			if (hour > 23 || hour < 0) {
-				return interaction.reply({
+				return void interaction.reply({
 					content:
 						'Invalid hour, please use military format (0-23) where 0 represents midnight.',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 			}
 			//get the minute and ensure that it is valid
 			let minute = interaction.options.getInteger('minute')!;
 			if (minute > 60 || minute < 0) {
-				return interaction.reply({
+				return void interaction.reply({
 					content: 'Invalid minute, please provide an integer between 0 and 60',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 			}
 
@@ -150,7 +153,7 @@ export class BirthdayConfig implements SlashCommand {
 			let minuteText = minute.toString();
 			if (hour < 10) hourText = '0' + hourText;
 			if (minute < 10) minuteText = '0' + minuteText;
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Successfully scheduled your birthday timer for **\`${hourText}:${minuteText}\` \`${timezone.toUpperCase()}\`** in ${interaction.options.getChannel(
@@ -163,7 +166,7 @@ export class BirthdayConfig implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

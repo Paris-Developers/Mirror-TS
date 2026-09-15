@@ -3,8 +3,9 @@
 import {
 	CacheType,
 	ChatInputApplicationCommandData,
-	CommandInteraction,
-	Permissions,
+	ChatInputCommandInteraction,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -15,19 +16,19 @@ export class Leave implements SlashCommand {
 	description: string = 'Have Mirror leave your voice channel';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.MOVE_MEMBERS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.MoveMembers,
 	];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			let mirrorVoice = interaction.guild!.me!.voice;
+			let mirrorVoice = interaction.guild!.members.me!.voice;
 			if (!mirrorVoice.channel) {
 				interaction.reply({
 					content: 'Not in a voice channel',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			}
@@ -38,7 +39,7 @@ export class Leave implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

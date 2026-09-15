@@ -1,11 +1,12 @@
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
+	MessageFlags,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
@@ -19,22 +20,22 @@ export class Skip implements SlashCommand {
 		new Option(
 			'number',
 			'How many tracks you want to skip in the queue',
-			ApplicationCommandOptionTypes.INTEGER,
+			ApplicationCommandOptionType.Integer,
 			false
 		)
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
 				embed.setDescription('There is no music playing!');
-				return interaction.reply({ embeds: [embed], ephemeral: true });
+				return void interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 			}
 			if(queue.repeatMode){
 				queue.setRepeatMode(QueueRepeatMode.OFF);
@@ -49,17 +50,17 @@ export class Skip implements SlashCommand {
 				embed.setDescription(
 					`${tracksToSkip} tracks skipped by ${interaction.user}`
 				);
-				return interaction.reply({ embeds: [embed] });
+				return void interaction.reply({ embeds: [embed] });
 			} else {
 				await queue.skip();
 				embed.setDescription(`Track skipped by ${interaction.user}`);
-				return interaction.reply({ embeds: [embed] });
+				return void interaction.reply({ embeds: [embed] });
 			}
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

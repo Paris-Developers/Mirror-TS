@@ -5,19 +5,19 @@ import { birthdayTimer } from '../resources/birthdayTimer';
 import { registerSlashCommands } from '../resources/registerSlashCommands';
 import { launchVoice } from '../slashcommands/DefaultVc';
 import config from '../../config.json';
-import { TextChannel } from 'discord.js';
+import { ActivityType, TextChannel } from 'discord.js';
 
 export class Ready implements EventHandler {
-	eventName = 'ready';
+	eventName = 'clientReady';
 	async process(bot: Bot): Promise<void> {
 		bot.logger.info('Logged in');
 		await registerSlashCommands(bot);
 		bot.client.user?.setActivity(config.message, {
-			type: 'LISTENING',
+			type: ActivityType.Listening,
 		});
-		bdayTimes.forEach(async (info, guild) => {
-			birthdayTimer(guild.toString(), bot);
-		});
+		for (const guild of bdayTimes.keys()) {
+			birthdayTimer(guild, bot);
+		}
 		launchVoice(bot);
 		let now = new Date();
 		let channel = bot.client.channels.cache.get(config.error_channel) as TextChannel;
