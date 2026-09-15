@@ -3,11 +3,11 @@
 import {
 	CacheType,
 	ChatInputApplicationCommandData,
-	CommandInteraction,
-	MessageEmbed,
-	Permissions,
+	ChatInputCommandInteraction,
+	EmbedBuilder,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
-import fetch from 'node-fetch';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
@@ -19,12 +19,12 @@ export class Nasa implements SlashCommand {
 	description: string = 'NASA\'s astronomy picture of the day';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			await interaction.deferReply(); // this command can take a while to respond, so we need to defer the reply.
@@ -34,7 +34,7 @@ export class Nasa implements SlashCommand {
 			let jsonData = await res.json();
 			let footer = `${jsonData.date} NASA Astronomy Picture of the day`; //we need this for the deprecation error we are getting with .setFooter()
 			bot.logger.debug(jsonData); // <- remove eventually;
-			var embed = new MessageEmbed()
+			var embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(`${jsonData.explanation.substr(0, 200)}...`)
 				.setFooter({ text: footer })
@@ -47,7 +47,7 @@ export class Nasa implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

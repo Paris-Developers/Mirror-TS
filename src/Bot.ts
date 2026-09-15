@@ -1,4 +1,4 @@
-import { Client, Guild, MessageEmbed, TextChannel } from 'discord.js';
+import { Client, Guild, EmbedBuilder, TextChannel } from 'discord.js';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
@@ -17,7 +17,7 @@ import { CustomPlayer } from './resources/CustomPlayer';
 
 export class Bot {
 	public logger: CustomLogger;
-	public player = new CustomPlayer(this);
+	public player: CustomPlayer;
 
 	//helper functions
 	public permissionsCheck = permissionsCheck;
@@ -36,17 +36,18 @@ export class Bot {
 		public mode: string,
 		public test_server: string
 	) {
+		//class fields initialize before constructor parameters are assigned, so the player
+		//(which reads this.client) has to be created here rather than as a field
+		this.player = new CustomPlayer(this);
+
 		//initialize logger
 		let now = new Date();
 		//have the logs sit outside the built directory as it gets removed during building
 		let logfileName = `./logs/${
 			now.getMonth() + 1
 		}-${now.getDate()}-${now.getFullYear()} ${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.log`;
-		let logLevel: TLogLevelName = this.mode == 'debug' ? 'debug' : 'info';
+		let logLevel: TLogLevelName = this.mode == 'debug' ? 'DEBUG' : 'INFO';
 		this.logger = new CustomLogger(logfileName, logLevel, this);
-
-		//fetch enmaps
-		this.songRecs.fetchEverything();
 	}
 
 	public async start(): Promise<void> {

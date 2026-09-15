@@ -8,10 +8,11 @@ import {
 } from '@discordjs/voice';
 import {
 	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	GuildMember,
-	Permissions,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -21,10 +22,10 @@ export class Sicko implements SlashCommand {
 	name: string = 'sicko';
 	description: string = 'Have Mirror join your voice channel, but sicko mode';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let member = interaction.member as GuildMember;
@@ -53,7 +54,7 @@ export class Sicko implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

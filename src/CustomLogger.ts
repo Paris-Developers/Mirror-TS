@@ -1,15 +1,14 @@
-import { ILogObject, Logger, TLogLevelName } from 'tslog';
-import { appendFile } from 'fs';
-import mkdirp from 'mkdirp';
+import { ILogObj, ILogObjMeta, Logger, TLogLevelName } from 'tslog';
+import { appendFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { Bot } from './Bot';
-import { AnyChannel, MessageEmbed, TextChannel } from 'discord.js';
+import { Channel, EmbedBuilder, TextChannel } from 'discord.js';
 import config from '../config.json';
 
-export class CustomLogger extends Logger {
+export class CustomLogger extends Logger<ILogObj> {
 	constructor(
 		private savePath: string,
-		private saveLevel: TLogLevelName,
+		saveLevel: TLogLevelName,
 		private bot: Bot
 	) {
 		super({
@@ -19,46 +18,26 @@ export class CustomLogger extends Logger {
 
 	async initialize() {
 		//only attach the logging to file function after the directory has been created
-		await mkdirp(path.dirname(this.savePath));
-		//bind the transport function so we can access the savePath from this
-		const boundTransport = this.logToTransport.bind(this);
+		await mkdir(path.dirname(this.savePath), { recursive: true });
+		//the transport only receives logs at or above the logger's minLevel
+		this.attachTransport((logObject) => this.logToTransport(logObject));
+	}
 
-		//attach all transports
-		this.attachTransport(
-			{
-				silly: boundTransport,
-				debug: boundTransport,
-				trace: boundTransport,
-				info: boundTransport,
-				warn: boundTransport,
-				error: boundTransport,
-				fatal: boundTransport,
-			},
-			this.saveLevel
+	logToTransport(logObject: ILogObj & ILogObjMeta) {
+		appendFile(this.savePath, JSON.stringify(logObject) + '\n').catch(
+			(err) => console.log(err) //something is wrong in logging, print directly to console
 		);
 	}
 
-	logToTransport(logObject: ILogObject) {
-		appendFile(this.savePath, JSON.stringify(logObject) + '\n', (err) => {
-			if (err) console.log(err); //something is wrong in logging, print directly to console
-		});
-	}
-
-	commandError(
-		channelId: string,
-		commandName: string,
-		...args: unknown[]
-	): ILogObject {
+	commandError(channelId: string, commandName: string, ...args: unknown[]) {
 		if (commandName) {
-			var errorChannel: AnyChannel;
+			var errorChannel: Channel;
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setTitle(`Error in command: __${commandName.toUpperCase()}__`)
-				.setColor('RED');
+				.setColor('Red');
 			if (channelId) {
-				errorChannel = this.bot.client.channels.cache.get(
-					channelId
-				) as AnyChannel;
+				errorChannel = this.bot.client.channels.cache.get(channelId) as Channel;
 				embed.setDescription(
 					`Error Message: ${args.join(' ')}\n\n Channel: ${errorChannel}`
 				);
@@ -74,6 +53,6 @@ export class CustomLogger extends Logger {
 			) as TextChannel;
 			channel.send({ embeds: [embed] });
 		}
-		return super.error(args);
+		return this.error(args);
 	}
 }

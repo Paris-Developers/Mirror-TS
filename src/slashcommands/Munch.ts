@@ -11,11 +11,12 @@ import {
 } from '@discordjs/voice';
 import {
 	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	GuildMember,
-	Permissions,
 	VoiceState,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -25,10 +26,10 @@ export class Munch implements SlashCommand {
 	name: string = 'munch';
 	description: string = 'Time to go munch some grub. But I will return.';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.DEAFEN_MEMBERS];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages, PermissionFlagsBits.DeafenMembers];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let member = interaction.member as GuildMember;
@@ -66,7 +67,7 @@ export class Munch implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}
