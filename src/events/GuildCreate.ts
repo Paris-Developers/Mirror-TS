@@ -27,7 +27,6 @@ export class GuildCreate implements EventHandler {
 		}
 		let channelList = await guild.channels.fetch();
 		for (let channel of channelList) {
-			if (!channel[1]) continue;
 			if (
 				channel[1].permissionsFor(guild.me!).has('VIEW_CHANNEL') &&
 				channel[1].permissionsFor(guild.me!).has('SEND_MESSAGES') &&

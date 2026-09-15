@@ -7,7 +7,6 @@ import {
 	createAudioResource,
 	AudioPlayerStatus,
 	AudioPlayerError,
-	DiscordGatewayAdapterCreator,
 } from '@discordjs/voice';
 import { VoiceState } from 'discord.js';
 import { silencedUsers } from '../slashcommands/SilenceMember';
@@ -23,7 +22,7 @@ export class VoiceStateUpdate implements EventHandler {
 			if(newState.member?.user.id == newState.guild.me!.id){
 				if(!newState.channelId){
 					if(bot.player.getQueue(newState.guild)){
-						bot.player.getQueue(newState.guild)?.destroy();
+						bot.player.getQueue(newState.guild).destroy();
 						return; //if mirror disconnects, destroy the queue. the player.on('disconnect') event is not reliable
 					}
 				}
@@ -42,7 +41,7 @@ export class VoiceStateUpdate implements EventHandler {
 			connection = joinVoiceChannel({
 				channelId: newState.channelId!,
 				guildId: newState.guild.id,
-				adapterCreator: newState.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
+				adapterCreator: newState.guild.voiceAdapterCreator,
 			});
 
 			//code copied from discord#9185

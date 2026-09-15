@@ -31,7 +31,7 @@ export class Superidol implements MessageCommand {
 			const connection = joinVoiceChannel({
 				channelId: state.channelId,
 				guildId: channel.guild.id,
-				adapterCreator: channel.guild.voiceAdapterCreator as import('@discordjs/voice').DiscordGatewayAdapterCreator,
+				adapterCreator: channel.guild.voiceAdapterCreator,
 			});
 			let player = createAudioPlayer();
 			connection.subscribe(player);
