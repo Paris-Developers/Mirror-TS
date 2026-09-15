@@ -1,0 +1,11 @@
+{
+	"token": "YOUR_DISCORD_BOT_TOKEN",
+	"mode": "debug",
+	"test_server": "TEST_SERVER_ID",
+	"error_channel": "ERROR_CHANNEL_ID",
+	"message": "",
+	"owner": "YOUR_DISCORD_USER_ID",
+	"nasa_token": "",
+	"stock_token": "",
+	"weather_token": ""
+}

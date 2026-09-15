@@ -23,7 +23,7 @@ export function voiceCommandCheck(bot: Bot, interaction: CommandInteraction): bo
             joinVoiceChannel({
                 channelId: state.id!,
                 guildId: interaction.guildId!,
-                adapterCreator: interaction.guild!.voiceAdapterCreator,
+                adapterCreator: interaction.guild!.voiceAdapterCreator as import('@discordjs/voice').DiscordGatewayAdapterCreator,
             });
         } else {
             embed.setDescription(

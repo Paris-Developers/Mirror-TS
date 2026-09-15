@@ -6,7 +6,7 @@ import {
 	CommandInteraction,
 } from 'discord.js';
 import fs from 'fs';
-import ytdl from 'ytdl-core';
+import ytdl from '@distube/ytdl-core';
 import mkdirp from 'mkdirp';
 import { SlashCommand } from './SlashCommand';
 import { Bot } from '../Bot';
