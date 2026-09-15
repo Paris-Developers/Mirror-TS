@@ -2,6 +2,7 @@ import { Bot } from '../Bot';
 import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
+import { pathToFileURL } from 'url';
 
 let promisedReaddir = promisify(fs.readdir);
 
@@ -12,7 +13,8 @@ export async function registerEvents(bot: Bot) {
 		// if it's the base class or the old class holder file, ignore it
 		if (file == 'EventHandler.js' || file == 'Events.js') continue;
 		// get all the exports from the file
-		let module = await import(`${__dirname}/../events/${file}`);
+		//import() needs a file:// URL, a bare Windows path like C:\... is read as a URL scheme
+		let module = await import(pathToFileURL(path.join(__dirname, '..', 'events', file)).href);
 		// make a new object using the exported class
 		let eventHandler = new module[path.parse(file).name]();
 		let eventName = eventHandler.eventName;

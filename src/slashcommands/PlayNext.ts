@@ -1,8 +1,9 @@
 import {
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
+	MessageFlags,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -20,10 +21,10 @@ export class PlayNext implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let member = interaction.member as GuildMember;
 
@@ -90,7 +91,7 @@ export class PlayNext implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

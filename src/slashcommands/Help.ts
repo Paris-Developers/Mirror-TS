@@ -2,13 +2,13 @@
 //Returns the info command
 import {
 	ChatInputApplicationCommandData,
-	CommandInteraction,
-	CommandOptionChannelResolvableType,
+	ChatInputCommandInteraction,
 	Message,
-	MessageEmbed,
+	EmbedBuilder,
 	MessageReaction,
-	Permissions,
 	User,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -19,19 +19,19 @@ export class Help implements SlashCommand {
 	description: string = 'Information about the bot';
 	options = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS, 
-		Permissions.FLAGS.MANAGE_MESSAGES,
-		Permissions.FLAGS.ADD_REACTIONS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks, 
+		PermissionFlagsBits.ManageMessages,
+		PermissionFlagsBits.AddReactions,
 	];
-	async run(bot: Bot, interaction: CommandInteraction): Promise<void> {
+	async run(bot: Bot, interaction: ChatInputCommandInteraction): Promise<void> {
 		try {
 			type cmdList = {[index:string]: string};
 			let cmds = {} as cmdList;
 			bot.slashCommands.forEach((command)=>{
 				cmds[command.name] = command.description;
 			})
-			const page1 = new MessageEmbed()
+			const page1 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':mirror: **__Mirror__**')
 				.setDescription('Informational and fun discord bot created by Ford, Zac, and Marty')
@@ -53,7 +53,7 @@ export class Help implements SlashCommand {
 					}
 				)
 				.setFooter({ text: 'Page 1 of 5' });
-			const page2 = new MessageEmbed()
+			const page2 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':sound: **__Voice Commands__**')
 				.setDescription(
@@ -82,7 +82,7 @@ export class Help implements SlashCommand {
 					inline:false
 				})
 				.setFooter({ text: 'Page 2 of 5' });
-			const page3 = new MessageEmbed()
+			const page3 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.addFields({
 					name: 'Informative Commands',
@@ -102,7 +102,7 @@ export class Help implements SlashCommand {
 					`\`/roll\`  ${cmds.roll}\n`
 				})
 				.setFooter({ text: 'Page 3 of 5' });
-			const page4 = new MessageEmbed()
+			const page4 = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setTitle(':bell: **__Server Configuration__**')
 				.setDescription(
@@ -119,7 +119,7 @@ export class Help implements SlashCommand {
 					`\`/removeintro\`  ${cmds.removeintro}\n`
 				)
 				.setFooter({ text: 'Page 4 of 5' });
-			const page5 = new MessageEmbed()
+			const page5 = new EmbedBuilder()
 			.setColor(colorCheck(interaction.guild!.id))
 			.setTitle(':bell: **__Other Information__**')
 			.addFields({
@@ -135,10 +135,8 @@ export class Help implements SlashCommand {
 			.setFooter({ text: 'Page 5 of 5' });
 			let embedArray = [page1, page2, page3, page4, page5];
 			let index = 0;
-			let message = (await interaction.reply({
-				embeds: [embedArray[index]],
-				fetchReply: true,
-			})) as Message; //fetch the reply and store it so we can react to it and use it in the collector
+			await interaction.reply({ embeds: [embedArray[index]] });
+			let message = await interaction.fetchReply(); //fetch the reply and store it so we can react to it and use it in the collector
 			await message.react('⏪');
 			await message.react('⏩');
 			const filter = (reaction: MessageReaction, user: User) => {
@@ -169,7 +167,7 @@ export class Help implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

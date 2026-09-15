@@ -1,9 +1,10 @@
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
+	MessageFlags,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -14,25 +15,25 @@ export class ClearQueue implements SlashCommand {
 	description = 'Clear the music queue';
 	options = [];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
 				embed.setDescription(
 					'There are no songs in the queue or the player is not playing'
 				);
-				return interaction.reply({ embeds: [embed], ephemeral: true });
+				return void interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 			}
 			queue.clear();
 			embed.setDescription(`Queue has been cleared by ${interaction.user}`);
-			return interaction.reply({ embeds: [embed] });
+			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			return void interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 	}

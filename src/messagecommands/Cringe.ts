@@ -1,12 +1,12 @@
-import { Message, Permissions } from 'discord.js';
+import { PermissionFlagsBits, Message } from 'discord.js';
 import { Bot } from '../Bot';
 import { MessageCommand } from './MessageCommand';
 
 export class Cringe implements MessageCommand {
 	name: string = 'cringe';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
 	];
 	async run(
 		bot: Bot,

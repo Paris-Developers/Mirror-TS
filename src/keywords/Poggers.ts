@@ -1,15 +1,15 @@
+import { PermissionFlagsBits, Message } from 'discord.js';
 //Keyword: poggers
 //Reacts to the keyword with JamesChamp
 
-import { Message, Permissions } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
 export class Poggers implements Keyword {
 	name: string = 'poggers';
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.ADD_REACTIONS,
-		Permissions.FLAGS.USE_EXTERNAL_EMOJIS,
+		PermissionFlagsBits.AddReactions,
+		PermissionFlagsBits.UseExternalEmojis,
 	];
 	async run(
 		bot: Bot,

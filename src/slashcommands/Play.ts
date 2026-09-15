@@ -1,11 +1,12 @@
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
+	MessageFlags,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { QueryType } from 'discord-player';
@@ -20,17 +21,17 @@ export class Play implements SlashCommand {
 		new Option(
 			'query',
 			'The song or playlist you want to queue',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let member = interaction.member as GuildMember; //need this for later
 
@@ -95,7 +96,7 @@ export class Play implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

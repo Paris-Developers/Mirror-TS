@@ -1,11 +1,18 @@
-import { CommandInteraction, CacheType, MessageEmbed, ColorResolvable } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import {
+	ChatInputCommandInteraction,
+	CacheType,
+	EmbedBuilder,
+	ColorResolvable,
+	MessageFlags,
+	ApplicationCommandOptionType,
+} from "discord.js";
+import { normalizeColor } from "../resources/embedColorCheck";
 import Enmap from "enmap";
 import { Bot } from "../Bot";
 import { Option, Subcommand } from "./Option";
 import { SlashCommand } from "./SlashCommand";
 
-export const serverColors = new Enmap('serverColors');
+export const serverColors = new Enmap({ name: 'serverColors' });
 
 export class ServerColor implements SlashCommand {
     name: string = 'servercolor';
@@ -14,30 +21,28 @@ export class ServerColor implements SlashCommand {
         new Option(
             'color',
             'The color you want to set',
-            ApplicationCommandOptionTypes.STRING,
+            ApplicationCommandOptionType.String,
             true,
         )
     ]
     requiredPermissions: bigint[] = [];
-    run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+    async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
         try{
-            let color = interaction.options.getString('color')?.toUpperCase();
+            let color = normalizeColor(interaction.options.getString('color')!.toUpperCase());
             try{
-                var colorTest = color as ColorResolvable;
-
-                const embed = new MessageEmbed()
-                    .setColor(colorTest)
+                const embed = new EmbedBuilder()
+                    .setColor(color)
                     .setDescription('This is your new server color!');
-                serverColors.set(interaction.guild!.id, colorTest);
-                return interaction.reply({embeds: [embed]});
+                serverColors.set(interaction.guild!.id, color);
+                return void interaction.reply({embeds: [embed]});
             } catch (err){
-                return interaction.reply({content: 'Invalid color, please try again with format: \'#ABC123\' or BLUE or RANDOM'});
+                return void interaction.reply({content: 'Invalid color, please try again with format: \'#ABC123\' or Blue or Random'});
             }
         } catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			return void interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			
 		}

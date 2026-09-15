@@ -1,11 +1,17 @@
-import { CommandInteraction, CacheType, MessageEmbed, User } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import {
+	ChatInputCommandInteraction,
+	CacheType,
+	EmbedBuilder,
+	User,
+	MessageFlags,
+	ApplicationCommandOptionType,
+} from 'discord.js';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
-const nuts = new Enmap({name:'nuts', fetchAll: true});
+const nuts = new Enmap({ name: 'nuts' });
 const gifArray = [
 	'https://media.giphy.com/media/j6ZW4QRTVTuWNsDlUV/giphy.gif',
 	'https://i.imgur.com/Fi6pnvQ.gif',
@@ -22,13 +28,13 @@ export class Nut implements SlashCommand {
 			new Option(
 				'change',
 				'how many nuts to add',
-				ApplicationCommandOptionTypes.INTEGER,
+				ApplicationCommandOptionType.Integer,
 				false
 			),
 			new Option(
 				'user',
 				'whos jar to add nuts to',
-				ApplicationCommandOptionTypes.USER,
+				ApplicationCommandOptionType.User,
 				false
 			),
 		]),
@@ -36,22 +42,22 @@ export class Nut implements SlashCommand {
 			new Option(
 				'change',
 				'How many nuts to remove',
-				ApplicationCommandOptionTypes.INTEGER,
+				ApplicationCommandOptionType.Integer,
 				false
 			),
 			new Option(
 				'user',
 				'whos jar to subtract nuts from',
-				ApplicationCommandOptionTypes.USER,
+				ApplicationCommandOptionType.User,
 				false
 			),
 		]),
 		new Subcommand('leaderboard', 'View the servers nut leaderboard', []),
 	];
 	requiredPermissions: bigint[] = [];
-	async run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor('#FDA50F');
+			const embed = new EmbedBuilder().setColor('#FDA50F');
 			if (
 				Math.random() == 0.69 ||
 				Math.random() == 0.42 ||
@@ -80,7 +86,7 @@ export class Nut implements SlashCommand {
 						messageContent ? `${jarUser}'s` : 'your'
 					} jar, the new total is ${storage}`
 				);
-				return interaction.reply({ embeds: [embed] });
+				return void interaction.reply({ embeds: [embed] });
 			}
 
 			if (interaction.options.getSubcommand() == 'subtract') {
@@ -101,20 +107,18 @@ export class Nut implements SlashCommand {
 						messageContent ? `${jarUser}'s` : 'your'
 					} jar, the new total is ${storage}`
 				);
-				return interaction.reply({ embeds: [embed] });
+				return void interaction.reply({ embeds: [embed] });
 			}
 			if (interaction.options.getSubcommand() == 'reset') {
 				nuts.set(interaction.user.id, 0);
 				embed
 					.setDescription('Your jar has been emptied')
 					.setImage('https://c.tenor.com/injWPZSrCK0AAAAC/bear.gif');
-				return interaction.reply({ embeds: [embed] });
+				return void interaction.reply({ embeds: [embed] });
 			}
-			if(interaction.options.getSubcommand() == 'leaderboard'){
-				nuts.fetchEverything();
-				let guild = interaction.guild!;
+			if(interaction.options.getSubcommand() == 'leaderboard'){				let guild = interaction.guild!;
 				let leaderboard: any[][] = [];
-				for(const item of nuts){
+				for(const item of nuts.entries()){
 					try{
 						let member = await guild.members.fetch(item[0].toString());
 						leaderboard.push([member.user.username, item[1]]);
@@ -149,9 +153,9 @@ export class Nut implements SlashCommand {
 			};
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			return void interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 	}

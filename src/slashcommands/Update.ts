@@ -1,19 +1,21 @@
 import { Bot } from '../Bot';
 import {
-	Permissions,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	GuildMember,
 	TextChannel,
 	Guild,
-	MessageEmbed,
+	EmbedBuilder,
 	Options,
+	MessageFlags,
+	ChannelType,
+	ApplicationCommandOptionType,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { SlashCommand } from './SlashCommand';
 import config from '../../config.json';
 import Enmap from 'enmap';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { colorCheck } from '../resources/embedColorCheck';
 
 export let updateChannels = new Enmap({ name: 'updateChannels' });
@@ -26,15 +28,15 @@ export class Update implements SlashCommand {
 		new Option(
 			'channel',
 			'The channel you wish to recieve update messages',
-			ApplicationCommandOptionTypes.CHANNEL,
+			ApplicationCommandOptionType.Channel,
 			true
 		),
 	];
-	public requiredPermissions = [Permissions.FLAGS.SEND_MESSAGES];
+	public requiredPermissions = [PermissionFlagsBits.SendMessages];
 
 	public async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			if (!(interaction.channel instanceof TextChannel)) {
@@ -43,38 +45,38 @@ export class Update implements SlashCommand {
 			}
 			let member = interaction.member as GuildMember;
 			if (
-				!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR') &&
+				!member.permissionsIn(interaction.channel!).has(PermissionFlagsBits.Administrator) &&
 				member.id != config.owner
 			) {
 				interaction.reply({
 					content:
 						'This command is only for people with Administrator permissions',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			}
 			let channel = interaction.options.getChannel('channel');
 			if (
-				!interaction.guild?.me
+				!interaction.guild?.members.me
 					?.permissionsIn(channel?.id!)
-					.has('SEND_MESSAGES') ||
-				!interaction.guild?.me?.permissionsIn(channel?.id!).has('EMBED_LINKS')
+					.has(PermissionFlagsBits.SendMessages) ||
+				!interaction.guild?.members.me?.permissionsIn(channel?.id!).has(PermissionFlagsBits.EmbedLinks)
 			) {
 				interaction.reply({
 					content:
 						'Mirror does not have permissions to send messages in the specified channel',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			}
-			if (channel!.type != 'GUILD_TEXT')
-				return interaction.reply({
+			if (channel!.type !== ChannelType.GuildText)
+				return void interaction.reply({
 					content: 'Channel must be a text channel',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 			//var enmapChannel = updateChannels.ensure(interaction.guild.id, '');
 			updateChannels.set(interaction.guild.id, channel?.id);
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Sucessfully updated your development messages to ${channel}`
@@ -85,7 +87,7 @@ export class Update implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}
