@@ -41,7 +41,7 @@ export class Sicko implements SlashCommand {
 			const connection = joinVoiceChannel({
 				channelId: state.channelId!,
 				guildId: interaction.guildId!,
-				adapterCreator: interaction.guild!.voiceAdapterCreator as import('@discordjs/voice').DiscordGatewayAdapterCreator,
+				adapterCreator: interaction.guild!.voiceAdapterCreator,
 			});
 			let audio = createAudioPlayer();
 			connection.subscribe(audio);

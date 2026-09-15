@@ -32,7 +32,7 @@ export class Join implements SlashCommand {
 			const connection = joinVoiceChannel({
 				channelId: state.channelId!,
 				guildId: interaction.guildId!,
-				adapterCreator: interaction.guild!.voiceAdapterCreator as import('@discordjs/voice').DiscordGatewayAdapterCreator,
+				adapterCreator: interaction.guild!.voiceAdapterCreator,
 			});
 			//code copied from discord#9185
 			//@ts-ignore
