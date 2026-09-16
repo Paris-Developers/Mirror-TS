@@ -57,6 +57,7 @@ export class Bot {
 		await importSlashCommands(this);
 		await importMessageCommands(this);
 		await importKeywords(this);
+		await this.player.loadExtractors();
 		this.client.login(this.token);
 		this.player.registerPlayerEvents();
 	}

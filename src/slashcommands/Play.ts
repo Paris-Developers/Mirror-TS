@@ -11,7 +11,6 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { QueryType } from 'discord-player';
 import { Option, Subcommand } from './Option';
-import { joinVoiceChannel } from '@discordjs/voice';
 import { colorCheck } from '../resources/embedColorCheck';
 
 export class Play implements SlashCommand {
@@ -47,13 +46,13 @@ export class Play implements SlashCommand {
 			if (!searchResult || !searchResult.tracks.length)
 				return void interaction.editReply('no results were found');
 
-			const queue = await bot.player.createQueue(guild!, bot.player.playOptions);
+			const queue = bot.player.nodes.create(guild!, bot.player.playOptions);
 
 			await guild?.members.fetch(interaction.user.id);
 			try {
 				if (!queue.connection) await queue.connect(member?.voice.channel!);
 			} catch {
-				void bot.player.deleteQueue(guild!.id);
+				void bot.player.nodes.delete(guild!.id);
 				return void interaction.editReply('Could not join your voice channel');
 			}
 
@@ -70,20 +69,20 @@ export class Play implements SlashCommand {
 					`Loading Song: **${searchResult.tracks[0].title}** by, *${searchResult.tracks[0].author}*`
 				)
 				.setFooter({
-					text: `Requested by ${searchResult.tracks[0].requestedBy.tag}`,
-					iconURL: searchResult.tracks[0].requestedBy.avatarURL()!,
+					text: `Requested by ${searchResult.tracks[0].requestedBy?.tag}`,
+					iconURL: searchResult.tracks[0].requestedBy?.avatarURL() ?? undefined,
 				});
 			await interaction.editReply({ embeds: [embed] });
 
 			searchResult.playlist
-				? queue.addTracks(searchResult.tracks)
+				? queue.addTrack(searchResult.tracks)
 				: queue.addTrack(searchResult.tracks[0]);
 			let track = searchResult.tracks[0];
-			if (!queue.playing) {
+			if (!queue.isPlaying()) {
 				embed.setDescription(
 					`Playing first: **${track.title}**, by *${track.author}* (${track.duration})`
 				);
-				await queue.play();
+				await queue.node.play();
 			} else {
 				searchResult.playlist
 					? embed.setDescription('Playlist added to the queue!')

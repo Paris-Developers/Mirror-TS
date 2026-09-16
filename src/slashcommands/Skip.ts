@@ -11,7 +11,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
-import { Queue, QueueRepeatMode } from 'discord-player';
+import { QueueRepeatMode } from 'discord-player';
 
 export class Skip implements SlashCommand {
 	name: string = 'skip';
@@ -32,8 +32,8 @@ export class Skip implements SlashCommand {
 		try {
 			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (!queue || !queue.playing) {
+			let queue = bot.player.nodes.get(interaction.guild!.id);
+			if (!queue || !queue.isPlaying()) {
 				embed.setDescription('There is no music playing!');
 				return void interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 			}
@@ -43,16 +43,16 @@ export class Skip implements SlashCommand {
 			let tracksToSkip = interaction.options.getInteger('number');
 			if (tracksToSkip) {
 				if (tracksToSkip > 15) tracksToSkip = 15;
-				if (tracksToSkip > queue.tracks.length) {
-					tracksToSkip = queue.tracks.length;
+				if (tracksToSkip > queue.tracks.size) {
+					tracksToSkip = queue.tracks.size;
 				}
-				await queue.skipTo(tracksToSkip - 1);
+				queue.node.skipTo(tracksToSkip - 1);
 				embed.setDescription(
 					`${tracksToSkip} tracks skipped by ${interaction.user}`
 				);
 				return void interaction.reply({ embeds: [embed] });
 			} else {
-				await queue.skip();
+				queue.node.skip();
 				embed.setDescription(`Track skipped by ${interaction.user}`);
 				return void interaction.reply({ embeds: [embed] });
 			}

@@ -1,13 +1,7 @@
 import { EventHandler } from './EventHandler';
 import { Bot } from '../Bot';
-import {
-	getVoiceConnection,
-	joinVoiceChannel,
-	createAudioPlayer,
-	createAudioResource,
-	AudioPlayerStatus,
-	AudioPlayerError,
-} from '@discordjs/voice';
+import { existsSync } from 'fs';
+import path from 'path';
 import { VoiceState } from 'discord.js';
 import { silencedUsers } from '../slashcommands/SilenceMember';
 
@@ -18,12 +12,12 @@ export class VoiceStateUpdate implements EventHandler {
 		oldState: VoiceState,
 		newState: VoiceState
 	): Promise<void> {
-		if (newState.member!.user.bot){ 
+		if (newState.member!.user.bot){
 			if(newState.member?.user.id == newState.guild.members.me!.id){
 				if(!newState.channelId){
-					if(bot.player.getQueue(newState.guild)){
-						bot.player.getQueue(newState.guild)?.destroy();
-						return; //if mirror disconnects, destroy the queue. the player.on('disconnect') event is not reliable
+					if(bot.player.nodes.get(newState.guild)){
+						bot.player.nodes.get(newState.guild)?.delete();
+						return; //if mirror disconnects, destroy the queue. the player disconnect event is not reliable
 					}
 				}
 			}
@@ -33,38 +27,16 @@ export class VoiceStateUpdate implements EventHandler {
 		if (newState.channelId != ourId) return; //if the new channel of the user doesnt match mirrors, end
 		if (oldState.channelId == newState.channelId) return; //if the new channel and the old channel are the same, end
 		if (newState.serverMute == true || newState.serverDeaf == true) return; //if the user is server muted or server deafened, end
-		if (bot.player.getQueue(newState.guild)) return; //if there is a player queue available, end TODO? we may want to remove this later
+		if (bot.player.nodes.get(newState.guild)?.isPlaying()) return; //don't play an intro over music
 		let userArray = silencedUsers.ensure(newState.guild!.id, []);
 		if (userArray.includes(newState.member!.id)) return; //if the user is silenced, end
-		let connection = getVoiceConnection(newState.guild.id);
-		if (!connection) {
-			connection = joinVoiceChannel({
-				channelId: newState.channelId!,
-				guildId: newState.guild.id,
-				adapterCreator: newState.guild.voiceAdapterCreator,
-			});
 
-			//code copied from discord#9185
-			//@ts-ignore
-			connection.on("stateChange", (oldState, newState) => {
-				const oldNetworking = Reflect.get(oldState, 'networking');
-				const newNetworking = Reflect.get(newState, 'networking');
-			  
-				const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-				  const newUdp = Reflect.get(newNetworkState, 'udp');
-				  clearInterval(newUdp?.keepAliveInterval);
-				}
-			  
-				oldNetworking?.off('stateChange', networkStateChangeHandler);
-				newNetworking?.on('stateChange', networkStateChangeHandler);
-			  });
-		}
-		let audioPlayer = createAudioPlayer();
-		connection.subscribe(audioPlayer);
-		const intro = createAudioResource(
-			`./data/intros/${newState.guild.id}/${newState.member!.id}.mp4`
+		if (!newState.channel) return; //the channel isn't always cached, and the player needs it
+		const intro = path.resolve(
+			`data/intros/${newState.guild.id}/${newState.member!.id}.mp4`
 		);
-		audioPlayer.play(intro);
+		if (!existsSync(intro)) return; //this user has no intro theme set
+		await bot.player.playFile(newState.channel, intro);
 		return;
 	}
 }

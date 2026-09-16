@@ -24,7 +24,13 @@ export class CustomLogger extends Logger<ILogObj> {
 	}
 
 	logToTransport(logObject: ILogObj & ILogObjMeta) {
-		appendFile(this.savePath, JSON.stringify(logObject) + '\n').catch(
+		//JSON.stringify turns an Error into {}, so pull the useful fields out first
+		const serialized = JSON.stringify(logObject, (_key, value) =>
+			value instanceof Error
+				? { name: value.name, message: value.message, stack: value.stack }
+				: value
+		);
+		appendFile(this.savePath, serialized + '\n').catch(
 			(err) => console.log(err) //something is wrong in logging, print directly to console
 		);
 	}

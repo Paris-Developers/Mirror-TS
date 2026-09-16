@@ -10,9 +10,9 @@ export class DestroyQueue implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
 		try {
-			let queue = bot.player.getQueue(interaction.guild!.id);
+			let queue = bot.player.nodes.get(interaction.guild!.id);
 			if (queue) {
-				queue.destroy();
+				queue.delete();
 			}
 			return void interaction.reply('Reset the queue');
 		} catch (err) {

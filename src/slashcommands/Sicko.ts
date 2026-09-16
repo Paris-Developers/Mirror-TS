@@ -2,18 +2,13 @@
 //Joins the voice channel and plays mirror intro theme?
 
 import {
-	createAudioPlayer,
-	createAudioResource,
-	joinVoiceChannel,
-} from '@discordjs/voice';
-import {
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	CacheType,
 	GuildMember,
 	MessageFlags,
 	PermissionFlagsBits,
 } from 'discord.js';
+import path from 'path';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
@@ -34,20 +29,12 @@ export class Sicko implements SlashCommand {
 				interaction.reply('you are not in a valid voice channel!');
 				return;
 			}
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (queue) {
+			//an idle queue is fine, but don't talk over music that is actually playing
+			if (bot.player.nodes.get(interaction.guild!.id)?.isPlaying()) {
 				interaction.reply('Cant go sicko while music is playing :sob:');
 				return;
 			}
-			const connection = joinVoiceChannel({
-				channelId: state.channelId!,
-				guildId: interaction.guildId!,
-				adapterCreator: interaction.guild!.voiceAdapterCreator,
-			});
-			let audio = createAudioPlayer();
-			connection.subscribe(audio);
-			const mirrormp3 = createAudioResource('./music/sicko.mp3');
-			audio.play(mirrormp3);
+			await bot.player.playFile(state.channel, path.resolve('music/sicko.mp3'));
 			interaction.reply('reply lol');
 			return;
 		} catch (err) {
