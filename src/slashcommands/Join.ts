@@ -31,16 +31,17 @@ export class Join implements SlashCommand {
 				});
 				return;
 			}
+			//joining voice can take longer than the 3 seconds Discord waits for a reply, so acknowledge first
+			await interaction.deferReply({ flags: MessageFlags.Ephemeral }); //hides the reply to anyone but the user
 			//the player joins the channel and plays the greeting out of the music folder
 			await bot.player.playFile(channel, path.resolve('music/mirror.mp3'));
-			interaction.reply({ content: 'success', flags: MessageFlags.Ephemeral }); //hides the reply to anyone but the user
+			interaction.editReply('success');
 			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			const content = 'Error: contact a developer to investigate';
+			if (interaction.deferred) interaction.editReply(content);
+			else interaction.reply({ content, flags: MessageFlags.Ephemeral });
 			return;
 		}
 	}

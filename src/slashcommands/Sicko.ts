@@ -34,15 +34,16 @@ export class Sicko implements SlashCommand {
 				interaction.reply('Cant go sicko while music is playing :sob:');
 				return;
 			}
+			//joining voice can take longer than the 3 seconds Discord waits for a reply, so acknowledge first
+			await interaction.deferReply();
 			await bot.player.playFile(state.channel, path.resolve('music/sicko.mp3'));
-			interaction.reply('reply lol');
+			interaction.editReply('reply lol');
 			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			const content = 'Error: contact a developer to investigate';
+			if (interaction.deferred) interaction.editReply(content);
+			else interaction.reply({ content, flags: MessageFlags.Ephemeral });
 			return;
 		}
 	}

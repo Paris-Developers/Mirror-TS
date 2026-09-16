@@ -28,4 +28,7 @@ let bot = new Bot(
 	config.test_server
 );
 
+// a failed request to Discord, like replying to a command that already timed out, is logged instead of stopping the bot
+process.on('unhandledRejection', (error) => bot.logger.error('Unhandled promise rejection:', error));
+
 bot.start();
