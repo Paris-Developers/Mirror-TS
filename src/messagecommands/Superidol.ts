@@ -2,12 +2,8 @@
 //Joins the voice channel and plays the superidol.mp3 file in the chat
 //SuperIdol的笑容都没你的甜八月正午的阳光都没你耀眼热爱105°c的你滴滴清纯的蒸馏水 :D
 
-import {
-	createAudioPlayer,
-	createAudioResource,
-	joinVoiceChannel,
-} from '@discordjs/voice';
-import { Message, TextChannel, PermissionFlagsBits } from 'discord.js';
+import { Message, PermissionFlagsBits } from 'discord.js';
+import path from 'path';
 import { Bot } from '../Bot';
 import { MessageCommand } from './MessageCommand';
 
@@ -26,17 +22,13 @@ export class Superidol implements MessageCommand {
 		try {
 			let state = message.member!.voice;
 			await message.delete();
-			if (!state.channelId) return;
-			let channel = message.channel as TextChannel;
-			const connection = joinVoiceChannel({
-				channelId: state.channelId,
-				guildId: channel.guild.id,
-				adapterCreator: channel.guild.voiceAdapterCreator,
-			});
-			let player = createAudioPlayer();
-			connection.subscribe(player);
-			const superidolmp3 = createAudioResource('./music/superidol.mp3');
-			player.play(superidolmp3);
+			if (!state.channel) return;
+			//an idle queue is fine, but don't talk over music that is actually playing
+			if (bot.player.nodes.get(state.guild.id)?.isPlaying()) return;
+			await bot.player.playFile(
+				state.channel,
+				path.resolve('music/superidol.mp3')
+			);
 		} catch (err) {
 			bot.logger.commandError(message.channel!.id, this.name, err);
 			message.reply({

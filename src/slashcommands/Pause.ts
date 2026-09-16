@@ -23,12 +23,12 @@ export class Pause implements SlashCommand {
 		try {
 			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (!queue || !queue.playing) {
+			let queue = bot.player.nodes.get(interaction.guild!.id);
+			if (!queue || !queue.isPlaying()) {
 				embed.setDescription('There is no music playing!');
 				return void interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 			}
-			queue.setPaused(true);
+			queue.node.setPaused(true);
 			embed.setDescription(`Music was paused by ${interaction.user}`);
 			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {

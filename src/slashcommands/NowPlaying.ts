@@ -19,16 +19,16 @@ export class NowPlaying implements SlashCommand {
 		try {
 			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (!queue || !queue.playing) {
+			let queue = bot.player.nodes.get(interaction.guild!.id);
+			if (!queue || !queue.isPlaying()) {
 				embed.setDescription('There is no queue!');
 				return void interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 			}
-			let track = queue.nowPlaying();
+			let track = queue.currentTrack!;
 			let trackString = `Now playing | **${track.title}**, by *${track.author}* (${track.duration})`;
 			embed.setDescription(trackString).setFooter({
-				text: `Requested by ${track.requestedBy.tag}`,
-				iconURL: track.requestedBy.avatarURL()!,
+				text: `Requested by ${track.requestedBy?.tag}`,
+				iconURL: track.requestedBy?.avatarURL() ?? undefined,
 			});
 			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {

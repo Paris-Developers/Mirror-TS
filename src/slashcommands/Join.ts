@@ -1,19 +1,13 @@
 //Call: Slash command join
 //Joins the voice channel and plays mirror intro theme!
 import {
-	joinVoiceChannel,
-	createAudioPlayer,
-	createAudioResource,
-	VoiceConnection,
-} from '@discordjs/voice';
-import {
 	CacheType,
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	GuildMember,
 	MessageFlags,
 	PermissionFlagsBits,
 } from 'discord.js';
+import path from 'path';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
@@ -29,30 +23,16 @@ export class Join implements SlashCommand {
 	): Promise<void> {
 		try {
 			let member = interaction.member as GuildMember;
-			let state = member.voice;
-			const connection = joinVoiceChannel({
-				channelId: state.channelId!,
-				guildId: interaction.guildId!,
-				adapterCreator: interaction.guild!.voiceAdapterCreator,
-			});
-			//code copied from discord#9185
-			//@ts-ignore
-			connection.on("stateChange", (oldState, newState) => {
-				const oldNetworking = Reflect.get(oldState, 'networking');
-				const newNetworking = Reflect.get(newState, 'networking');
-			  
-				const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-				  const newUdp = Reflect.get(newNetworkState, 'udp');
-				  clearInterval(newUdp?.keepAliveInterval);
-				}
-			  
-				oldNetworking?.off('stateChange', networkStateChangeHandler);
-				newNetworking?.on('stateChange', networkStateChangeHandler);
-			});		
-			let player = createAudioPlayer();
-			connection.subscribe(player);
-			const mirrormp3 = createAudioResource('./music/mirror.mp3');
-			player.play(mirrormp3);
+			let channel = member.voice.channel;
+			if (!channel) {
+				interaction.reply({
+					content: 'You are not in a voice channel!',
+					flags: MessageFlags.Ephemeral,
+				});
+				return;
+			}
+			//the player joins the channel and plays the greeting out of the music folder
+			await bot.player.playFile(channel, path.resolve('music/mirror.mp3'));
 			interaction.reply({ content: 'success', flags: MessageFlags.Ephemeral }); //hides the reply to anyone but the user
 			return;
 		} catch (err) {

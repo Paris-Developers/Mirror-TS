@@ -20,15 +20,15 @@ export class Queue implements SlashCommand {
 		try {
 			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (!queue || !queue.playing || queue.tracks.length == 0)
+			let queue = bot.player.nodes.get(interaction.guild!.id);
+			if (!queue || !queue.isPlaying() || queue.tracks.size == 0)
 				return void interaction.reply('There is no queue');
 			let ptr = 1;
 			let titleString = '';
 			let artistString = '';
 			let timeString = '';
 			let ptrString = '.';
-			for (let track of queue.tracks) {
+			for (let track of queue.tracks.toArray()) {
 				ptrString = ptr.toString() + ') ';
 				if (track.title.length > 42) {
 					titleString =
@@ -42,18 +42,18 @@ export class Queue implements SlashCommand {
 				if (ptr == 16) break;
 			}
 			let footerText = `${Math.round(
-				queue.totalTime / 1000 / 60 / 60 - 0.5
+				queue.estimatedDuration / 1000 / 60 / 60 - 0.5
 			)} hour(s) ${Math.round(
-				((queue.totalTime / 1000 / 60 / 60) % 1) * 60
+				((queue.estimatedDuration / 1000 / 60 / 60) % 1) * 60
 			)} minutes`;
 			embed
 				.setTitle(`Music queue for ${interaction.guild!.name}`)
 				.addFields(
 					{
 						name: '🎶 | Now Playing',
-						value: `**${queue.nowPlaying().title}**, by *${
-							queue.nowPlaying().author
-						}* (${queue.nowPlaying().duration})`,
+						value: `**${queue.currentTrack!.title}**, by *${
+							queue.currentTrack!.author
+						}* (${queue.currentTrack!.duration})`,
 						inline: false,
 					},
 					{
@@ -73,8 +73,8 @@ export class Queue implements SlashCommand {
 					}
 				)
 				.setColor(colorCheck(interaction.guild!.id,true));
-			if (queue.tracks.length - 16 > 0) {
-				footerText = `${queue.tracks.length - 16} more tracks, ` + footerText;
+			if (queue.tracks.size - 16 > 0) {
+				footerText = `${queue.tracks.size - 16} more tracks, ` + footerText;
 			}
 			embed.setFooter({ text: footerText });
 			return void interaction.reply({ embeds: [embed] });

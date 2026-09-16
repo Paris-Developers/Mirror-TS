@@ -22,12 +22,12 @@ export class Shuffle implements SlashCommand {
 		try {
 			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (!queue || !queue.playing) {
+			let queue = bot.player.nodes.get(interaction.guild!.id);
+			if (!queue || !queue.isPlaying()) {
 				embed.setDescription('There is no music playing!');
 				return void interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 			}
-			await queue.shuffle();
+			queue.tracks.shuffle();
 			embed.setDescription(`Queue has been shuffled by ${interaction.user}`);
 			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {

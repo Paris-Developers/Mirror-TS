@@ -19,8 +19,8 @@ export class ClearQueue implements SlashCommand {
 		try {
 			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
-			let queue = bot.player.getQueue(interaction.guild!.id);
-			if (!queue || !queue.playing) {
+			let queue = bot.player.nodes.get(interaction.guild!.id);
+			if (!queue || !queue.isPlaying()) {
 				embed.setDescription(
 					'There are no songs in the queue or the player is not playing'
 				);

@@ -1,4 +1,3 @@
-import { createAudioPlayer, joinVoiceChannel } from '@discordjs/voice';
 import {
 	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
@@ -87,29 +86,18 @@ export class DefaultVc implements SlashCommand {
 }
 
 export async function launchVoice(bot: Bot): Promise<void> {
-	defaultVc.entries().forEach(([guild, channel]) => {
+	for (const [guild, channel] of defaultVc.entries()) {
 		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
-		if (!guildCheck) return defaultVc.delete(guild);
-		const connection = joinVoiceChannel({
-			channelId: channel,
-			guildId: guildCheck.id,
-			adapterCreator: guildCheck.voiceAdapterCreator,
-		});
-		//code copied from discord#9185
-		//@ts-ignore
-		connection.on("stateChange", (oldState, newState) => {
-			const oldNetworking = Reflect.get(oldState, 'networking');
-			const newNetworking = Reflect.get(newState, 'networking');
-			
-			const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-				const newUdp = Reflect.get(newNetworkState, 'udp');
-				clearInterval(newUdp?.keepAliveInterval);
-			}
-			
-			oldNetworking?.off('stateChange', networkStateChangeHandler);
-			newNetworking?.on('stateChange', networkStateChangeHandler);
-		});
-		let player = createAudioPlayer();
-		connection.subscribe(player);
-	});
+		if (!guildCheck) {
+			defaultVc.delete(guild);
+			continue;
+		}
+		//an idle queue keeps Mirror sitting in the channel, ready for music or intros
+		const queue = bot.player.nodes.create(guildCheck, bot.player.playOptions);
+		try {
+			if (!queue.connection) await queue.connect(channel);
+		} catch (err) {
+			bot.logger.warn(`Could not join the default voice channel in ${guildCheck.name}`);
+		}
+	}
 }

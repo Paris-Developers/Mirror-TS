@@ -14,8 +14,8 @@ export class Loop implements SlashCommand{
         try {
             const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id));
 
-            let queue = bot.player.getQueue(interaction.guild!.id);
-            if(!queue || !queue.playing) {
+            let queue = bot.player.nodes.get(interaction.guild!.id);
+            if(!queue || !queue.isPlaying()) {
                 embed.setDescription('There is no music playing!');
                 return void interaction.reply({embeds: [embed]});
             }
@@ -25,7 +25,7 @@ export class Loop implements SlashCommand{
                 return void interaction.reply({embeds: [embed]});
             }
             queue.setRepeatMode(QueueRepeatMode.TRACK);
-            embed.setDescription(`Now looping **${queue.nowPlaying().title}** by *${queue.nowPlaying().author}*.  Use \`/skip\` to continue the queue`);
+            embed.setDescription(`Now looping **${queue.currentTrack!.title}** by *${queue.currentTrack!.author}*.  Use \`/skip\` to continue the queue`);
             return void interaction.reply({embeds:[embed]});
         }
         catch (err) {
