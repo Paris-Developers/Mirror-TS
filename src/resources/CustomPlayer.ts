@@ -1,6 +1,7 @@
 import { Bot } from '../Bot';
 import { GuildNodeCreateOptions, GuildQueue, Player, QueryType, Track } from 'discord-player';
 import { VoiceBasedChannel } from 'discord.js';
+import config from '../../config.json';
 import { createWriteStream } from 'fs';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
@@ -8,6 +9,12 @@ import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
 import { DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeExtractor } from 'discord-player-youtubei';
+
+//optional, and absent from most config.json files, so it is read defensively
+function youtubeCookie(): string | undefined {
+	const cookie = (config as Record<string, unknown>).youtube_cookie;
+	return typeof cookie === 'string' && cookie.length ? cookie : undefined;
+}
 
 export class CustomPlayer extends Player {
 	constructor(private bot: Bot) {
@@ -23,7 +30,29 @@ export class CustomPlayer extends Player {
 
 	//discord-player 7 ships without YouTube support, so the youtubei extractor provides it
 	async loadExtractors(): Promise<void> {
-		await this.extractors.register(YoutubeExtractor, {});
+		//the extractor reports why a download attempt failed only through debug messages, so
+		//listen before it starts up; without this a failure is just "could not extract stream"
+		this.on('debug', (message) => {
+			//errors come through this event too, despite the string signature
+			const text =
+				typeof message === 'string'
+					? message
+					: String((message as unknown as Error)?.message ?? message);
+			if (text.includes('failed with the method')) {
+				this.bot.logger.warn(text);
+			} else {
+				this.bot.logger.debug(text);
+			}
+		});
+		this.on('error', (error) => this.bot.logger.error(error));
+
+		//the extractor has several ways to fetch audio. yt-dlp goes first because it is the most
+		//reliable from a server, where YouTube treats requests with more suspicion than it does a
+		//home connection. the optional cookie in config.json helps when it asks for a sign in
+		await this.extractors.register(YoutubeExtractor, {
+			downloads: { trialOrder: ['yt-dlp', 'peer', 'adaptive', 'sabr'] },
+			cookie: youtubeCookie(),
+		});
 		await this.extractors.loadMulti(DefaultExtractors);
 		this.bot.logger.info('Loaded music extractors');
 	}

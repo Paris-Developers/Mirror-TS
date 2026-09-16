@@ -58,11 +58,12 @@ export class Intro implements SlashCommand {
 				});
 				return;
 			}
-			//only the first few seconds are kept, so the video itself just has to be a sane length.
-			//a livestream reports no duration, so it fails this check too
-			if (!track.durationMS || track.durationMS > 10 * 60 * 1000) {
+			//only the first few seconds are kept, so length barely matters, and ffmpeg stops on its
+			//own even for a livestream. YouTube sometimes returns a video with no duration at all,
+			//which is not a reason to refuse it, so only a known-long video is turned away
+			if (track.durationMS && track.durationMS > 10 * 60 * 1000) {
 				interaction.editReply({
-					content: 'Please pick a normal video under 10 minutes, not a livestream',
+					content: 'Please pick a video under 10 minutes',
 				});
 				return;
 			}
