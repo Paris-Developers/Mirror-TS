@@ -22,6 +22,7 @@ You must run ./build.bat and restart the bot whenever you make a change to the p
 - A `config.json` in the project folder: copy `config.example.json` and fill it in
 - The **Message Content** intent enabled for the bot in the Discord developer portal (Bot → Privileged Gateway Intents); `$` commands and keywords need it
 - Always start the bot from the project folder, since saved data lives in `./data`
+- Python 3.9 or newer, optionally. It lets `youtube-dl-exec` install, which gives the music player its most reliable way of downloading from YouTube — worth having on a server, where YouTube is stricter than it is with a home connection. Without Python that one package is skipped and the player falls back to its other methods.
 
 ## Upgrading an existing install (discord.js 13 → 14)
 
