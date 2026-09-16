@@ -3,9 +3,10 @@
 
 import {
 	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	Permissions,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
@@ -15,10 +16,10 @@ export class Mirror implements SlashCommand {
 	name: string = 'mirror';
 	description: string = 'Mirror go brrrr';
 	options: (Option | Subcommand)[] = [];
-	requiredPermissions: bigint[] = [Permissions.FLAGS.SEND_MESSAGES];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			interaction.reply(
@@ -28,7 +29,7 @@ export class Mirror implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

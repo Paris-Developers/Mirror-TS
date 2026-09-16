@@ -1,9 +1,10 @@
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
+	MessageFlags,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -17,24 +18,24 @@ export class Pause implements SlashCommand {
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing) {
 				embed.setDescription('There is no music playing!');
-				return interaction.reply({ embeds: [embed], ephemeral: true });
+				return void interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 			}
 			queue.setPaused(true);
 			embed.setDescription(`Music was paused by ${interaction.user}`);
-			return interaction.reply({ embeds: [embed] });
+			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}

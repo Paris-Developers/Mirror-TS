@@ -1,22 +1,24 @@
 import { createAudioPlayer, joinVoiceChannel } from '@discordjs/voice';
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	VoiceChannel,
 	GuildMember,
 	TextChannel,
-	MessageEmbed,
+	EmbedBuilder,
 	Guild,
+	MessageFlags,
+	ApplicationCommandOptionType,
+	PermissionFlagsBits,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
-export let defaultVc = new Enmap('defaultVc');
+export let defaultVc = new Enmap({ name: 'defaultVc' });
 
 export class DefaultVc implements SlashCommand {
 	name: string = 'defaultvc';
@@ -26,25 +28,25 @@ export class DefaultVc implements SlashCommand {
 		new Option(
 			'channel',
 			'The channel you wish to designate as the default',
-			ApplicationCommandOptionTypes.CHANNEL,
+			ApplicationCommandOptionType.Channel,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let member = interaction.member as GuildMember;
 			if (
 				!(interaction.channel instanceof TextChannel) ||
-				!member.permissionsIn(interaction.channel!).has('ADMINISTRATOR')
+				!member.permissionsIn(interaction.channel!).has(PermissionFlagsBits.Administrator)
 			) {
 				interaction.reply({
 					content:
 						'This command is only for people with Administrator permissions',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			}
@@ -52,19 +54,19 @@ export class DefaultVc implements SlashCommand {
 			if (!(channel instanceof VoiceChannel)) {
 				interaction.reply({
 					content: 'Channel must be a voice channel',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			}
-			if (!interaction.guild?.me?.permissionsIn(channel.id).has('CONNECT')) {
+			if (!interaction.guild?.members.me?.permissionsIn(channel.id).has(PermissionFlagsBits.Connect)) {
 				interaction.reply({
 					content: 'I do not have permission to Connect to that VC',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			}
 			defaultVc.set(interaction.guild!.id, channel.id);
-			let embed = new MessageEmbed()
+			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
 					`Sucessfully updated your default voice channel to ${channel}`
@@ -75,7 +77,7 @@ export class DefaultVc implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}
@@ -85,7 +87,7 @@ export class DefaultVc implements SlashCommand {
 }
 
 export async function launchVoice(bot: Bot): Promise<void> {
-	defaultVc.forEach((channel, guild) => {
+	defaultVc.entries().forEach(([guild, channel]) => {
 		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
 		if (!guildCheck) return defaultVc.delete(guild);
 		const connection = joinVoiceChannel({

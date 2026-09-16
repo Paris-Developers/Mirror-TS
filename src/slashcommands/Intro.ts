@@ -3,16 +3,16 @@
 import {
 	CacheType,
 	ChatInputApplicationCommandData,
-	CommandInteraction,
+	ChatInputCommandInteraction,
+	MessageFlags,
+	ApplicationCommandOptionType,
 } from 'discord.js';
 import fs from 'fs';
-import ytdl from 'ytdl-core';
-import mkdirp from 'mkdirp';
+import ytdl from '@distube/ytdl-core';
 import { SlashCommand } from './SlashCommand';
 import { Bot } from '../Bot';
 import { silencedUsers } from './SilenceMember';
 import { Option, Subcommand } from './Option';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 
 interface Format {
 	approxDurationMs: number;
@@ -25,24 +25,24 @@ export class Intro implements SlashCommand {
 		new Option(
 			'video',
 			'Youtube link to intro',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			true
 		),
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
 			if (userArray.includes(interaction.user.id)) {
-				return interaction.reply({
+				return void interaction.reply({
 					content: 'Silenced users cannot use this command',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 			}
-			await interaction.deferReply({ ephemeral: true });
+			await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 			const url = interaction.options.getString('video');
 			//TODO: validate the correct videos.
 			const info = await ytdl.getInfo(url!);
@@ -53,7 +53,7 @@ export class Intro implements SlashCommand {
 				});
 				return;
 			}
-			await mkdirp(`./data/intros/${interaction.guild!.id}`);
+			await fs.promises.mkdir(`./data/intros/${interaction.guild!.id}`, { recursive: true });
 			let writeStream = fs.createWriteStream(
 				`./data/intros/${interaction.guild!.id}/${interaction.user.id}.mp4`
 			);

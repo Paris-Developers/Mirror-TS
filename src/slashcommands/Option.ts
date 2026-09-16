@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
+import { ApplicationCommandOptionType } from 'discord.js';
 
 type Choices = {
 	name: string;
@@ -65,7 +65,7 @@ export class Subcommand {
 	_name: string;
 	_description: string;
 	_options: Array<Option> | undefined;
-	_type: number = ApplicationCommandOptionTypes.SUB_COMMAND;
+	_type: number = ApplicationCommandOptionType.Subcommand;
 
 	constructor(name: string, description: string, options?: Array<Option>) {
 		this._name = name;

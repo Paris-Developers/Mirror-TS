@@ -1,10 +1,11 @@
 import {
 	ApplicationCommandDataResolvable,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	Message,
-	MessageEmbed,
+	EmbedBuilder,
 	GuildMember,
+	MessageFlags,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -15,13 +16,13 @@ export class Queue implements SlashCommand {
 	description: string = 'View the music queue';
 	options = [];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id,true));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id,true));
 
 			let queue = bot.player.getQueue(interaction.guild!.id);
 			if (!queue || !queue.playing || queue.tracks.length == 0)
-				return interaction.reply('There is no queue');
+				return void interaction.reply('There is no queue');
 			let ptr = 1;
 			let titleString = '';
 			let artistString = '';
@@ -76,12 +77,12 @@ export class Queue implements SlashCommand {
 				footerText = `${queue.tracks.length - 16} more tracks, ` + footerText;
 			}
 			embed.setFooter({ text: footerText });
-			return interaction.reply({ embeds: [embed] });
+			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			return void interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 	}

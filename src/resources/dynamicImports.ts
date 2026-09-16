@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
+import { pathToFileURL } from 'url';
 import { Bot } from '../Bot';
 
 let promisedReaddir = promisify(fs.readdir);
@@ -13,8 +14,8 @@ export async function importSlashCommands(bot: Bot) {
 		if (!file.endsWith('.js')) continue;
 		// if it's the base classes, ignore it
 		if (file == 'SlashCommand.js' || file == 'Option.js') continue;
-		// get all the exports from the file
-		let module = await import(`${__dirname}/../slashcommands/${file}`);
+		// get all the exports from the file (import() needs a file:// URL on Windows)
+		let module = await import(pathToFileURL(path.join(__dirname, '..', 'slashcommands', file)).href);
 		// make a new object using the exported class
 		let command = new module[path.parse(file).name]();
 		let commandName = command.name;
@@ -29,7 +30,7 @@ export async function importMessageCommands(bot: Bot) {
 	for (let file of files) {
 		if (!file.endsWith('.js')) continue;
 		if (file == 'MessageCommand.js' || file == 'MessageCommands.js') continue;
-		let module = await import(`${__dirname}/../messagecommands/${file}`);
+		let module = await import(pathToFileURL(path.join(__dirname, '..', 'messagecommands', file)).href);
 		let command = new module[path.parse(file).name]();
 		let commandName = command.name;
 		bot.logger.info(`Loaded message command ${commandName}`);
@@ -41,7 +42,7 @@ export async function importKeywords(bot: Bot) {
 	for (let file of files) {
 		if (!file.endsWith('.js')) continue;
 		if (file == 'Keyword.js' || file == 'Keywords.js') continue;
-		let module = await import(`${__dirname}/../keywords/${file}`);
+		let module = await import(pathToFileURL(path.join(__dirname, '..', 'keywords', file)).href);
 		let keyword = new module[path.parse(file).name]();
 		let keywordName = keyword.name;
 		bot.logger.info(`Loaded keyword ${keywordName}`);

@@ -1,12 +1,13 @@
 //Call: Slash command banintro
 //Removes a selected users intro
 import {
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	GuildMember,
 	TextChannel,
+	MessageFlags,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { unlink } from 'fs';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
@@ -20,14 +21,14 @@ export class RemoveIntro implements SlashCommand {
 		new Option(
 			'user',
 			'Member to remove intro',
-			ApplicationCommandOptionTypes.USER,
+			ApplicationCommandOptionType.User,
 			true
 		),
 	];
 	public requiredPermissions = [];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let badUser = interaction.options.getUser('user');
@@ -38,7 +39,7 @@ export class RemoveIntro implements SlashCommand {
 			);
 			await interaction.reply({
 				content: 'Intro successfully deleted',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		} catch (err: any) {
 			if (err.code == 'ENOENT') {
@@ -46,14 +47,14 @@ export class RemoveIntro implements SlashCommand {
 					content: `${interaction.options.getUser(
 						'user'
 					)} does not have an intro.`,
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			} else {
 				bot.logger.commandError(interaction.channel!.id, this.name, err);
 				interaction.reply({
 					content: 'Error detected, contact an admin for further details.',
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			}

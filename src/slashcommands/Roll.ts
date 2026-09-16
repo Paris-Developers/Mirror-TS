@@ -1,10 +1,11 @@
 import {
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CacheType,
 	RichPresenceAssets,
-	MessageEmbed,
+	EmbedBuilder,
+	MessageFlags,
+	ApplicationCommandOptionType,
 } from 'discord.js';
-import { ApplicationCommandOptionTypes } from 'discord.js/typings/enums';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
@@ -17,14 +18,14 @@ export class Roll implements SlashCommand {
 		new Option(
 			'roll',
 			'the dice you want to roll',
-			ApplicationCommandOptionTypes.STRING,
+			ApplicationCommandOptionType.String,
 			false
 		),
 	];
 	requiredPermissions: bigint[] = [];
-	run(bot: Bot, interaction: CommandInteraction<CacheType>): Promise<void> {
+	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
 		try {
-			const embed = new MessageEmbed().setColor(colorCheck(interaction.guild!.id));
+			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id));
 			if (interaction.options.getString('roll')) {
 				if (interaction.options.getString('roll') == '1dbbq') {
 					if (Math.floor(Math.random() * 2 + 0.99) == 1) {
@@ -36,7 +37,7 @@ export class Roll implements SlashCommand {
 					} else {
 						embed.setDescription('No barbeque :sob:');
 					}
-					return interaction.reply({ embeds: [embed] });
+					return void interaction.reply({ embeds: [embed] });
 				}
 				let array = interaction.options.getString('roll')?.split('+');
 				let rollTotal = 0;
@@ -44,14 +45,14 @@ export class Roll implements SlashCommand {
 				for (let x of array!) {
 					let subStrings = x.split('-');
 					if (subStrings.length != 1) {
-						return interaction.reply('L');
+						return void interaction.reply('L');
 					}
 					let dStrings = x.split('d');
 					let y = 0;
 					while (y < parseInt(dStrings[0])) {
 						let one = Math.floor((Math.random() * 100) / parseInt(dStrings[1]));
 						if (isNaN(one)) {
-							return interaction.reply({
+							return void interaction.reply({
 								content: 'Invalid syntax, try something like "2d12"',
 							});
 						}
@@ -66,14 +67,14 @@ export class Roll implements SlashCommand {
 				embed
 					.setTitle(interaction.options.getString('roll')!)
 					.setDescription(rollString);
-				return interaction.reply({ embeds: [embed] });
+				return void interaction.reply({ embeds: [embed] });
 			}
-			return interaction.reply(Math.floor(Math.random() * 6 + 0.99).toString());
+			return void interaction.reply(Math.floor(Math.random() * 6 + 0.99).toString());
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return interaction.reply({
+			return void interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 	}

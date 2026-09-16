@@ -3,11 +3,11 @@
 import {
 	CacheType,
 	ChatInputApplicationCommandData,
-	CommandInteraction,
-	MessageEmbed,
-	Permissions,
+	ChatInputCommandInteraction,
+	EmbedBuilder,
+	MessageFlags,
+	PermissionFlagsBits,
 } from 'discord.js';
-import fetch from 'node-fetch';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { SlashCommand } from './SlashCommand';
@@ -17,17 +17,17 @@ export class Kanye implements SlashCommand {
 	description: string = 'Kanye';
 	options = [];
 	requiredPermissions: bigint[] = [
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.EMBED_LINKS,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.EmbedLinks,
 	];
 	async run(
 		bot: Bot,
-		interaction: CommandInteraction<CacheType>
+		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
 			let res = await fetch(`https://api.kanye.rest/`);
 			let jsonData = await res.json();
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(`**${jsonData.quote}**`)
 				.setFooter({
@@ -39,7 +39,7 @@ export class Kanye implements SlashCommand {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
 				content: 'Error: contact a developer to investigate',
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}
