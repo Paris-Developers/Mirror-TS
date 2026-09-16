@@ -32,6 +32,7 @@ export class Leave implements SlashCommand {
 				});
 				return;
 			}
+			bot.player.nodes.get(interaction.guild!.id)?.delete();
 			mirrorVoice.disconnect();
 			interaction.reply('Left the voice channel :wave:');
 			return;

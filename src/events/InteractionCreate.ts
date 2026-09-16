@@ -1,4 +1,3 @@
-import { joinVoiceChannel } from '@discordjs/voice';
 import {
 	ChatInputCommandInteraction,
 	GuildMember,

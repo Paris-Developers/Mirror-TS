@@ -1,7 +1,9 @@
-import { joinVoiceChannel } from "@discordjs/voice";
 import { ChatInputCommandInteraction, GuildMember, EmbedBuilder, MessageFlags } from "discord.js";
 import { Bot } from "../Bot";
 import { colorCheck } from "./embedColorCheck";
+
+//these commands join the caller's channel themselves, so Mirror doesn't have to be connected yet
+const connectsItself = ["play", "playnext", "join", "sicko", "munch"];
 
 export function voiceCommandCheck(bot: Bot, interaction: ChatInputCommandInteraction): boolean {
     let member = interaction.member as GuildMember;
@@ -17,20 +19,12 @@ export function voiceCommandCheck(bot: Bot, interaction: ChatInputCommandInterac
 
     //if mirror is not connected to voice
     if (!interaction.guild!.members.me?.voice.channel) {
-        const cmdCatches = ["play","playNext","join","sicko"];
-        if(cmdCatches.includes(interaction.commandName)){
-            joinVoiceChannel({
-                channelId: state.id!,
-                guildId: interaction.guildId!,
-                adapterCreator: interaction.guild!.voiceAdapterCreator,
-            });
-        } else {
-            embed.setDescription(
-                'Mirror is not connected to a voice channel, use `/join`'
-            );
-            interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
-            return false;
-        }
+        if (connectsItself.includes(interaction.commandName)) return true;
+        embed.setDescription(
+            'Mirror is not connected to a voice channel, use `/join`'
+        );
+        interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+        return false;
     }
     //if the user is not connected to the correct voice, end
     else if (interaction.guild!.members.me?.voice.channel!.id != state.id) {

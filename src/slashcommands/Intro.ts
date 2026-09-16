@@ -2,29 +2,28 @@
 //Sets an intro theme for a user. Youtube link
 import {
 	CacheType,
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	MessageFlags,
 	ApplicationCommandOptionType,
 } from 'discord.js';
+import { QueryType } from 'discord-player';
 import fs from 'fs';
-import ytdl from '@distube/ytdl-core';
+import path from 'path';
 import { SlashCommand } from './SlashCommand';
 import { Bot } from '../Bot';
 import { silencedUsers } from './SilenceMember';
 import { Option, Subcommand } from './Option';
 
-interface Format {
-	approxDurationMs: number;
-}
+//how much of the chosen video is kept and played back
+const INTRO_SECONDS = 5;
 
 export class Intro implements SlashCommand {
 	name: string = 'intro';
-	description: string = 'Set your intro theme, must be a Youtube video under 10 seconds';
+	description: string = 'Set your intro theme from a Youtube video, the first 5 seconds are used';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'video',
-			'Youtube link to intro',
+			'Youtube link to intro, only its first 5 seconds are kept',
 			ApplicationCommandOptionType.String,
 			true
 		),
@@ -43,50 +42,43 @@ export class Intro implements SlashCommand {
 				});
 			}
 			await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-			const url = interaction.options.getString('video');
-			//TODO: validate the correct videos.
-			const info = await ytdl.getInfo(url!);
-			let format = info.player_response.streamingData.formats[0] as Format;
-			if (format.approxDurationMs > 12 * 1000) {
+			const url = interaction.options.getString('video')!;
+
+			//resolved through the same youtube library the music commands use
+			const search = await bot.player
+				.search(url, {
+					requestedBy: interaction.user,
+					searchEngine: QueryType.AUTO,
+				})
+				.catch(() => null);
+			const track = search?.tracks[0];
+			if (!track) {
 				interaction.editReply({
-					content: 'Video is too long, select something 10 seconds or shorter',
+					content: 'Please enter a valid youtube link',
 				});
 				return;
 			}
-			await fs.promises.mkdir(`./data/intros/${interaction.guild!.id}`, { recursive: true });
-			let writeStream = fs.createWriteStream(
-				`./data/intros/${interaction.guild!.id}/${interaction.user.id}.mp4`
-			);
-			let downloadStream = ytdl(url!, {
-				filter: (format) => format.itag === 140,
-			});
-			downloadStream.pipe(writeStream);
-			writeStream.on('finish', () => {
+			//only the first few seconds are kept, so the video itself just has to be a sane length.
+			//a livestream reports no duration, so it fails this check too
+			if (!track.durationMS || track.durationMS > 10 * 60 * 1000) {
 				interaction.editReply({
-					content: 'Sucessfully updated your intro theme!',
+					content: 'Please pick a normal video under 10 minutes, not a livestream',
 				});
 				return;
+			}
+
+			const folder = path.resolve(`data/intros/${interaction.guild!.id}`);
+			await fs.promises.mkdir(folder, { recursive: true });
+			await bot.player.downloadTrack(
+				track,
+				path.join(folder, `${interaction.user.id}.mp4`),
+				INTRO_SECONDS
+			);
+			interaction.editReply({
+				content: `Sucessfully updated your intro theme! The first ${INTRO_SECONDS} seconds of **${track.title}** will play when you join.`,
 			});
 			return;
 		} catch (err: any) {
-			if (err.message == "This is a private video. Please sign in to verify that you may see it."){
-				interaction.editReply('Video is private, please use another video that I can access');
-				return;
-			}
-			if (err.message.substr(0,18) == 'No video id found:'){
-				interaction.editReply('Please enter a valid youtube link');
-				return;
-			}
-			if (err == 'Error: Not a YouTube domain') {
-				interaction.editReply('Please enter a valid youtube link');
-				return;
-			}
-			if (err.message == 'Status code: 410') {
-				interaction.editReply(
-					'Your video is private or age restricted, please choose another'
-				);
-				return;
-			}
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.editReply({
 				content: 'Error detected, contact an admin to investigate.',

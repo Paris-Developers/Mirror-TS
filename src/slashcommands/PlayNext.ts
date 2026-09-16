@@ -9,7 +9,6 @@ import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { QueryType } from 'discord-player';
 import { SlashCommand } from './SlashCommand';
-import { joinVoiceChannel } from '@discordjs/voice';
 import { colorCheck } from '../resources/embedColorCheck';
 
 export class PlayNext implements SlashCommand {
@@ -40,13 +39,13 @@ export class PlayNext implements SlashCommand {
 			if (!searchResult || !searchResult.tracks.length)
 				return void interaction.editReply('no results were found');
 
-			const queue = await bot.player.createQueue(guild!, bot.player.playOptions);
+			const queue = bot.player.nodes.create(guild!, bot.player.playOptions);
 
 			await guild?.members.fetch(interaction.user.id);
 			try {
 				if (!queue.connection) await queue.connect(member?.voice.channel!);
 			} catch {
-				void bot.player.deleteQueue(guild!.id);
+				void bot.player.nodes.delete(guild!.id);
 				return void interaction.editReply('Could not join your voice channel');
 			}
 
@@ -63,22 +62,22 @@ export class PlayNext implements SlashCommand {
 					`Playing next: **${searchResult.tracks[0].title}** by, *${searchResult.tracks[0].author}*`
 				)
 				.setFooter({
-					text: `Requested by ${searchResult.tracks[0].requestedBy.tag}`,
-					iconURL: searchResult.tracks[0].requestedBy.avatarURL()!,
+					text: `Requested by ${searchResult.tracks[0].requestedBy?.tag}`,
+					iconURL: searchResult.tracks[0].requestedBy?.avatarURL() ?? undefined,
 				});
 			await interaction.editReply({ embeds: [embed] });
 
 			if (searchResult.playlist) {
-				queue.addTracks(searchResult.tracks.slice(1, -1));
+				queue.addTrack(searchResult.tracks.slice(1, -1));
 			}
-			queue.insert(searchResult.tracks[0], 0);
+			queue.insertTrack(searchResult.tracks[0], 0);
 
 			let track = searchResult.tracks[0];
-			if (!queue.playing) {
+			if (!queue.isPlaying()) {
 				embed.setDescription(
 					`Playing next: **${track.title}**, by *${track.author}* (${track.duration})`
 				);
-				await queue.play();
+				await queue.node.play();
 			} else {
 				searchResult.playlist
 					? embed.setDescription('Playlist added to the queue!')
