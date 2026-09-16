@@ -9,6 +9,7 @@ import {
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
+import { commandsUsed } from '../resources/metrics';
 import { voiceCommandCheck } from '../resources/voiceCommandCheck';
 import { silenceCheck } from '../slashcommands/SilenceRole';
 import { EventHandler } from './EventHandler';
@@ -26,6 +27,10 @@ export class InteractionCreate implements EventHandler {
 
 		//we didn't find it, exit
 		if (!command) return;
+		commandsUsed.inc({
+			command: command.name,
+			guild: interaction.guild?.name ?? 'direct message',
+		});
 
 		//if the command needs to be run in a server setting
 		if (command.guildRequired) {

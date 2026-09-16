@@ -27,6 +27,7 @@
 		"mediaplex": "^1.0.0",
 		"node-cron": "^4.6.0",
 		"pm2": "^7.0.4",
+		"prom-client": "^15.1.3",
 		"simple-ytdl-core": "^1.1.1",
 		"tslog": "^5.2.0"
 	},

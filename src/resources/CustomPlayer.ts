@@ -9,6 +9,7 @@ import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
 import { AttachmentExtractor, DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeExtractor } from 'discord-player-youtubei';
+import { playerErrors, tracksStarted } from './metrics';
 
 //these settings are optional and absent from most config.json files, so they are read defensively
 function configValue(key: string): string | undefined {
@@ -161,7 +162,10 @@ export class CustomPlayer extends Player {
 		this.events.on('disconnect', (queue) => this.discardQueue(queue));
 		this.events.on('emptyChannel', (queue) => this.discardQueue(queue));
 
+		this.events.on('playerStart', (queue) => tracksStarted.inc({ guild: queue.guild.name }));
+
 		this.events.on('error', (queue, error) => {
+			playerErrors.inc({ kind: 'queue' });
 			this.discardQueue(queue);
 			this.bot.logger.error(
 				`[${queue.guild.name}] Error emitted from the queue: ${error.message}`
@@ -170,6 +174,7 @@ export class CustomPlayer extends Player {
 
 		//one failing track should not kill the queue, so move on to the next one
 		this.events.on('playerError', (queue, error) => {
+			playerErrors.inc({ kind: 'track' });
 			queue.node.skip();
 			this.bot.logger.error(
 				`[${queue.guild.name}] Error emitted from the player: ${error.message}`
