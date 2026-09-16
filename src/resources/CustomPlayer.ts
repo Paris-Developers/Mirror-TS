@@ -10,10 +10,10 @@ import ffmpegPath from 'ffmpeg-static';
 import { DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeExtractor } from 'discord-player-youtubei';
 
-//optional, and absent from most config.json files, so it is read defensively
-function youtubeCookie(): string | undefined {
-	const cookie = (config as Record<string, unknown>).youtube_cookie;
-	return typeof cookie === 'string' && cookie.length ? cookie : undefined;
+//these settings are optional and absent from most config.json files, so they are read defensively
+function configValue(key: string): string | undefined {
+	const value = (config as Record<string, unknown>)[key];
+	return typeof value === 'string' && value.length ? value : undefined;
 }
 
 export class CustomPlayer extends Player {
@@ -50,8 +50,11 @@ export class CustomPlayer extends Player {
 		//reliable from a server, where YouTube treats requests with more suspicion than it does a
 		//home connection. the optional cookie in config.json helps when it asks for a sign in
 		await this.extractors.register(YoutubeExtractor, {
-			downloads: { trialOrder: ['yt-dlp', 'peer', 'adaptive', 'sabr'] },
-			cookie: youtubeCookie(),
+			downloads: {
+				trialOrder: ['yt-dlp', 'peer', 'adaptive', 'sabr'],
+				ytdlp: { cookiePath: configValue('youtube_cookie_file') },
+			},
+			cookie: configValue('youtube_cookie'),
 		});
 		await this.extractors.loadMulti(DefaultExtractors);
 		this.bot.logger.info('Loaded music extractors');

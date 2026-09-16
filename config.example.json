@@ -6,6 +6,7 @@
 	"message": "",
 	"owner": "YOUR_DISCORD_USER_ID",
 	"youtube_cookie": "",
+	"youtube_cookie_file": "",
 	"nasa_token": "",
 	"stock_token": "",
 	"weather_token": ""
