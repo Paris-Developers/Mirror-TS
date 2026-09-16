@@ -1,13 +1,13 @@
 import { Bot } from '../Bot';
 import { GuildNodeCreateOptions, GuildQueue, Player, QueryType, Track } from 'discord-player';
-import { VoiceBasedChannel } from 'discord.js';
+import { User, VoiceBasedChannel } from 'discord.js';
 import config from '../../config.json';
 import { createWriteStream } from 'fs';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
-import { DefaultExtractors } from '@discord-player/extractor';
+import { AttachmentExtractor, DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeExtractor } from 'discord-player-youtubei';
 
 //these settings are optional and absent from most config.json files, so they are read defensively
@@ -58,6 +58,19 @@ export class CustomPlayer extends Player {
 		});
 		await this.extractors.loadMulti(DefaultExtractors);
 		this.bot.logger.info('Loaded music extractors');
+	}
+
+	//looks up a song name or link typed by a user (/play, /playnext, /intro).
+	//links from YouTube, Spotify, SoundCloud and the like go through their own extractors, but any
+	//other link would be downloaded by the attachment extractor straight from wherever it points.
+	//that would let anyone who can use the bot see the host's IP address, or make it send requests to
+	//devices on the host's own network, so that extractor is left out of anything a user types
+	async searchFromUser(query: string, requestedBy: User) {
+		return this.search(query, {
+			requestedBy,
+			searchEngine: QueryType.AUTO,
+			blockExtractors: [AttachmentExtractor.identifier],
+		});
 	}
 
 	//plays a sound file from disk (intro themes, the sound effect commands).
