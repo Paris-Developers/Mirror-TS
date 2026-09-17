@@ -6,7 +6,6 @@ import {
 	MessageFlags,
 	ApplicationCommandOptionType,
 } from 'discord.js';
-import { QueryType } from 'discord-player';
 import fs from 'fs';
 import path from 'path';
 import { SlashCommand } from './SlashCommand';
@@ -46,10 +45,7 @@ export class Intro implements SlashCommand {
 
 			//resolved through the same youtube library the music commands use
 			const search = await bot.player
-				.search(url, {
-					requestedBy: interaction.user,
-					searchEngine: QueryType.AUTO,
-				})
+				.searchFromUser(url, interaction.user)
 				.catch(() => null);
 			const track = search?.tracks[0];
 			if (!track) {

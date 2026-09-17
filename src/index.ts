@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { Bot } from './Bot';
+import { unhandledRejections } from './resources/metrics';
 //@ts-ignore:next-line
 import config from '../config.json';
 
@@ -27,5 +28,11 @@ let bot = new Bot(
 	config.mode,
 	config.test_server
 );
+
+// a failed request to Discord, like replying to a command that already timed out, is logged instead of stopping the bot
+process.on('unhandledRejection', (error) => {
+	unhandledRejections.inc();
+	bot.logger.error('Unhandled promise rejection:', error);
+});
 
 bot.start();

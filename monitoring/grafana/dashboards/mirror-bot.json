@@ -1,0 +1,1809 @@
+{
+	"uid": "mirror-bot",
+	"title": "Mirror bot",
+	"description": "What the Mirror Discord bot is doing and what it costs the PC. Only the bot and the programs it starts are counted.",
+	"tags": [
+		"mirror"
+	],
+	"timezone": "browser",
+	"editable": false,
+	"graphTooltip": 1,
+	"refresh": "30s",
+	"time": {
+		"from": "now-24h",
+		"to": "now"
+	},
+	"timepicker": {},
+	"templating": {
+		"list": [
+			{
+				"type": "textbox",
+				"name": "isp_gb",
+				"label": "Your internet provider's total for this month (GB)",
+				"description": "The data used this month according to your internet provider or router, in GB. Used for the share panel only.",
+				"query": "0",
+				"current": {
+					"text": "0",
+					"value": "0"
+				},
+				"options": [
+					{
+						"selected": true,
+						"text": "0",
+						"value": "0"
+					}
+				],
+				"hide": 0
+			}
+		]
+	},
+	"annotations": {
+		"list": []
+	},
+	"schemaVersion": 39,
+	"version": 1,
+	"panels": [
+		{
+			"id": 1,
+			"type": "row",
+			"title": "Right now",
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 0
+			},
+			"panels": []
+		},
+		{
+			"id": 2,
+			"type": "stat",
+			"title": "Servers playing music",
+			"description": "Servers where Mirror is playing audio at this moment.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 4,
+				"x": 0,
+				"y": 1
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "mirror_queues_playing",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 3,
+			"type": "stat",
+			"title": "Voice channels joined",
+			"description": "Servers where Mirror is sitting in a voice channel, playing or not.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 4,
+				"x": 4,
+				"y": 1
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "mirror_voice_connections",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 4,
+			"type": "stat",
+			"title": "Servers",
+			"description": "Servers Mirror is in.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 4,
+				"x": 8,
+				"y": 1
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "mirror_guilds",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 5,
+			"type": "stat",
+			"title": "Discord ping",
+			"description": "Round trip time to Discord's gateway.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 4,
+				"x": 12,
+				"y": 1
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "mirror_gateway_ping_milliseconds",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "ms",
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "unknown"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "area",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 6,
+			"type": "stat",
+			"title": "Bot uptime",
+			"description": "Time since the bot last started. The weekly refresh restarts it on Mondays at 5 AM.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 4,
+				"x": 16,
+				"y": 1
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "time() - mirror_process_start_time_seconds",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "dtdurations",
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "offline"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 7,
+			"type": "stat",
+			"title": "Bot memory",
+			"description": "Memory used by the bot process itself.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 4,
+				"x": 20,
+				"y": 1
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "mirror_process_resident_memory_bytes",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "bytes",
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "offline"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "area",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 8,
+			"type": "row",
+			"title": "PC resources used by the bot (only programs run by the mirrorbot account)",
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 5
+			},
+			"panels": []
+		},
+		{
+			"id": 9,
+			"type": "timeseries",
+			"title": "CPU, as a share of the whole PC",
+			"description": "CPU used by the bot (node) and the programs it starts for each song: yt-dlp downloads audio and ffmpeg converts it. 100% would be every core on the PC. Only processes run by the mirrorbot account are counted, so games and Moonlight never show up here.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 8,
+				"x": 0,
+				"y": 6
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sum by (process) (rate(windows_process_cpu_time_total[$__rate_interval]) * on(process_id) group_left() windows_process_info{owner=~\"(?i).*mirrorbot.*\"}) / scalar(count(windows_cpu_time_total{mode=\"idle\"})) * 100",
+					"legendFormat": "{{process}}",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "percent",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "normal",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			}
+		},
+		{
+			"id": 10,
+			"type": "timeseries",
+			"title": "Memory, as a share of the whole PC",
+			"description": "Memory used by the bot and its helper programs, as a share of the PC's installed memory. Only processes run by the mirrorbot account are counted.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 8,
+				"x": 8,
+				"y": 6
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sum by (process) (windows_process_working_set_private_bytes * on(process_id) group_left() windows_process_info{owner=~\"(?i).*mirrorbot.*\"}) / scalar(windows_memory_physical_total_bytes) * 100",
+					"legendFormat": "{{process}}",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "percent",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "normal",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			}
+		},
+		{
+			"id": 11,
+			"type": "timeseries",
+			"title": "Memory by program",
+			"description": "Memory used by the bot and its helper programs, counting only memory that belongs to each program.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 8,
+				"x": 16,
+				"y": 6
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sum by (process) (windows_process_working_set_private_bytes * on(process_id) group_left() windows_process_info{owner=~\"(?i).*mirrorbot.*\"})",
+					"legendFormat": "{{process}}",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "bytes",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "normal",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			}
+		},
+		{
+			"id": 12,
+			"type": "row",
+			"title": "Internet data used by the bot (compare with the monthly total your internet provider shows)",
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 14
+			},
+			"panels": []
+		},
+		{
+			"id": 13,
+			"type": "stat",
+			"title": "Today",
+			"description": "Internet data the bot used since midnight. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 4,
+				"x": 0,
+				"y": 15
+			},
+			"timeFrom": "now/d",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round((sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))))",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"decimals": 2,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 14,
+			"type": "stat",
+			"title": "This month so far",
+			"description": "Internet data the bot used since the 1st of this month. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 5,
+				"x": 4,
+				"y": 15
+			},
+			"timeFrom": "now/M",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round((sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))))",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"decimals": 2,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 15,
+			"type": "stat",
+			"title": "Last month",
+			"description": "Internet data the bot used during all of last month. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 5,
+				"x": 9,
+				"y": 15
+			},
+			"timeFrom": "now/M",
+			"timeShift": "1M/M",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round((sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))))",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"decimals": 2,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 16,
+			"type": "stat",
+			"title": "Last 30 days",
+			"description": "Internet data the bot used over the last 30 days. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 5,
+				"x": 14,
+				"y": 15
+			},
+			"timeFrom": "30d",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round((sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))))",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"decimals": 2,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 17,
+			"type": "stat",
+			"title": "Bot's share of this month's data",
+			"description": "This month's bot data as a share of the total your internet provider shows for this month. Type that total, in GB, into the box at the top of the dashboard.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 5,
+				"x": 19,
+				"y": 15
+			},
+			"timeFrom": "now/M",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "(sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))) / ($isp_gb * 1e9) * 100 and on() (vector($isp_gb) > 0)",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "percent",
+					"decimals": 1,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "Enter your provider total above"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 18,
+			"type": "bargauge",
+			"title": "What used the data this month",
+			"description": "Where the bot's internet data went since the 1st of this month.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 8,
+				"x": 0,
+				"y": 19
+			},
+			"timeFrom": "now/M",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sum(increase(mirror_song_download_bytes_total[$__range]))",
+					"legendFormat": "Song downloads (YouTube)",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "B",
+					"expr": "sum(increase(mirror_network_bytes_total{protocol=\"udp\"}[$__range])) + 28 * sum(increase(mirror_network_packets_total{protocol=\"udp\"}[$__range]))",
+					"legendFormat": "Voice audio",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "C",
+					"expr": "sum(increase(mirror_network_bytes_total{protocol=\"tcp\"}[$__range]))",
+					"legendFormat": "Discord and web APIs",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"min": 0,
+					"decimals": 2,
+					"color": {
+						"mode": "continuous-blues"
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"orientation": "horizontal",
+				"displayMode": "basic",
+				"showUnfilled": true,
+				"valueMode": "text",
+				"namePlacement": "top",
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				}
+			}
+		},
+		{
+			"id": 19,
+			"type": "timeseries",
+			"title": "Data used per day",
+			"description": "Internet data the bot used per day over the last 30 days. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 16,
+				"x": 8,
+				"y": 19
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "(sum(increase(mirror_network_bytes_total[1d])) + 28 * sum(increase(mirror_network_packets_total[1d])) + sum(increase(mirror_song_download_bytes_total[1d])))",
+					"legendFormat": "Internet data used in the 24 hours before each bar",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"min": 0,
+					"custom": {
+						"drawStyle": "bars",
+						"lineWidth": 1,
+						"fillOpacity": 80,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "none",
+							"group": "A"
+						},
+						"spanNulls": false
+					},
+					"decimals": 2
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			},
+			"interval": "1d",
+			"timeFrom": "30d",
+			"maxDataPoints": 31
+		},
+		{
+			"id": 20,
+			"type": "row",
+			"title": "Internet speed",
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 27
+			},
+			"panels": []
+		},
+		{
+			"id": 21,
+			"type": "timeseries",
+			"title": "Internet speed used by the bot",
+			"description": "How fast the bot is using the internet at each moment. Song downloads come in short bursts when a song starts; voice audio is steady while music plays, about 100 kb/s per server.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 24,
+				"x": 0,
+				"y": 28
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "rate(mirror_song_download_bytes_total[$__rate_interval]) * 8",
+					"legendFormat": "Song downloads (YouTube)",
+					"range": true,
+					"instant": false
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "B",
+					"expr": "(rate(mirror_network_bytes_total{protocol=\"udp\",direction=\"sent\"}[$__rate_interval]) + 28 * rate(mirror_network_packets_total{protocol=\"udp\",direction=\"sent\"}[$__rate_interval])) * 8",
+					"legendFormat": "Voice audio sent",
+					"range": true,
+					"instant": false
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "C",
+					"expr": "(rate(mirror_network_bytes_total{protocol=\"udp\",direction=\"received\"}[$__rate_interval]) + 28 * rate(mirror_network_packets_total{protocol=\"udp\",direction=\"received\"}[$__rate_interval])) * 8",
+					"legendFormat": "Voice received",
+					"range": true,
+					"instant": false
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "D",
+					"expr": "rate(mirror_network_bytes_total{protocol=\"tcp\",direction=\"received\"}[$__rate_interval]) * 8",
+					"legendFormat": "Discord and web APIs received",
+					"range": true,
+					"instant": false
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "E",
+					"expr": "rate(mirror_network_bytes_total{protocol=\"tcp\",direction=\"sent\"}[$__rate_interval]) * 8",
+					"legendFormat": "Discord and web APIs sent",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "bps",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "none",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			}
+		},
+		{
+			"id": 22,
+			"type": "row",
+			"title": "Activity",
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 36
+			},
+			"panels": []
+		},
+		{
+			"id": 23,
+			"type": "timeseries",
+			"title": "Songs started per hour, by server",
+			"description": "Songs and sound effects that started playing in the hour before each point, by server.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 12,
+				"x": 0,
+				"y": 37
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sum by (guild) (increase(mirror_tracks_started_total[1h]))",
+					"legendFormat": "{{guild}}",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "none",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			},
+			"interval": "5m"
+		},
+		{
+			"id": 24,
+			"type": "timeseries",
+			"title": "Commands per hour, by server",
+			"description": "Slash commands used in the hour before each point, by server.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 12,
+				"x": 12,
+				"y": 37
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sum by (guild) (increase(mirror_commands_total[1h]))",
+					"legendFormat": "{{guild}}",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "none",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			},
+			"interval": "5m"
+		},
+		{
+			"id": 25,
+			"type": "bargauge",
+			"title": "Most used commands (selected time range)",
+			"description": "Slash commands used during the time range picked at the top right.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 12,
+				"x": 0,
+				"y": 45
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sort_desc(round(sum by (command) (increase(mirror_commands_total[$__range]))))",
+					"legendFormat": "{{command}}",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"min": 0,
+					"decimals": 0,
+					"color": {
+						"mode": "continuous-blues"
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"orientation": "horizontal",
+				"displayMode": "basic",
+				"showUnfilled": true,
+				"valueMode": "text",
+				"namePlacement": "left",
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				}
+			}
+		},
+		{
+			"id": 26,
+			"type": "bargauge",
+			"title": "Busiest servers (selected time range)",
+			"description": "Slash commands used per server during the time range picked at the top right.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 12,
+				"x": 12,
+				"y": 45
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sort_desc(round(sum by (guild) (increase(mirror_commands_total[$__range]))))",
+					"legendFormat": "{{guild}}",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"min": 0,
+					"decimals": 0,
+					"color": {
+						"mode": "continuous-blues"
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"orientation": "horizontal",
+				"displayMode": "basic",
+				"showUnfilled": true,
+				"valueMode": "text",
+				"namePlacement": "left",
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				}
+			}
+		},
+		{
+			"id": 27,
+			"type": "row",
+			"title": "Health",
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 53
+			},
+			"panels": []
+		},
+		{
+			"id": 28,
+			"type": "timeseries",
+			"title": "Problems per hour",
+			"description": "Should stay near zero. Player errors mean a song failed to play. Reconnects usually mean a Wi-Fi or internet hiccup.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 8,
+				"x": 0,
+				"y": 54
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sum by (kind) (increase(mirror_player_errors_total[1h]))",
+					"legendFormat": "Music player error ({{kind}})",
+					"range": true,
+					"instant": false
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "B",
+					"expr": "increase(mirror_unhandled_rejections_total[1h])",
+					"legendFormat": "Unhandled error (logged, bot kept running)",
+					"range": true,
+					"instant": false
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "C",
+					"expr": "increase(mirror_gateway_reconnects_total[1h])",
+					"legendFormat": "Reconnected to Discord",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "none",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			},
+			"interval": "5m"
+		},
+		{
+			"id": 29,
+			"type": "timeseries",
+			"title": "Responsiveness",
+			"description": "Discord ping is the round trip to Discord. Internal delay is how long the bot's work queue was blocked; if it climbs past about 100 ms the bot is overloaded.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 8,
+				"x": 8,
+				"y": 54
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "mirror_gateway_ping_milliseconds",
+					"legendFormat": "Discord ping",
+					"range": true,
+					"instant": false
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "B",
+					"expr": "mirror_nodejs_eventloop_lag_p99_seconds * 1000",
+					"legendFormat": "Bot internal delay (slowest 1%)",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "ms",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "none",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			}
+		},
+		{
+			"id": 30,
+			"type": "timeseries",
+			"title": "Disk used by the bot",
+			"description": "data holds saved settings, birthdays and intro sounds. logs grows over time and can be cleaned out when the bot is stopped.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 8,
+				"x": 16,
+				"y": 54
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "mirror_folder_bytes",
+					"legendFormat": "{{folder}}",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "bytes",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "none",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			}
+		},
+		{
+			"id": 31,
+			"type": "stat",
+			"title": "Restarts in selected range",
+			"description": "Times the bot started during the time range picked at the top right, including the Monday refresh. More than expected means it crashed and the service restarted it.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 6,
+				"x": 0,
+				"y": 62
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "changes(mirror_process_start_time_seconds[$__range])",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"decimals": 0,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 32,
+			"type": "stat",
+			"title": "Songs in selected range",
+			"description": "Songs and sounds played across all servers during the selected time range.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 6,
+				"x": 6,
+				"y": 62
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round(sum(increase(mirror_tracks_started_total[$__range])))",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"decimals": 0,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 33,
+			"type": "stat",
+			"title": "Commands in selected range",
+			"description": "Slash commands used across all servers during the selected time range.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 6,
+				"x": 12,
+				"y": 62
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round(sum(increase(mirror_commands_total[$__range])))",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"decimals": 0,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 34,
+			"type": "stat",
+			"title": "Unhandled errors in selected range",
+			"description": "Errors nothing handled during the selected time range. Each one is in the bot log with details.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 6,
+				"x": 18,
+				"y": 62
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round(sum(increase(mirror_unhandled_rejections_total[$__range])))",
+					"legendFormat": "",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "none",
+					"decimals": 0,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		}
+	]
+}

@@ -1,0 +1,16 @@
+# Prometheus settings for watching Mirror. Setup steps are in docs/MONITORING.md.
+# Both sources are only reachable on 127.0.0.1, on the same machine as the bot.
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  # stats the bot reports about itself; needs metrics_port 9464 in config.json
+  - job_name: mirror-bot
+    static_configs:
+      - targets: ['127.0.0.1:9464']
+
+  # CPU, memory and disk/network activity per process, from windows_exporter.
+  # the dashboard narrows these down to processes run by the mirrorbot account
+  - job_name: mirror-processes
+    static_configs:
+      - targets: ['127.0.0.1:9182']

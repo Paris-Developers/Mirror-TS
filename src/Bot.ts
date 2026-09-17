@@ -14,6 +14,7 @@ import {
 import Enmap from 'enmap';
 import { registerEvents } from './resources/registerEvents';
 import { CustomPlayer } from './resources/CustomPlayer';
+import { startMetrics } from './resources/metrics';
 
 export class Bot {
 	public logger: CustomLogger;
@@ -53,6 +54,8 @@ export class Bot {
 	public async start(): Promise<void> {
 		await this.logger.initialize();
 		this.logger.info('Logging initialized');
+		//before anything connects out, so the stats count all of the bot's traffic
+		startMetrics(this);
 		await registerEvents(this);
 		await importSlashCommands(this);
 		await importMessageCommands(this);

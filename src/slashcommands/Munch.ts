@@ -34,27 +34,28 @@ export class Munch implements SlashCommand {
 				interaction.reply('Cant go munch while music is playing :sob:');
 				return;
 			}
+			//joining voice can take longer than the 3 seconds Discord waits for a reply, so acknowledge first
+			await interaction.deferReply();
 			await bot.player.playFile(
 				state.channel,
 				path.resolve('music/minecraft-eating-sound.mp3')
 			);
 			if(state.deaf){
-				interaction.reply(`<@${interaction.user.id}>` + 'had a nice lunch.');
+				interaction.editReply(`<@${interaction.user.id}>` + 'had a nice lunch.');
 				state.setDeaf(false, "no longer eating")
 				return;
 			}
 			else{
-				interaction.reply(`<@${interaction.user.id}>` + 'has gone to munch a lunch.');
+				interaction.editReply(`<@${interaction.user.id}>` + 'has gone to munch a lunch.');
 				state.setDeaf(true, "eating")
 			return;
 			}
 
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			const content = 'Error: contact a developer to investigate';
+			if (interaction.deferred) interaction.editReply(content);
+			else interaction.reply({ content, flags: MessageFlags.Ephemeral });
 			return;
 		}
 	}

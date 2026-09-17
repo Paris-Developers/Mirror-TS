@@ -7,9 +7,9 @@ import {
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
-import { QueryType } from 'discord-player';
 import { SlashCommand } from './SlashCommand';
 import { colorCheck } from '../resources/embedColorCheck';
+import { MusicMetadata } from '../resources/nowPlaying';
 
 export class PlayNext implements SlashCommand {
 	name: string = 'playnext';
@@ -31,15 +31,14 @@ export class PlayNext implements SlashCommand {
 			const guild = bot.client.guilds.cache.get(interaction.guild!.id);
 			const query = interaction.options.getString('query')!;
 			const searchResult = await bot.player
-				.search(query, {
-					requestedBy: interaction.user,
-					searchEngine: QueryType.AUTO,
-				})
+				.searchFromUser(query, interaction.user)
 				.catch(() => {});
 			if (!searchResult || !searchResult.tracks.length)
 				return void interaction.editReply('no results were found');
 
 			const queue = bot.player.nodes.create(guild!, bot.player.playOptions);
+			//the now playing card goes in the channel music was last queued from
+			if (interaction.channel?.isSendable()) queue.metadata = { channel: interaction.channel } satisfies MusicMetadata;
 
 			await guild?.members.fetch(interaction.user.id);
 			try {

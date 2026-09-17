@@ -1,14 +1,17 @@
 import { Bot } from '../Bot';
 import { GuildNodeCreateOptions, GuildQueue, Player, QueryType, Track } from 'discord-player';
-import { VoiceBasedChannel } from 'discord.js';
+import { User, VoiceBasedChannel } from 'discord.js';
 import config from '../../config.json';
 import { createWriteStream } from 'fs';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
-import { DefaultExtractors } from '@discord-player/extractor';
+import { AttachmentExtractor, DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeExtractor } from 'discord-player-youtubei';
+import { playerErrors, tracksStarted } from './metrics';
+import { registerNowPlaying } from './nowPlaying';
+import { youtubeStream } from './youtubeStream';
 
 //these settings are optional and absent from most config.json files, so they are read defensively
 function configValue(key: string): string | undefined {
@@ -30,34 +33,40 @@ export class CustomPlayer extends Player {
 
 	//discord-player 7 ships without YouTube support, so the youtubei extractor provides it
 	async loadExtractors(): Promise<void> {
-		//the extractor reports why a download attempt failed only through debug messages, so
-		//listen before it starts up; without this a failure is just "could not extract stream"
+		//the player and extractors explain what they're doing through debug messages; listen before
+		//they start up. download failures are logged as warnings by youtubeStream itself
 		this.on('debug', (message) => {
 			//errors come through this event too, despite the string signature
 			const text =
 				typeof message === 'string'
 					? message
 					: String((message as unknown as Error)?.message ?? message);
-			if (text.includes('failed with the method')) {
-				this.bot.logger.warn(text);
-			} else {
-				this.bot.logger.debug(text);
-			}
+			this.bot.logger.debug(text);
 		});
 		this.on('error', (error) => this.bot.logger.error(error));
 
-		//the extractor has several ways to fetch audio. yt-dlp goes first because it is the most
-		//reliable from a server, where YouTube treats requests with more suspicion than it does a
-		//home connection. the optional cookie in config.json helps when it asks for a sign in
+		//audio comes from youtubeStream: yt-dlp first, since YouTube serves it most reliably, then the
+		//extractor's other methods, falling back only when one really fails. the optional cookies in
+		//config.json help when YouTube asks for a sign in
 		await this.extractors.register(YoutubeExtractor, {
-			downloads: {
-				trialOrder: ['yt-dlp', 'peer', 'adaptive', 'sabr'],
-				ytdlp: { cookiePath: configValue('youtube_cookie_file') },
-			},
+			createStream: youtubeStream(this.bot, configValue('youtube_cookie_file')),
 			cookie: configValue('youtube_cookie'),
 		});
 		await this.extractors.loadMulti(DefaultExtractors);
 		this.bot.logger.info('Loaded music extractors');
+	}
+
+	//looks up a song name or link typed by a user (/play, /playnext, /intro).
+	//links from YouTube, Spotify, SoundCloud and the like go through their own extractors, but any
+	//other link would be downloaded by the attachment extractor straight from wherever it points.
+	//that would let anyone who can use the bot see the host's IP address, or make it send requests to
+	//devices on the host's own network, so that extractor is left out of anything a user types
+	async searchFromUser(query: string, requestedBy: User) {
+		return this.search(query, {
+			requestedBy,
+			searchEngine: QueryType.AUTO,
+			blockExtractors: [AttachmentExtractor.identifier],
+		});
 	}
 
 	//plays a sound file from disk (intro themes, the sound effect commands).
@@ -148,20 +157,27 @@ export class CustomPlayer extends Player {
 		this.events.on('disconnect', (queue) => this.discardQueue(queue));
 		this.events.on('emptyChannel', (queue) => this.discardQueue(queue));
 
+		this.events.on('playerStart', (queue) => tracksStarted.inc({ guild: queue.guild.name }));
+
 		this.events.on('error', (queue, error) => {
+			playerErrors.inc({ kind: 'queue' });
 			this.discardQueue(queue);
 			this.bot.logger.error(
 				`[${queue.guild.name}] Error emitted from the queue: ${error.message}`
 			);
 		});
 
-		//one failing track should not kill the queue, so move on to the next one
-		this.events.on('playerError', (queue, error) => {
-			queue.node.skip();
+		//the player moves on to the next song by itself after a song fails, so skipping here as well
+		//would skip a second song. only a failed song that is somehow still playing gets skipped
+		this.events.on('playerError', (queue, error, track) => {
+			playerErrors.inc({ kind: 'track' });
+			if (queue.currentTrack === track && queue.node.isPlaying()) queue.node.skip();
 			this.bot.logger.error(
 				`[${queue.guild.name}] Error emitted from the player: ${error.message}`
 			);
 		});
+
+		registerNowPlaying(this.bot);
 	}
 
 	private discardQueue(queue: GuildQueue) {

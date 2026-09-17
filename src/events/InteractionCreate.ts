@@ -1,5 +1,5 @@
 import {
-	ChatInputCommandInteraction,
+	Interaction,
 	GuildMember,
 	EmbedBuilder,
 	TextChannel,
@@ -9,6 +9,8 @@ import {
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { managerCheck } from '../resources/managerCheck';
+import { commandsUsed } from '../resources/metrics';
+import { handleNowPlayingButton, nowPlayingButton } from '../resources/nowPlaying';
 import { voiceCommandCheck } from '../resources/voiceCommandCheck';
 import { silenceCheck } from '../slashcommands/SilenceRole';
 import { EventHandler } from './EventHandler';
@@ -16,7 +18,13 @@ import { EventHandler } from './EventHandler';
 export class InteractionCreate implements EventHandler {
 	eventName = 'interactionCreate';
 
-	async process(bot: Bot, interaction: ChatInputCommandInteraction) {
+	async process(bot: Bot, interaction: Interaction) {
+		//the now playing card's buttons outlive any one command, so they're handled here
+		if (interaction.isButton() && interaction.customId.startsWith(nowPlayingButton)) {
+			return void handleNowPlayingButton(bot, interaction).catch((error) =>
+				bot.logger.error('Now playing button failed:', error)
+			);
+		}
 		if (!interaction.isChatInputCommand()) return;
 
 		//attempt to find the command from the array of all of them
@@ -26,6 +34,10 @@ export class InteractionCreate implements EventHandler {
 
 		//we didn't find it, exit
 		if (!command) return;
+		commandsUsed.inc({
+			command: command.name,
+			guild: interaction.guild?.name ?? 'direct message',
+		});
 
 		//if the command needs to be run in a server setting
 		if (command.guildRequired) {

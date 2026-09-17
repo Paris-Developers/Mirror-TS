@@ -24,6 +24,10 @@ You must run ./build.bat and restart the bot whenever you make a change to the p
 - Always start the bot from the project folder, since saved data lives in `./data`
 - Python 3.9 or newer, optionally. It lets `youtube-dl-exec` install, which gives the music player its most reliable way of downloading from YouTube — worth having on a server, where YouTube is stricter than it is with a home connection. Without Python that one package is skipped and the player falls back to its other methods.
 
+## Optional: stats for monitoring
+
+Set `metrics_port` in `config.json` (for example `9464`) and rebuild to have the bot serve stats about itself at `http://127.0.0.1:<port>/metrics`, in the format Prometheus reads. They cover the bot's own CPU, memory and network traffic (including song downloads by yt-dlp), servers playing music, commands used, player errors, the gateway ping and the size of the `data` and `logs` folders. The stats are only reachable from the machine running the bot. Leave `metrics_port` empty to turn them off.
+
 ## Upgrading an existing install (discord.js 13 → 14)
 
 Saved data (manager roles, birthdays, server colors, silenced users and so on) is stored with enmap, which moved from version 5 to 6. Version 6 can't open a version 5 database, so after pulling this update, stop the bot and run once:
