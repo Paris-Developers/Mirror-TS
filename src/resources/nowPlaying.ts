@@ -29,6 +29,7 @@ const cards = new Map<string, Message>(); //server id -> its card
 const lastPlayed = new Map<string, Played>(); //server id -> the song the card last showed
 const lastAction = new Map<string, { text: string; at: number }>(); //server id -> "Skipped by @someone"
 const pending = new Map<string, NodeJS.Timeout>(); //server id -> a card update waiting to go out
+const failures = new Map<string, { title: string; at: number }>(); //server id -> a song YouTube just wouldn't send
 
 const isSoundFile = (track: Track) => (track.raw as { isFile?: boolean } | undefined)?.isFile === true;
 
@@ -40,8 +41,18 @@ export function registerNowPlaying(bot: Bot) {
 	for (const event of ['audioTrackAdd', 'audioTracksAdd', 'audioTrackRemove', 'audioTracksRemove', 'playerPause', 'playerResume'] as const) {
 		events.on(event, (queue: GuildQueue) => refresh(bot, queue));
 	}
-	events.on('emptyQueue', (queue) => finish(bot, queue.guild.id, 'The queue finished'));
-	events.on('queueDelete', (queue) => finish(bot, queue.guild.id, 'Music stopped'));
+	//the player skips a song it couldn't get audio for; the card says so, on the next song or as the queue ends
+	events.on('playerSkip', (queue, track, reason) => {
+		if (reason !== 'ERR_NO_STREAM' || isSoundFile(track)) return;
+		failures.set(queue.guild.id, { title: track.title, at: Date.now() });
+		lastAction.set(queue.guild.id, {
+			text: `⚠️ Couldn't play ${escapeMarkdown(shorten(track.title))}: YouTube didn't send any audio, so it was skipped`,
+			at: Date.now(),
+		});
+	});
+	const channelOf = (queue: GuildQueue) => (queue.metadata as MusicMetadata | null)?.channel;
+	events.on('emptyQueue', (queue) => finish(bot, queue.guild.id, 'The queue finished', channelOf(queue)));
+	events.on('queueDelete', (queue) => finish(bot, queue.guild.id, 'Music stopped', channelOf(queue)));
 }
 
 //several changes often land together (a playlist, a skip starting the next song), so updates wait a
@@ -83,12 +94,24 @@ async function showCard(bot: Bot, guildId: string) {
 }
 
 //the card stays in the channel as a record of what played, without its buttons
-async function finish(bot: Bot, guildId: string, note: string) {
+async function finish(bot: Bot, guildId: string, note: string, channel?: SendableChannels) {
 	clearTimeout(pending.get(guildId));
 	pending.delete(guildId);
 	const card = cards.get(guildId);
 	cards.delete(guildId);
-	if (card) await card.edit({ components: [endedCard(bot, guildId, note)], ...noPings }).catch(() => {});
+	const failure = failures.get(guildId);
+	failures.delete(guildId);
+	const failedTitle = failure && Date.now() - failure.at < 30 * 1000 ? failure.title : undefined;
+
+	const ended = endedCard(bot, guildId, note, failedTitle);
+	if (card) {
+		await card.edit({ components: [ended], ...noPings }).catch(() => {});
+	} else if (failedTitle && channel) {
+		//the song failed before a card was ever posted, so the warning goes out on its own
+		await channel
+			.send({ components: [ended], ...cardReply })
+			.catch((error) => bot.logger.error('Could not post the song failure card:', error));
+	}
 	lastAction.delete(guildId);
 }
 
@@ -151,11 +174,18 @@ function playingCard(bot: Bot, queue: GuildQueue): ContainerBuilder {
 	return card;
 }
 
-function endedCard(bot: Bot, guildId: string, note: string): ContainerBuilder {
+function endedCard(bot: Bot, guildId: string, note: string, failedTitle?: string): ContainerBuilder {
 	const played = lastPlayed.get(guildId);
-	const lines = [`## ⏹️ ${note}`];
-	if (played) lines.push(`Last played: **${songLink(played)}** · ${escapeMarkdown(played.author)}`);
-	lines.push(`-# Start more with ${commandMention(bot, 'play')}`);
+	const lines = failedTitle
+		? [
+				`## ⚠️ Couldn't play ${escapeMarkdown(shorten(failedTitle))}`,
+				`YouTube didn't send any audio for it. Try ${commandMention(bot, 'play')} again in a minute.`,
+		  ]
+		: [`## ⏹️ ${note}`];
+	if (played && played.title !== failedTitle) {
+		lines.push(`Last played: **${songLink(played)}** · ${escapeMarkdown(played.author)}`);
+	}
+	if (!failedTitle) lines.push(`-# Start more with ${commandMention(bot, 'play')}`);
 	return new ContainerBuilder()
 		.setAccentColor(accentColor(guildId))
 		.addTextDisplayComponents((text) => text.setContent(lines.join('\n')));
