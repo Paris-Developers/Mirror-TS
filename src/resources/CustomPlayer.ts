@@ -11,6 +11,7 @@ import { AttachmentExtractor, DefaultExtractors } from '@discord-player/extracto
 import { YoutubeExtractor } from 'discord-player-youtubei';
 import { playerErrors, tracksStarted } from './metrics';
 import { registerNowPlaying } from './nowPlaying';
+import { youtubeStream } from './youtubeStream';
 
 //these settings are optional and absent from most config.json files, so they are read defensively
 function configValue(key: string): string | undefined {
@@ -32,30 +33,23 @@ export class CustomPlayer extends Player {
 
 	//discord-player 7 ships without YouTube support, so the youtubei extractor provides it
 	async loadExtractors(): Promise<void> {
-		//the extractor reports why a download attempt failed only through debug messages, so
-		//listen before it starts up; without this a failure is just "could not extract stream"
+		//the player and extractors explain what they're doing through debug messages; listen before
+		//they start up. download failures are logged as warnings by youtubeStream itself
 		this.on('debug', (message) => {
 			//errors come through this event too, despite the string signature
 			const text =
 				typeof message === 'string'
 					? message
 					: String((message as unknown as Error)?.message ?? message);
-			if (text.includes('failed with the method')) {
-				this.bot.logger.warn(text);
-			} else {
-				this.bot.logger.debug(text);
-			}
+			this.bot.logger.debug(text);
 		});
 		this.on('error', (error) => this.bot.logger.error(error));
 
-		//the extractor has several ways to fetch audio. yt-dlp goes first because it is the most
-		//reliable from a server, where YouTube treats requests with more suspicion than it does a
-		//home connection. the optional cookie in config.json helps when it asks for a sign in
+		//audio comes from youtubeStream: yt-dlp first, since YouTube serves it most reliably, then the
+		//extractor's other methods, falling back only when one really fails. the optional cookies in
+		//config.json help when YouTube asks for a sign in
 		await this.extractors.register(YoutubeExtractor, {
-			downloads: {
-				trialOrder: ['yt-dlp', 'peer', 'adaptive', 'sabr'],
-				ytdlp: { cookiePath: configValue('youtube_cookie_file') },
-			},
+			createStream: youtubeStream(this.bot, configValue('youtube_cookie_file')),
 			cookie: configValue('youtube_cookie'),
 		});
 		await this.extractors.loadMulti(DefaultExtractors);
@@ -173,10 +167,11 @@ export class CustomPlayer extends Player {
 			);
 		});
 
-		//one failing track should not kill the queue, so move on to the next one
-		this.events.on('playerError', (queue, error) => {
+		//the player moves on to the next song by itself after a song fails, so skipping here as well
+		//would skip a second song. only a failed song that is somehow still playing gets skipped
+		this.events.on('playerError', (queue, error, track) => {
 			playerErrors.inc({ kind: 'track' });
-			queue.node.skip();
+			if (queue.currentTrack === track && queue.node.isPlaying()) queue.node.skip();
 			this.bot.logger.error(
 				`[${queue.guild.name}] Error emitted from the player: ${error.message}`
 			);
