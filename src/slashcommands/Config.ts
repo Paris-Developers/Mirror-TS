@@ -1,37 +1,38 @@
 import {
-	ApplicationCommandDataResolvable,
-	ChatInputCommandInteraction,
 	CacheType,
-	EmbedBuilder,
+	ChatInputCommandInteraction,
+	ContainerBuilder,
 	GuildChannel,
-	GuildChannelResolvable,
-	PermissionOverwriteManager,
-	PermissionResolvable,
 	MessageFlags,
 	PermissionFlagsBits,
+	escapeMarkdown,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
-import { bdayChannels } from './BirthdayConfig';
+import { bdayChannels, bdayTimes } from './BirthdayConfig';
 import { defaultVc } from './DefaultVc';
 import { updateChannels } from './Update';
 import { nsfw } from './Nsfw';
 import { managerRoles } from './ManagerRole';
 import { silencedRole } from './SilenceRole';
+import { silencedUsers } from './SilenceMember';
 import { serverColors } from './ServerColor';
-import { colorCheck } from '../resources/embedColorCheck';
+import { accentColor, addHeading, cardReply, commandMention, divider } from '../resources/cards';
 
-const permList = [
-	['ADD_REACTIONS', PermissionFlagsBits.AddReactions],
-	['CONNECT', PermissionFlagsBits.Connect],
-	['EMBED_LINKS', PermissionFlagsBits.EmbedLinks],
-	['MANAGE_MESSAGES',PermissionFlagsBits.ManageMessages],
-	['MOVE_MEMBERS', PermissionFlagsBits.MoveMembers],
-	['SEND_MESSAGES', PermissionFlagsBits.SendMessages],
-	['SPEAK', PermissionFlagsBits.Speak],
-	['USE_EXTERNAL_EMOJIS',PermissionFlagsBits.UseExternalEmojis],
-	['VIEW_CHANNEL',PermissionFlagsBits.ViewChannel]]
-	
+//what Mirror needs in a channel for all of its commands to work there
+const neededPermissions: [string, bigint][] = [
+	['View Channel', PermissionFlagsBits.ViewChannel],
+	['Send Messages', PermissionFlagsBits.SendMessages],
+	['Embed Links', PermissionFlagsBits.EmbedLinks],
+	['Add Reactions', PermissionFlagsBits.AddReactions],
+	['Use External Emojis', PermissionFlagsBits.UseExternalEmojis],
+	['Manage Messages', PermissionFlagsBits.ManageMessages],
+	['Connect', PermissionFlagsBits.Connect],
+	['Speak', PermissionFlagsBits.Speak],
+	['Move Members', PermissionFlagsBits.MoveMembers],
+	['Deafen Members', PermissionFlagsBits.DeafenMembers],
+];
+
 export class Config implements SlashCommand {
 	name: string = 'config';
 	description = 'See the configuration settings for this server';
@@ -39,103 +40,63 @@ export class Config implements SlashCommand {
 	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
 		try {
-			let embed = new EmbedBuilder()
-				.setTitle(`:gear: Server Settings for ${interaction.guild?.name}`)
-				.setColor(colorCheck(interaction.guild!.id));
-			let lines: any[][] = [
-				['Setting', 'Description', 'Configuration'],
-				['`/update`', 'Mirror development updates', '❌'],
-				['`/birthdayconfig`', 'Recieve birthday messages', '❌'],
-				['`/defaultvc`', 'Channel Mirror joins automatically', '❌'],
-				['`/nsfw`', 'Toggle NSFW settings', '❌'],
-				['`/servercolor`','Change default color', '❌'],
+			const guild = interaction.guild!;
+			const channelName = (id: unknown) =>
+				typeof id === 'string' && guild.channels.cache.has(id) ? `<#${id}>` : 'a channel that no longer exists';
+			const setting = (label: string, value: string | undefined, command: string) =>
+				value
+					? `✅ **${label}** · ${value}`
+					: `❌ **${label}** · not set up · ${commandMention(bot, command)}`;
+
+			//birthday times are saved as MM-HH-DATEMOD-TIMEZONE
+			const birthdayChannel = bdayChannels.get(guild.id);
+			const [minute, hour, , timezone] = String(bdayTimes.get(guild.id) ?? '').split('-');
+			const birthdayTime =
+				minute && hour && timezone
+					? ` at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} ${timezone.toUpperCase()}`
+					: '';
+			const nsfwOn = nsfw.get(guild.id) == 'on';
+			const color = serverColors.get(guild.id);
+
+			const features = [
+				setting('Birthday messages', birthdayChannel && `${channelName(birthdayChannel)}${birthdayTime}`, 'birthdayconfig'),
+				setting('Default voice channel', defaultVc.get(guild.id) && channelName(defaultVc.get(guild.id)), 'defaultvc'),
+				setting('Mirror development updates', updateChannels.get(guild.id) && channelName(updateChannels.get(guild.id)), 'update'),
+				`${nsfwOn ? '✅' : '❌'} **NSFW commands** · ${nsfwOn ? 'on' : 'off'} · ${commandMention(bot, 'nsfw')}`,
+				`🎨 **Color** · ${color ? `\`${color}\`` : 'default'} · ${commandMention(bot, 'servercolor')}`,
 			];
-			let bday = bdayChannels.get(interaction.guild!.id);
-			let defaultVoice = defaultVc.get(interaction.guild!.id);
-			let update = updateChannels.get(interaction.guild!.id);
-			let nsfwToggle = nsfw.get(interaction.guild!.id);
-			let silence = silencedRole.get(interaction.guild!.id);
-			let serverColor = serverColors.get(interaction.guild!.id);
-			if (update) {
-				update = bot.client.channels.cache.get(update);
-				lines[1][2] = update;
-			}
-			if (bday) {
-				bday = bot.client.channels.cache.get(bday);
-				lines[2][2] = bday;
-			}
-			if (defaultVoice) {
-				defaultVoice = bot.client.channels.cache.get(defaultVoice);
-				lines[3][2] = defaultVoice;
-			}
-			if (nsfwToggle == 'on') {
-				lines[4][2] = '✅';
-			}
-			if(serverColor){
-				lines[5][2] = serverColor;
-			}
-			let managerArray = managerRoles.ensure(interaction.guild!.id, []);
-			let managerString = '';
-			if (managerArray.length == 0) {
-				managerString = 'Add Mirror Managers with `/managerrole`';
-			} else {
-				for (let role of managerArray) {
-					let getRole = interaction.guild?.roles.cache.get(role);
-					managerString = managerString + `${getRole}` + ', ';
-				}
-				managerString = managerString.slice(0, -2);
-			}
-			let silenceString =
-				'To prevent someone interacting with introthemes, birthday commands or music\n`/silencerole` or `/silencemember`';
-			if (silence) {
-				let getRole = interaction.guild?.roles.cache.get(silence);
-				silenceString = `${getRole}`;
-			}
-			embed.addFields(
-				{
-					name: lines[0][0],
-					value: `${lines[1][0]}\n${lines[2][0]}\n${lines[3][0]}\n${lines[4][0]}\n${lines[5][0]}`,
-					inline: true,
-				},
-				{
-					name: lines[0][1],
-					value: `${lines[1][1]}\n${lines[2][1]}\n${lines[3][1]}\n${lines[4][1]}\n${lines[5][1]}`,
-					inline: true,
-				},
-				{
-					name: lines[0][2],
-					value: `${lines[1][2]}\n${lines[2][2]}\n${lines[3][2]}\n${lines[4][2]}\n${lines[5][2]}`,
-					inline: true,
-				},
-				{
-					name: 'Mirror Manager Roles',
-					value: managerString,
-					inline: false,
-				},
-				{
-					name: 'Silenced Role',
-					value: silenceString,
-					inline: false,
-				}
-			);
-			
-			var permString = 'Looks like you have all the required permissions to use Mirror in this channel :smile:';
-			let channel = interaction.channel as GuildChannel;
-			let missingPerms = [];
-			let us = await interaction.guild!.members.fetch(bot.client.user!);
-			let permissions = channel.permissionsFor(us);
-			for(let x in permList){
-				if(!permissions.has(permList[x][1] as PermissionResolvable)) missingPerms.push(permList[x][0].toString());
-			}
-			if(missingPerms.length > 0){
-				permString = 'Looks like Mirror is missing a few permissions:'
-				for(let perm of missingPerms){
-					permString += '\n' + '\`' + perm + '\`';
-				}
-				permString += '\n' + 'Assign mirror the missing permissions to ensure full functionality'
-			}
-			embed.addFields({ name: 'Permissions', value: permString });
-			return void interaction.reply({ embeds: [embed] });
+
+			const managers = (managerRoles.ensure(guild.id, []) as string[])
+				.filter((role) => guild.roles.cache.has(role))
+				.map((role) => `<@&${role}>`);
+			const silenced = silencedRole.get(guild.id);
+			const silencedMembers = (silencedUsers.ensure(guild.id, []) as string[]).length;
+			const roles = [
+				`**Mirror managers** · ${managers.length ? managers.join(', ') : `none yet · ${commandMention(bot, 'managerrole')}`}`,
+				`**Silenced role** · ${silenced && guild.roles.cache.has(silenced) ? `<@&${silenced}>` : `none · ${commandMention(bot, 'silencerole')}`}`,
+				`**Silenced members** · ${silencedMembers} · ${commandMention(bot, 'silencemember')}`,
+			];
+
+			const channel = interaction.channel as GuildChannel;
+			const granted = channel.permissionsFor(guild.members.me!);
+			const missing = neededPermissions.filter(([, flag]) => !granted?.has(flag)).map(([name]) => name);
+			const permissions = missing.length
+				? `⚠️ Mirror is missing some permissions here, so a few commands won't work:\n${missing.map((name) => `- ${name}`).join('\n')}`
+				: '✅ Mirror has every permission it needs here.';
+
+			const card = new ContainerBuilder().setAccentColor(accentColor(guild.id));
+			addHeading(card, `## ⚙️ Mirror settings\n${escapeMarkdown(guild.name)}`, guild.iconURL());
+			card
+				.addSeparatorComponents(divider)
+				.addTextDisplayComponents((text) => text.setContent(['### Features', ...features].join('\n')))
+				.addSeparatorComponents(divider)
+				.addTextDisplayComponents((text) => text.setContent(['### Roles', ...roles].join('\n')))
+				.addSeparatorComponents(divider)
+				.addTextDisplayComponents((text) =>
+					text.setContent(`### Permissions in <#${channel.id}>\n${permissions}`)
+				);
+
+			return void interaction.reply({ components: [card], ...cardReply });
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			return void interaction.reply({

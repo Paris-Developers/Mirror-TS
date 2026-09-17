@@ -10,6 +10,7 @@ import ffmpegPath from 'ffmpeg-static';
 import { AttachmentExtractor, DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeExtractor } from 'discord-player-youtubei';
 import { playerErrors, tracksStarted } from './metrics';
+import { registerNowPlaying } from './nowPlaying';
 import { youtubeStream } from './youtubeStream';
 
 //these settings are optional and absent from most config.json files, so they are read defensively
@@ -175,6 +176,8 @@ export class CustomPlayer extends Player {
 				`[${queue.guild.name}] Error emitted from the player: ${error.message}`
 			);
 		});
+
+		registerNowPlaying(this.bot);
 	}
 
 	private discardQueue(queue: GuildQueue) {

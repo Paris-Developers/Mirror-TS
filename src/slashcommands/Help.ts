@@ -1,168 +1,83 @@
 //Call: Slash command help
-//Returns the info command
+//Shows what Mirror is and its commands, one category at a time
 import {
-	ChatInputApplicationCommandData,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
 	ChatInputCommandInteraction,
-	Message,
-	EmbedBuilder,
-	MessageReaction,
-	User,
+	ContainerBuilder,
 	MessageFlags,
 	PermissionFlagsBits,
+	StringSelectMenuBuilder,
 } from 'discord.js';
 import { Bot } from '../Bot';
-import { colorCheck } from '../resources/embedColorCheck';
+import { accentColor, addHeading, cardReply, commandMention, divider, handleControls } from '../resources/cards';
 import { SlashCommand } from './SlashCommand';
+
+const supportServer = 'https://discord.gg/uvdg2R5PAU';
+
+type Category = { id: string; label: string; emoji: string; blurb: string; commands: string[] };
+const categories: Category[] = [
+	{
+		id: 'voice',
+		label: 'Voice and intros',
+		emoji: '🔊',
+		blurb: 'Mirror joining voice, sound effects, and the intro that plays when you join a channel.',
+		commands: ['join', 'leave', 'defaultvc', 'sicko', 'munch', 'intro', 'removeintro'],
+	},
+	{
+		id: 'music',
+		label: 'Music',
+		emoji: '🎵',
+		blurb: 'Play songs from YouTube by name or link, and control the queue.',
+		commands: ['play', 'playnext', 'nowplaying', 'queue', 'skip', 'pause', 'resume', 'shuffle', 'loop', 'clearqueue', 'destroyqueue'],
+	},
+	{
+		id: 'fun',
+		label: 'Info and fun',
+		emoji: '🎲',
+		blurb: 'Lookups, birthdays, polls and assorted silliness.',
+		commands: ['weather', 'stock', 'nasa', 'birthday', 'birthdaylist', 'poll', 'roll', 'kanye', 'kawaii', 'tickle', 'mirror', 'nut'],
+	},
+	{
+		id: 'setup',
+		label: 'Server setup',
+		emoji: '⚙️',
+		blurb: 'Settings for server managers. See everything at once with /config.',
+		commands: ['config', 'birthdayconfig', 'defaultvc', 'update', 'managerrole', 'silencemember', 'silencerole', 'nsfw', 'servercolor', 'removeintro'],
+	},
+	{
+		id: 'about',
+		label: 'About Mirror',
+		emoji: 'ℹ️',
+		blurb: 'Where Mirror comes from and how to reach the developers.',
+		commands: ['github', 'invite', 'support', 'test'],
+	},
+];
 
 export class Help implements SlashCommand {
 	name: string = 'help';
 	description: string = 'Information about the bot';
 	options = [];
-	requiredPermissions: bigint[] = [
-		PermissionFlagsBits.SendMessages,
-		PermissionFlagsBits.EmbedLinks, 
-		PermissionFlagsBits.ManageMessages,
-		PermissionFlagsBits.AddReactions,
-	];
+	requiredPermissions: bigint[] = [PermissionFlagsBits.SendMessages];
 	async run(bot: Bot, interaction: ChatInputCommandInteraction): Promise<void> {
 		try {
-			type cmdList = {[index:string]: string};
-			let cmds = {} as cmdList;
-			bot.slashCommands.forEach((command)=>{
-				cmds[command.name] = command.description;
-			})
-			const page1 = new EmbedBuilder()
-				.setColor(colorCheck(interaction.guild!.id))
-				.setTitle(':mirror: **__Mirror__**')
-				.setDescription('Informational and fun discord bot created by Ford, Zac, and Marty')
-				.addFields(
-					{
-						name: '__Support server:__',
-						value:
-							'Interested in contributing or learning about development? Join our [dev server](https://discord.gg/uvdg2R5PAU)',
-						inline: false,
-					},
-					{
-						name: '__Command List:__',
-						value:
-							'**Page 2:** Voice Commands\n' +
-							'**Page 3:** Informative and Fun Commands\n' +
-							'**Page 4:** Server Configuration Guide\n' +
-							'**Page 5:** More Information',
-						inline: false,
-					}
-				)
-				.setFooter({ text: 'Page 1 of 5' });
-			const page2 = new EmbedBuilder()
-				.setColor(colorCheck(interaction.guild!.id))
-				.setTitle(':sound: **__Voice Commands__**')
-				.setDescription(
-					`\`/join\`  ${cmds.join}\n` +
-					`\`/leave\`  ${cmds.leave}\n` + 
-					`\`/defaultvc\`  ${cmds.defaultvc}\n`
-				)
-				.addFields({
-					name: 'Introtheme Commands',
-					value: `\`/intro\`  ${cmds.intro}\n` +
-					`\`/removeintro\`  ${cmds.removeintro}\n`,
-					inline: false	
-				},{
-					name: 'Music Commands',
-					value: `\`/play\`  ${cmds.play}\n` +
-					`\`/playnext\`  ${cmds.playnext}\n` +
-					`\`/nowplaying\`  ${cmds.nowplaying}\n` +
-					`\`/queue\`  ${cmds.queue}\n` +
-					`\`/clearqueue\`  ${cmds.clearqueue}\n` +
-					`\`/shuffle\`  ${cmds.shuffle}\n` +
-					`\`/pause\`  ${cmds.pause}\n` +
-					`\`/resume\`  ${cmds.resume}\n` +
-					`\`/loop\` ${cmds.loop}\n` +
-					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
-					`\`/sicko\`  ${cmds.sicko}\n`,
-					inline:false
-				})
-				.setFooter({ text: 'Page 2 of 5' });
-			const page3 = new EmbedBuilder()
-				.setColor(colorCheck(interaction.guild!.id))
-				.addFields({
-					name: 'Informative Commands',
-					value: `\`/weather\`  ${cmds.weather}\n` +
-					`\`/stock\`  ${cmds.stock}\n` +
-					`\`/nasa\`  ${cmds.nasa}\n` +
-					`\`/github\`  ${cmds.github}\n`,
-				},{
-					name: 'Fun Commands',
-					value: `\`/birthday\`  ${cmds.birthday}\n` +
-					`\`/kanye\`  ${cmds.kanye}\n` +
-					`\`/poll\`  ${cmds.poll}\n` +
-					`\`/kawaii\`  ${cmds.kawaii}\n` +
-					`\`/tickle\`  ${cmds.tickle}\n` +
-					`\`/mirror\`  ${cmds.mirror}\n` +
-					`\`/nut\`  ${cmds.nut}\n` +
-					`\`/roll\`  ${cmds.roll}\n`
-				})
-				.setFooter({ text: 'Page 3 of 5' });
-			const page4 = new EmbedBuilder()
-				.setColor(colorCheck(interaction.guild!.id))
-				.setTitle(':bell: **__Server Configuration__**')
-				.setDescription(
-					`\`/config\`  ${cmds.config}\n` +
-					`\`/defaultvc\`  ${cmds.defaultvc}\n` +
-					`\`/update\`  ${cmds.update}\n` +
-					`\`/birthdayconfig\`  ${cmds.birthdayconfig}\n` +
-					`\`/managerrole\`  ${cmds.managerrole}\n` +
-					`\`/silencemember\`  ${cmds.silencemember}\n` +
-					`\`/silencerole\`  ${cmds.silencerole}\n` + 
-					`\`/destroyqueue\`  ${cmds.destroyqueue}\n` +
-					`\`/nsfw\`  ${cmds.nsfw}\n` +
-					`\`/servercolor\`  ${cmds.servercolor}\n` +
-					`\`/removeintro\`  ${cmds.removeintro}\n`
-				)
-				.setFooter({ text: 'Page 4 of 5' });
-			const page5 = new EmbedBuilder()
-			.setColor(colorCheck(interaction.guild!.id))
-			.setTitle(':bell: **__Other Information__**')
-			.addFields({
-				name: 'Commands',
-				value: `\`/github\`  ${cmds.github}\n` +
-				`\`/invite\`  ${cmds.invite}\n` +
-				`\`/support\`  ${cmds.support}\n` +
-				`\`/test\`  ${cmds.test}\n`
-			},{
-				name: 'Thank You!',
-				value: 'Thank you for using Mirror! On behalf of the developer team we appreciate you taking time to learn and improve our bot.  If you have any questions regarding Mirror, reach out to us using our [Support Server](https://discord.gg/uvdg2R5PAU)'
-			})
-			.setFooter({ text: 'Page 5 of 5' });
-			let embedArray = [page1, page2, page3, page4, page5];
-			let index = 0;
-			await interaction.reply({ embeds: [embedArray[index]] });
-			let message = await interaction.fetchReply(); //fetch the reply and store it so we can react to it and use it in the collector
-			await message.react('⏪');
-			await message.react('⏩');
-			const filter = (reaction: MessageReaction, user: User) => {
-				return (
-					['⏪', '⏩'].includes(reaction.emoji.name!) &&
-					user.id === interaction.user.id
-				); //if reaction emoji matches one of the two in this array + it was reacted by the interaction creator
-			};
-			const collector = message.createReactionCollector({
-				filter,
-				time: 60000,
-			});
-			collector.on('collect', (reaction, user) => {
-				if (reaction.emoji.name == '⏩') {
-					index += 1;
-				} else if (reaction.emoji.name == '⏪') {
-					index -= 1;
-				} else return;
-				if (index > embedArray.length - 1) {
-					index = 0;
-				} else if (index < 0) {
-					index = embedArray.length - 1;
-				}
-				message.edit({ embeds: [embedArray[index]] });
-				reaction.users.remove(user.id); //remove the emoji so the user doesn't have to remove it themselves
-			});
+			let current = 'start';
+			const render = (controls: boolean) => helpCard(bot, interaction.guild?.id, current, controls);
+			const response = await interaction.reply({ components: [render(true)], ...cardReply, withResponse: true });
+			const message = response.resource?.message;
+			if (!message) return;
+
+			handleControls(
+				bot,
+				message,
+				interaction.user.id,
+				async (control) => {
+					if (control.isStringSelectMenu()) current = control.values[0];
+					await control.update({ components: [render(true)], allowedMentions: { parse: [] } });
+				},
+				() => interaction.editReply({ components: [render(false)], allowedMentions: { parse: [] } })
+			);
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
 			interaction.reply({
@@ -172,4 +87,65 @@ export class Help implements SlashCommand {
 			return;
 		}
 	}
+}
+
+function helpCard(bot: Bot, guildId: string | undefined, current: string, controls: boolean): ContainerBuilder {
+	const card = new ContainerBuilder().setAccentColor(accentColor(guildId));
+	addHeading(
+		card,
+		'## 🪞 Mirror\nInformational and fun Discord bot created by Ford, Zac and Marty.',
+		bot.client.user?.displayAvatarURL()
+	);
+	card.addSeparatorComponents(divider);
+
+	const category = categories.find((c) => c.id === current);
+	if (category) {
+		const lines = commandsIn(bot, category).map((name) => `${commandMention(bot, name)} · ${descriptionOf(bot, name)}`);
+		card.addTextDisplayComponents((text) =>
+			text.setContent([`### ${category.emoji} ${category.label}`, category.blurb, '', ...lines].join('\n'))
+		);
+	} else {
+		card.addTextDisplayComponents((text) =>
+			text.setContent(
+				[
+					'### Getting started',
+					'Pick a category below to see its commands. Command names can be clicked to start typing them.',
+					'',
+					...categories.map((c) => `${c.emoji} **${c.label}** · ${c.blurb}`),
+				].join('\n')
+			)
+		);
+	}
+
+	if (!controls) return card;
+
+	card.addSeparatorComponents(divider);
+	const menu = new StringSelectMenuBuilder().setCustomId('category').setPlaceholder('Pick a category');
+	menu.addOptions({ label: 'Getting started', value: 'start', emoji: '🪞', default: current === 'start' });
+	for (const c of categories) {
+		menu.addOptions({ label: c.label, value: c.id, emoji: c.emoji, default: c.id === current });
+	}
+	card
+		.addActionRowComponents(new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(menu))
+		.addActionRowComponents(
+			new ActionRowBuilder<ButtonBuilder>().addComponents(
+				new ButtonBuilder().setLabel('Support server').setStyle(ButtonStyle.Link).setURL(supportServer)
+			)
+		);
+	return card;
+}
+
+//a category's commands that actually exist, with any command missing from every category listed
+//under About so nothing is left out of help
+function commandsIn(bot: Bot, category: Category): string[] {
+	const existing = new Set(bot.slashCommands.map((command) => command.name));
+	const listed = category.commands.filter((name) => existing.has(name));
+	if (category.id !== 'about') return listed;
+	const everywhere = new Set(categories.flatMap((c) => c.commands));
+	const unlisted = [...existing].filter((name) => !everywhere.has(name) && name !== 'help').sort();
+	return [...listed, ...unlisted];
+}
+
+function descriptionOf(bot: Bot, name: string): string {
+	return bot.slashCommands.find((command) => command.name === name)?.description ?? '';
 }

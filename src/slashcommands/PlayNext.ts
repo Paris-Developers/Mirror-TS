@@ -9,6 +9,7 @@ import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 import { colorCheck } from '../resources/embedColorCheck';
+import { MusicMetadata } from '../resources/nowPlaying';
 
 export class PlayNext implements SlashCommand {
 	name: string = 'playnext';
@@ -36,6 +37,8 @@ export class PlayNext implements SlashCommand {
 				return void interaction.editReply('no results were found');
 
 			const queue = bot.player.nodes.create(guild!, bot.player.playOptions);
+			//the now playing card goes in the channel music was last queued from
+			if (interaction.channel?.isSendable()) queue.metadata = { channel: interaction.channel } satisfies MusicMetadata;
 
 			await guild?.members.fetch(interaction.user.id);
 			try {
