@@ -45,7 +45,7 @@ Check it after about 30 seconds. This should print the number of servers:
 ```powershell
 winget download -e --id Prometheus.WindowsExporter --download-directory C:\Temp\windows_exporter
 $msi = (Get-ChildItem C:\Temp\windows_exporter -Filter *.msi | Select-Object -First 1).FullName
-Start-Process msiexec.exe -Wait -ArgumentList '/i', $msi, '/qn', 'CONFIG_FILE=C:\Mirror-TS\monitoring\windows_exporter.yml', 'ENABLED_COLLECTORS=process,cpu', 'LISTEN_ADDR=127.0.0.1'
+Start-Process msiexec.exe -Wait -ArgumentList '/i', $msi, '/qn', 'CONFIG_FILE=C:\Mirror-TS\monitoring\windows_exporter.yml', 'ENABLED_COLLECTORS=process,cpu,memory', 'LISTEN_ADDR=127.0.0.1'
 ```
 
 Check it. This should show lines ending in `mirrorbot`:

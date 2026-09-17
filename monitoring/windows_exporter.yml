@@ -1,8 +1,9 @@
 # windows_exporter settings for watching Mirror. Setup steps are in docs/MONITORING.md.
 collectors:
   # process: CPU, memory and I/O per program.
-  # cpu: only used to count the PC's cores, so the dashboard can show the bot's share of the whole PC
-  enabled: process,cpu
+  # cpu and memory: only used for the PC's core count and installed memory, so the dashboard can
+  # show the bot's share of the whole PC
+  enabled: process,cpu,memory
 collector:
   process:
     # the bot (node) and the helper programs it starts for each song. the dashboard narrows

@@ -384,7 +384,7 @@
 			},
 			"gridPos": {
 				"h": 8,
-				"w": 12,
+				"w": 8,
 				"x": 0,
 				"y": 6
 			},
@@ -434,6 +434,64 @@
 		{
 			"id": 10,
 			"type": "timeseries",
+			"title": "Memory, as a share of the whole PC",
+			"description": "Memory used by the bot and its helper programs, as a share of the PC's installed memory. Only processes run by the mirrorbot account are counted.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 8,
+				"x": 8,
+				"y": 6
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sum by (process) (windows_process_working_set_private_bytes * on(process_id) group_left() windows_process_info{owner=~\"(?i).*mirrorbot.*\"}) / scalar(windows_memory_physical_total_bytes) * 100",
+					"legendFormat": "{{process}}",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "percent",
+					"min": 0,
+					"custom": {
+						"drawStyle": "line",
+						"lineWidth": 1,
+						"fillOpacity": 15,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "normal",
+							"group": "A"
+						},
+						"spanNulls": false
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			}
+		},
+		{
+			"id": 11,
+			"type": "timeseries",
 			"title": "Memory by program",
 			"description": "Memory used by the bot and its helper programs, counting only memory that belongs to each program.",
 			"datasource": {
@@ -442,8 +500,8 @@
 			},
 			"gridPos": {
 				"h": 8,
-				"w": 12,
-				"x": 12,
+				"w": 8,
+				"x": 16,
 				"y": 6
 			},
 			"targets": [
@@ -490,7 +548,7 @@
 			}
 		},
 		{
-			"id": 11,
+			"id": 12,
 			"type": "row",
 			"title": "Network",
 			"collapsed": false,
@@ -503,7 +561,7 @@
 			"panels": []
 		},
 		{
-			"id": 12,
+			"id": 13,
 			"type": "timeseries",
 			"title": "Bot connections (Discord, voice, web APIs)",
 			"description": "Traffic on connections the bot opens itself, counted inside the bot. Voice audio is what Mirror streams into voice channels. Discord and web API traffic is counted after decryption, so it reads a little low. Song downloads are shown separately.",
@@ -594,7 +652,7 @@
 			}
 		},
 		{
-			"id": 13,
+			"id": 14,
 			"type": "timeseries",
 			"title": "Song downloads and helper program activity",
 			"description": "Data read and written by the helper programs Mirror starts for each song. yt-dlp read is roughly the song download from YouTube; Windows counts network and disk together for a program.",
@@ -652,7 +710,7 @@
 			}
 		},
 		{
-			"id": 14,
+			"id": 15,
 			"type": "row",
 			"title": "Activity",
 			"collapsed": false,
@@ -665,7 +723,7 @@
 			"panels": []
 		},
 		{
-			"id": 15,
+			"id": 16,
 			"type": "timeseries",
 			"title": "Songs started per hour, by server",
 			"description": "Songs and sound effects that started playing in the hour before each point, by server.",
@@ -724,7 +782,7 @@
 			"interval": "5m"
 		},
 		{
-			"id": 16,
+			"id": 17,
 			"type": "timeseries",
 			"title": "Commands per hour, by server",
 			"description": "Slash commands used in the hour before each point, by server.",
@@ -783,7 +841,7 @@
 			"interval": "5m"
 		},
 		{
-			"id": 17,
+			"id": 18,
 			"type": "bargauge",
 			"title": "Most used commands (selected time range)",
 			"description": "Slash commands used during the time range picked at the top right.",
@@ -838,7 +896,7 @@
 			}
 		},
 		{
-			"id": 18,
+			"id": 19,
 			"type": "bargauge",
 			"title": "Busiest servers (selected time range)",
 			"description": "Slash commands used per server during the time range picked at the top right.",
@@ -893,7 +951,7 @@
 			}
 		},
 		{
-			"id": 19,
+			"id": 20,
 			"type": "row",
 			"title": "Health",
 			"collapsed": false,
@@ -906,7 +964,7 @@
 			"panels": []
 		},
 		{
-			"id": 20,
+			"id": 21,
 			"type": "timeseries",
 			"title": "Problems per hour",
 			"description": "Should stay near zero. Player errors mean a song failed to play. Reconnects usually mean a Wi-Fi or internet hiccup.",
@@ -987,7 +1045,7 @@
 			"interval": "5m"
 		},
 		{
-			"id": 21,
+			"id": 22,
 			"type": "timeseries",
 			"title": "Responsiveness",
 			"description": "Discord ping is the round trip to Discord. Internal delay is how long the bot's work queue was blocked; if it climbs past about 100 ms the bot is overloaded.",
@@ -1056,7 +1114,7 @@
 			}
 		},
 		{
-			"id": 22,
+			"id": 23,
 			"type": "timeseries",
 			"title": "Disk used by the bot",
 			"description": "data holds saved settings, birthdays and intro sounds. logs grows over time and can be cleaned out when the bot is stopped.",
@@ -1114,7 +1172,7 @@
 			}
 		},
 		{
-			"id": 23,
+			"id": 24,
 			"type": "stat",
 			"title": "Restarts in selected range",
 			"description": "Times the bot started during the time range picked at the top right, including the Monday refresh. More than expected means it crashed and the service restarted it.",
@@ -1169,7 +1227,7 @@
 			}
 		},
 		{
-			"id": 24,
+			"id": 25,
 			"type": "stat",
 			"title": "Songs in selected range",
 			"description": "Songs and sounds played across all servers during the selected time range.",
@@ -1224,7 +1282,7 @@
 			}
 		},
 		{
-			"id": 25,
+			"id": 26,
 			"type": "stat",
 			"title": "Commands in selected range",
 			"description": "Slash commands used across all servers during the selected time range.",
@@ -1279,7 +1337,7 @@
 			}
 		},
 		{
-			"id": 26,
+			"id": 27,
 			"type": "stat",
 			"title": "Unhandled errors in selected range",
 			"description": "Errors nothing handled during the selected time range. Each one is in the bot log with details.",
