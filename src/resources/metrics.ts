@@ -123,9 +123,11 @@ export function startMetrics(bot: Bot): void {
 	countNetworkTraffic();
 	collectDefaultMetrics({ register: registry, prefix: 'mirror_' });
 
-	new Gauge({
-		name: 'mirror_network_bytes',
-		help: 'Bytes Mirror has sent and received since it started, by protocol. TCP is counted after decryption; yt-dlp downloads are not included',
+	//a counter only goes up, so each scrape adds whatever the totals grew by since the last one
+	const reported = new Map<string, number>();
+	new Counter({
+		name: 'mirror_network_bytes_total',
+		help: 'Bytes Mirror has sent and received, by protocol. TCP is counted after decryption; yt-dlp downloads are not included',
 		labelNames: ['protocol', 'direction'],
 		registers: [registry],
 		collect() {
@@ -135,10 +137,19 @@ export function startMetrics(bot: Bot): void {
 				read += socket.bytesRead;
 				written += socket.bytesWritten;
 			}
-			this.set({ protocol: 'tcp', direction: 'received' }, read);
-			this.set({ protocol: 'tcp', direction: 'sent' }, written);
-			this.set({ protocol: 'udp', direction: 'received' }, udpReceived);
-			this.set({ protocol: 'udp', direction: 'sent' }, udpSent);
+			const totals = [
+				{ protocol: 'tcp', direction: 'received', bytes: read },
+				{ protocol: 'tcp', direction: 'sent', bytes: written },
+				{ protocol: 'udp', direction: 'received', bytes: udpReceived },
+				{ protocol: 'udp', direction: 'sent', bytes: udpSent },
+			];
+			for (const { protocol, direction, bytes } of totals) {
+				const key = `${protocol} ${direction}`;
+				const growth = bytes - (reported.get(key) ?? 0);
+				if (growth > 0) this.inc({ protocol, direction }, growth);
+				else if (!reported.has(key)) this.inc({ protocol, direction }, 0);
+				reported.set(key, Math.max(bytes, reported.get(key) ?? 0));
+			}
 		},
 	});
 	new Gauge({
