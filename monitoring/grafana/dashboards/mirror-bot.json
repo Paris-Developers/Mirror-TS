@@ -15,7 +15,27 @@
 	},
 	"timepicker": {},
 	"templating": {
-		"list": []
+		"list": [
+			{
+				"type": "textbox",
+				"name": "isp_gb",
+				"label": "Your internet provider's total for this month (GB)",
+				"description": "The data used this month according to your internet provider or router, in GB. Used for the share panel only.",
+				"query": "0",
+				"current": {
+					"text": "0",
+					"value": "0"
+				},
+				"options": [
+					{
+						"selected": true,
+						"text": "0",
+						"value": "0"
+					}
+				],
+				"hide": 0
+			}
+		]
 	},
 	"annotations": {
 		"list": []
@@ -550,7 +570,7 @@
 		{
 			"id": 12,
 			"type": "row",
-			"title": "Network",
+			"title": "Internet data used by the bot (compare with the monthly total your internet provider shows)",
 			"collapsed": false,
 			"gridPos": {
 				"h": 1,
@@ -562,18 +582,384 @@
 		},
 		{
 			"id": 13,
-			"type": "timeseries",
-			"title": "Bot connections (Discord, voice, web APIs)",
-			"description": "Traffic on connections the bot opens itself, counted inside the bot. Voice audio is what Mirror streams into voice channels. Discord and web API traffic is counted after decryption, so it reads a little low. Song downloads are shown separately.",
+			"type": "stat",
+			"title": "Today",
+			"description": "Internet data the bot used since midnight. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 4,
+				"x": 0,
+				"y": 15
+			},
+			"timeFrom": "now/d",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round((sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))))",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"decimals": 2,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 14,
+			"type": "stat",
+			"title": "This month so far",
+			"description": "Internet data the bot used since the 1st of this month. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 5,
+				"x": 4,
+				"y": 15
+			},
+			"timeFrom": "now/M",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round((sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))))",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"decimals": 2,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 15,
+			"type": "stat",
+			"title": "Last month",
+			"description": "Internet data the bot used during all of last month. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 5,
+				"x": 9,
+				"y": 15
+			},
+			"timeFrom": "now/M",
+			"timeShift": "1M/M",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round((sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))))",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"decimals": 2,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 16,
+			"type": "stat",
+			"title": "Last 30 days",
+			"description": "Internet data the bot used over the last 30 days. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 5,
+				"x": 14,
+				"y": 15
+			},
+			"timeFrom": "30d",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "round((sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))))",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"decimals": 2,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "0"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 17,
+			"type": "stat",
+			"title": "Bot's share of this month's data",
+			"description": "This month's bot data as a share of the total your internet provider shows for this month. Type that total, in GB, into the box at the top of the dashboard.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 4,
+				"w": 5,
+				"x": 19,
+				"y": 15
+			},
+			"timeFrom": "now/M",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "(sum(increase(mirror_network_bytes_total[$__range])) + 28 * sum(increase(mirror_network_packets_total[$__range])) + sum(increase(mirror_song_download_bytes_total[$__range]))) / ($isp_gb * 1e9) * 100 and on() (vector($isp_gb) > 0)",
+					"legendFormat": "",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "percent",
+					"decimals": 1,
+					"color": {
+						"mode": "fixed",
+						"fixedColor": "text"
+					},
+					"noValue": "Enter your provider total above"
+				},
+				"overrides": []
+			},
+			"options": {
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				},
+				"colorMode": "none",
+				"graphMode": "none",
+				"textMode": "value",
+				"justifyMode": "auto",
+				"orientation": "auto"
+			}
+		},
+		{
+			"id": 18,
+			"type": "bargauge",
+			"title": "What used the data this month",
+			"description": "Where the bot's internet data went since the 1st of this month.",
 			"datasource": {
 				"type": "prometheus",
 				"uid": "mirror-prometheus"
 			},
 			"gridPos": {
 				"h": 8,
-				"w": 12,
+				"w": 8,
 				"x": 0,
-				"y": 15
+				"y": 19
+			},
+			"timeFrom": "now/M",
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "sum(increase(mirror_song_download_bytes_total[$__range]))",
+					"legendFormat": "Song downloads (YouTube)",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "B",
+					"expr": "sum(increase(mirror_network_bytes_total{protocol=\"udp\"}[$__range])) + 28 * sum(increase(mirror_network_packets_total{protocol=\"udp\"}[$__range]))",
+					"legendFormat": "Voice audio",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "C",
+					"expr": "sum(increase(mirror_network_bytes_total{protocol=\"tcp\"}[$__range]))",
+					"legendFormat": "Discord and web APIs",
+					"range": false,
+					"instant": true,
+					"format": "time_series"
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"min": 0,
+					"decimals": 2,
+					"color": {
+						"mode": "continuous-blues"
+					}
+				},
+				"overrides": []
+			},
+			"options": {
+				"orientation": "horizontal",
+				"displayMode": "basic",
+				"showUnfilled": true,
+				"valueMode": "text",
+				"namePlacement": "top",
+				"reduceOptions": {
+					"calcs": [
+						"lastNotNull"
+					],
+					"fields": "",
+					"values": false
+				}
+			}
+		},
+		{
+			"id": 19,
+			"type": "timeseries",
+			"title": "Data used per day",
+			"description": "Internet data the bot used per day over the last 30 days. Everything the bot sends and receives over the internet: song downloads from YouTube, voice audio, and Discord and web API traffic. It reads a few percent under what your provider counts, because encryption and some packet overhead are not measured.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 16,
+				"x": 8,
+				"y": 19
 			},
 			"targets": [
 				{
@@ -582,8 +968,83 @@
 						"uid": "mirror-prometheus"
 					},
 					"refId": "A",
-					"expr": "rate(mirror_network_bytes_total{protocol=\"udp\",direction=\"sent\"}[$__rate_interval]) * 8",
-					"legendFormat": "Voice audio sent",
+					"expr": "(sum(increase(mirror_network_bytes_total[1d])) + 28 * sum(increase(mirror_network_packets_total[1d])) + sum(increase(mirror_song_download_bytes_total[1d])))",
+					"legendFormat": "Internet data used in the 24 hours before each bar",
+					"range": true,
+					"instant": false
+				}
+			],
+			"fieldConfig": {
+				"defaults": {
+					"unit": "decbytes",
+					"min": 0,
+					"custom": {
+						"drawStyle": "bars",
+						"lineWidth": 1,
+						"fillOpacity": 80,
+						"showPoints": "never",
+						"stacking": {
+							"mode": "none",
+							"group": "A"
+						},
+						"spanNulls": false
+					},
+					"decimals": 2
+				},
+				"overrides": []
+			},
+			"options": {
+				"legend": {
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				}
+			},
+			"interval": "1d",
+			"timeFrom": "30d",
+			"maxDataPoints": 31
+		},
+		{
+			"id": 20,
+			"type": "row",
+			"title": "Internet speed",
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 27
+			},
+			"panels": []
+		},
+		{
+			"id": 21,
+			"type": "timeseries",
+			"title": "Internet speed used by the bot",
+			"description": "How fast the bot is using the internet at each moment. Song downloads come in short bursts when a song starts; voice audio is steady while music plays, about 100 kb/s per server.",
+			"datasource": {
+				"type": "prometheus",
+				"uid": "mirror-prometheus"
+			},
+			"gridPos": {
+				"h": 8,
+				"w": 24,
+				"x": 0,
+				"y": 28
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "A",
+					"expr": "rate(mirror_song_download_bytes_total[$__rate_interval]) * 8",
+					"legendFormat": "Song downloads (YouTube)",
 					"range": true,
 					"instant": false
 				},
@@ -593,8 +1054,8 @@
 						"uid": "mirror-prometheus"
 					},
 					"refId": "B",
-					"expr": "rate(mirror_network_bytes_total{protocol=\"udp\",direction=\"received\"}[$__rate_interval]) * 8",
-					"legendFormat": "Voice received",
+					"expr": "(rate(mirror_network_bytes_total{protocol=\"udp\",direction=\"sent\"}[$__rate_interval]) + 28 * rate(mirror_network_packets_total{protocol=\"udp\",direction=\"sent\"}[$__rate_interval])) * 8",
+					"legendFormat": "Voice audio sent",
 					"range": true,
 					"instant": false
 				},
@@ -604,6 +1065,17 @@
 						"uid": "mirror-prometheus"
 					},
 					"refId": "C",
+					"expr": "(rate(mirror_network_bytes_total{protocol=\"udp\",direction=\"received\"}[$__rate_interval]) + 28 * rate(mirror_network_packets_total{protocol=\"udp\",direction=\"received\"}[$__rate_interval])) * 8",
+					"legendFormat": "Voice received",
+					"range": true,
+					"instant": false
+				},
+				{
+					"datasource": {
+						"type": "prometheus",
+						"uid": "mirror-prometheus"
+					},
+					"refId": "D",
 					"expr": "rate(mirror_network_bytes_total{protocol=\"tcp\",direction=\"received\"}[$__rate_interval]) * 8",
 					"legendFormat": "Discord and web APIs received",
 					"range": true,
@@ -614,7 +1086,7 @@
 						"type": "prometheus",
 						"uid": "mirror-prometheus"
 					},
-					"refId": "D",
+					"refId": "E",
 					"expr": "rate(mirror_network_bytes_total{protocol=\"tcp\",direction=\"sent\"}[$__rate_interval]) * 8",
 					"legendFormat": "Discord and web APIs sent",
 					"range": true,
@@ -652,65 +1124,7 @@
 			}
 		},
 		{
-			"id": 14,
-			"type": "timeseries",
-			"title": "Song downloads and helper program activity",
-			"description": "Data read and written by the helper programs Mirror starts for each song. yt-dlp read is roughly the song download from YouTube; Windows counts network and disk together for a program.",
-			"datasource": {
-				"type": "prometheus",
-				"uid": "mirror-prometheus"
-			},
-			"gridPos": {
-				"h": 8,
-				"w": 12,
-				"x": 12,
-				"y": 15
-			},
-			"targets": [
-				{
-					"datasource": {
-						"type": "prometheus",
-						"uid": "mirror-prometheus"
-					},
-					"refId": "A",
-					"expr": "sum by (process, mode) (rate(windows_process_io_bytes_total{process=~\"yt-dlp|ffmpeg\",mode=~\"read|write\"}[$__rate_interval]) * on(process_id) group_left() windows_process_info{owner=~\"(?i).*mirrorbot.*\"}) * 8",
-					"legendFormat": "{{process}} {{mode}}",
-					"range": true,
-					"instant": false
-				}
-			],
-			"fieldConfig": {
-				"defaults": {
-					"unit": "bps",
-					"min": 0,
-					"custom": {
-						"drawStyle": "line",
-						"lineWidth": 1,
-						"fillOpacity": 15,
-						"showPoints": "never",
-						"stacking": {
-							"mode": "none",
-							"group": "A"
-						},
-						"spanNulls": false
-					}
-				},
-				"overrides": []
-			},
-			"options": {
-				"legend": {
-					"displayMode": "list",
-					"placement": "bottom",
-					"showLegend": true
-				},
-				"tooltip": {
-					"mode": "multi",
-					"sort": "desc"
-				}
-			}
-		},
-		{
-			"id": 15,
+			"id": 22,
 			"type": "row",
 			"title": "Activity",
 			"collapsed": false,
@@ -718,12 +1132,12 @@
 				"h": 1,
 				"w": 24,
 				"x": 0,
-				"y": 23
+				"y": 36
 			},
 			"panels": []
 		},
 		{
-			"id": 16,
+			"id": 23,
 			"type": "timeseries",
 			"title": "Songs started per hour, by server",
 			"description": "Songs and sound effects that started playing in the hour before each point, by server.",
@@ -735,7 +1149,7 @@
 				"h": 8,
 				"w": 12,
 				"x": 0,
-				"y": 24
+				"y": 37
 			},
 			"targets": [
 				{
@@ -782,7 +1196,7 @@
 			"interval": "5m"
 		},
 		{
-			"id": 17,
+			"id": 24,
 			"type": "timeseries",
 			"title": "Commands per hour, by server",
 			"description": "Slash commands used in the hour before each point, by server.",
@@ -794,7 +1208,7 @@
 				"h": 8,
 				"w": 12,
 				"x": 12,
-				"y": 24
+				"y": 37
 			},
 			"targets": [
 				{
@@ -841,7 +1255,7 @@
 			"interval": "5m"
 		},
 		{
-			"id": 18,
+			"id": 25,
 			"type": "bargauge",
 			"title": "Most used commands (selected time range)",
 			"description": "Slash commands used during the time range picked at the top right.",
@@ -853,7 +1267,7 @@
 				"h": 8,
 				"w": 12,
 				"x": 0,
-				"y": 32
+				"y": 45
 			},
 			"targets": [
 				{
@@ -896,7 +1310,7 @@
 			}
 		},
 		{
-			"id": 19,
+			"id": 26,
 			"type": "bargauge",
 			"title": "Busiest servers (selected time range)",
 			"description": "Slash commands used per server during the time range picked at the top right.",
@@ -908,7 +1322,7 @@
 				"h": 8,
 				"w": 12,
 				"x": 12,
-				"y": 32
+				"y": 45
 			},
 			"targets": [
 				{
@@ -951,7 +1365,7 @@
 			}
 		},
 		{
-			"id": 20,
+			"id": 27,
 			"type": "row",
 			"title": "Health",
 			"collapsed": false,
@@ -959,12 +1373,12 @@
 				"h": 1,
 				"w": 24,
 				"x": 0,
-				"y": 40
+				"y": 53
 			},
 			"panels": []
 		},
 		{
-			"id": 21,
+			"id": 28,
 			"type": "timeseries",
 			"title": "Problems per hour",
 			"description": "Should stay near zero. Player errors mean a song failed to play. Reconnects usually mean a Wi-Fi or internet hiccup.",
@@ -976,7 +1390,7 @@
 				"h": 8,
 				"w": 8,
 				"x": 0,
-				"y": 41
+				"y": 54
 			},
 			"targets": [
 				{
@@ -1045,7 +1459,7 @@
 			"interval": "5m"
 		},
 		{
-			"id": 22,
+			"id": 29,
 			"type": "timeseries",
 			"title": "Responsiveness",
 			"description": "Discord ping is the round trip to Discord. Internal delay is how long the bot's work queue was blocked; if it climbs past about 100 ms the bot is overloaded.",
@@ -1057,7 +1471,7 @@
 				"h": 8,
 				"w": 8,
 				"x": 8,
-				"y": 41
+				"y": 54
 			},
 			"targets": [
 				{
@@ -1114,7 +1528,7 @@
 			}
 		},
 		{
-			"id": 23,
+			"id": 30,
 			"type": "timeseries",
 			"title": "Disk used by the bot",
 			"description": "data holds saved settings, birthdays and intro sounds. logs grows over time and can be cleaned out when the bot is stopped.",
@@ -1126,7 +1540,7 @@
 				"h": 8,
 				"w": 8,
 				"x": 16,
-				"y": 41
+				"y": 54
 			},
 			"targets": [
 				{
@@ -1172,7 +1586,7 @@
 			}
 		},
 		{
-			"id": 24,
+			"id": 31,
 			"type": "stat",
 			"title": "Restarts in selected range",
 			"description": "Times the bot started during the time range picked at the top right, including the Monday refresh. More than expected means it crashed and the service restarted it.",
@@ -1184,7 +1598,7 @@
 				"h": 4,
 				"w": 6,
 				"x": 0,
-				"y": 49
+				"y": 62
 			},
 			"targets": [
 				{
@@ -1227,7 +1641,7 @@
 			}
 		},
 		{
-			"id": 25,
+			"id": 32,
 			"type": "stat",
 			"title": "Songs in selected range",
 			"description": "Songs and sounds played across all servers during the selected time range.",
@@ -1239,7 +1653,7 @@
 				"h": 4,
 				"w": 6,
 				"x": 6,
-				"y": 49
+				"y": 62
 			},
 			"targets": [
 				{
@@ -1282,7 +1696,7 @@
 			}
 		},
 		{
-			"id": 26,
+			"id": 33,
 			"type": "stat",
 			"title": "Commands in selected range",
 			"description": "Slash commands used across all servers during the selected time range.",
@@ -1294,7 +1708,7 @@
 				"h": 4,
 				"w": 6,
 				"x": 12,
-				"y": 49
+				"y": 62
 			},
 			"targets": [
 				{
@@ -1337,7 +1751,7 @@
 			}
 		},
 		{
-			"id": 27,
+			"id": 34,
 			"type": "stat",
 			"title": "Unhandled errors in selected range",
 			"description": "Errors nothing handled during the selected time range. Each one is in the bot log with details.",
@@ -1349,7 +1763,7 @@
 				"h": 4,
 				"w": 6,
 				"x": 18,
-				"y": 49
+				"y": 62
 			},
 			"targets": [
 				{

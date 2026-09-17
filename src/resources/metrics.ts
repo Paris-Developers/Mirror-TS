@@ -3,6 +3,7 @@
 //running the bot can reach them. everything here describes Mirror's own process, so other
 //programs on the same machine never show up in these numbers
 import { Counter, Gauge, Registry, collectDefaultMetrics } from 'prom-client';
+import { ChildProcess } from 'child_process';
 import dgram from 'dgram';
 import http from 'http';
 import net from 'net';
@@ -41,12 +42,16 @@ export const unhandledRejections = new Counter({
 //bytes on the connections Mirror opens: Discord's gateway and API, YouTube and the other web APIs
 //over TCP, and voice audio over UDP. TLS connections are counted after decryption, which leaves
 //out handshakes and encryption overhead, so the TCP numbers run under what goes over the wire.
-//song downloads happen inside yt-dlp, a separate process, and are not part of these numbers
+//song downloads happen inside yt-dlp, a separate process, and are counted from what it hands back
 let tcpClosedRead = 0;
 let tcpClosedWritten = 0;
 const openTcpSockets = new Set<net.Socket>();
 let udpSent = 0;
 let udpReceived = 0;
+let udpPacketsSent = 0;
+let udpPacketsReceived = 0;
+let downloadClosedBytes = 0;
+const openDownloads = new Set<net.Socket>();
 
 function countNetworkTraffic() {
 	//every outgoing TCP connection goes through Socket.connect, TLS ones included
@@ -67,15 +72,41 @@ function countNetworkTraffic() {
 	//calls send again once it is, so only sends on a bound socket are counted
 	const send = dgram.Socket.prototype.send as (...args: unknown[]) => void;
 	dgram.Socket.prototype.send = function (this: dgram.Socket, ...args: unknown[]) {
-		if (isBound(this)) udpSent += datagramSize(args);
+		if (isBound(this)) {
+			udpSent += datagramSize(args);
+			udpPacketsSent++;
+		}
 		return send.apply(this, args);
 	} as typeof dgram.Socket.prototype.send;
 
 	const emit = dgram.Socket.prototype.emit as (...args: unknown[]) => boolean;
 	dgram.Socket.prototype.emit = function (this: dgram.Socket, ...args: unknown[]) {
-		if (args[0] === 'message' && Buffer.isBuffer(args[1])) udpReceived += args[1].length;
+		if (args[0] === 'message' && Buffer.isBuffer(args[1])) {
+			udpReceived += args[1].length;
+			udpPacketsReceived++;
+		}
 		return emit.apply(this, args);
 	} as typeof dgram.Socket.prototype.emit;
+
+	//every way of starting a program (spawn, exec, execFile) goes through ChildProcess.spawn.
+	//yt-dlp writes the song it downloads to its output, which the bot reads through a pipe, so the
+	//bytes read from that pipe are the download. the pipe is kept at the start: once yt-dlp exits,
+	//the library that starts it replaces stdout on the process object with the collected output
+	const childProcess = ChildProcess.prototype as unknown as { spawn: (...args: unknown[]) => unknown };
+	const spawn = childProcess.spawn;
+	childProcess.spawn = function (this: ChildProcess, ...args: unknown[]) {
+		const result = spawn.apply(this, args);
+		const file = (args[0] as { file?: unknown } | undefined)?.file;
+		const output = this.stdout;
+		if (typeof file === 'string' && /^yt-dlp/i.test(path.basename(file)) && output instanceof net.Socket) {
+			openDownloads.add(output);
+			output.once('close', () => {
+				downloadClosedBytes += output.bytesRead;
+				openDownloads.delete(output);
+			});
+		}
+		return result;
+	};
 }
 
 function isBound(socket: dgram.Socket): boolean {
@@ -97,6 +128,16 @@ function datagramSize(args: unknown[]): number {
 		if (ArrayBuffer.isView(part)) return total + part.byteLength;
 		return total;
 	}, 0);
+}
+
+//a counter only goes up, so each scrape adds whatever a running total grew by since the last one
+const reported = new Map<string, number>();
+function raiseTo(counter: Counter<string>, labels: Record<string, string>, total: number) {
+	const key = `${(counter as unknown as { name: string }).name} ${JSON.stringify(labels)}`;
+	const previous = reported.get(key);
+	if (previous === undefined) counter.inc(labels, total);
+	else if (total > previous) counter.inc(labels, total - previous);
+	reported.set(key, Math.max(total, previous ?? 0));
 }
 
 async function folderSize(folder: string): Promise<number> {
@@ -123,11 +164,9 @@ export function startMetrics(bot: Bot): void {
 	countNetworkTraffic();
 	collectDefaultMetrics({ register: registry, prefix: 'mirror_' });
 
-	//a counter only goes up, so each scrape adds whatever the totals grew by since the last one
-	const reported = new Map<string, number>();
 	new Counter({
 		name: 'mirror_network_bytes_total',
-		help: 'Bytes Mirror has sent and received, by protocol. TCP is counted after decryption; yt-dlp downloads are not included',
+		help: 'Bytes Mirror has sent and received, by protocol. TCP is counted after decryption; song downloads are in mirror_song_download_bytes_total',
 		labelNames: ['protocol', 'direction'],
 		registers: [registry],
 		collect() {
@@ -137,19 +176,32 @@ export function startMetrics(bot: Bot): void {
 				read += socket.bytesRead;
 				written += socket.bytesWritten;
 			}
-			const totals = [
-				{ protocol: 'tcp', direction: 'received', bytes: read },
-				{ protocol: 'tcp', direction: 'sent', bytes: written },
-				{ protocol: 'udp', direction: 'received', bytes: udpReceived },
-				{ protocol: 'udp', direction: 'sent', bytes: udpSent },
-			];
-			for (const { protocol, direction, bytes } of totals) {
-				const key = `${protocol} ${direction}`;
-				const growth = bytes - (reported.get(key) ?? 0);
-				if (growth > 0) this.inc({ protocol, direction }, growth);
-				else if (!reported.has(key)) this.inc({ protocol, direction }, 0);
-				reported.set(key, Math.max(bytes, reported.get(key) ?? 0));
-			}
+			raiseTo(this, { protocol: 'tcp', direction: 'received' }, read);
+			raiseTo(this, { protocol: 'tcp', direction: 'sent' }, written);
+			raiseTo(this, { protocol: 'udp', direction: 'received' }, udpReceived);
+			raiseTo(this, { protocol: 'udp', direction: 'sent' }, udpSent);
+		},
+	});
+	//each UDP packet also carries 28 bytes of IP and UDP headers that internet providers count.
+	//voice sends about 50 small packets a second, so the headers are a real share of voice data
+	new Counter({
+		name: 'mirror_network_packets_total',
+		help: 'UDP (voice) packets Mirror has sent and received; each carries 28 bytes of IP and UDP headers',
+		labelNames: ['protocol', 'direction'],
+		registers: [registry],
+		collect() {
+			raiseTo(this, { protocol: 'udp', direction: 'received' }, udpPacketsReceived);
+			raiseTo(this, { protocol: 'udp', direction: 'sent' }, udpPacketsSent);
+		},
+	});
+	new Counter({
+		name: 'mirror_song_download_bytes_total',
+		help: 'Audio yt-dlp downloaded for songs and intros, as handed to the bot; the download itself runs a few percent larger',
+		registers: [registry],
+		collect() {
+			let bytes = downloadClosedBytes;
+			for (const output of openDownloads) bytes += output.bytesRead;
+			raiseTo(this, {}, bytes);
 		},
 	});
 	new Gauge({

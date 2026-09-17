@@ -8,7 +8,7 @@ It's built for a Windows host where the bot runs as the `MirrorBot` service unde
 |---|---|---|
 | The bot's stats (`metrics_port` in `config.json`) | What the bot is doing and the traffic it sends and receives | This machine only (`127.0.0.1:9464`) |
 | windows_exporter | CPU, memory and I/O of the bot's processes | This machine only (`127.0.0.1:9182`) |
-| Prometheus | Stores 30 days of history | This machine only (`127.0.0.1:9090`) |
+| Prometheus | Stores 400 days of history, so whole months can be compared with your internet bill | This machine only (`127.0.0.1:9090`) |
 | Grafana | The dashboard | Port 3000, limited by the firewall to one other PC |
 
 The config files live in `monitoring/`.
@@ -88,7 +88,7 @@ Create the service. Use the NSSM copy in `C:\Program Files\NSSM`, because servic
 ```powershell
 $nssm = "C:\Program Files\NSSM\nssm.exe"
 & $nssm install Prometheus "C:\Program Files\Prometheus\prometheus.exe"
-& $nssm set Prometheus AppParameters "--config.file=C:\Mirror-TS\monitoring\prometheus.yml --storage.tsdb.path=C:\ProgramData\Prometheus\data --storage.tsdb.retention.time=30d --web.listen-address=127.0.0.1:9090"
+& $nssm set Prometheus AppParameters "--config.file=C:\Mirror-TS\monitoring\prometheus.yml --storage.tsdb.path=C:\ProgramData\Prometheus\data --storage.tsdb.retention.time=400d --web.listen-address=127.0.0.1:9090"
 & $nssm set Prometheus AppDirectory C:\ProgramData\Prometheus
 & $nssm set Prometheus DisplayName "Prometheus (Mirror monitoring)"
 & $nssm set Prometheus AppStdout C:\ProgramData\Prometheus\prometheus.log
@@ -123,6 +123,15 @@ Then, on the viewing PC:
 2. Sign in as `admin` / `admin`.
 3. Set a strong new password when prompted.
 4. Open **Dashboards → Mirror → Mirror bot**.
+
+## Internet data used by the bot
+
+The **Internet data used by the bot** row totals everything the bot sends and receives over the internet: today, this month so far, last month and the last 30 days, plus a daily chart and a breakdown by what used it. Those parts are:
+- **Song downloads**: counted from the audio yt-dlp hands back to the bot.
+- **Voice audio**: including the 28 bytes of IP and UDP headers on each packet.
+- **Discord and web API traffic.**
+
+To see the bot's share of your household's data, type the monthly total from your internet provider or router, in GB, into the box at the top of the dashboard. The totals read a few percent under what a provider counts, because encryption and some packet overhead aren't measured. They also only start from when the stats were turned on.
 
 ## Updating the dashboard
 
