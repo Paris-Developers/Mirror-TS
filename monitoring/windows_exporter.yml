@@ -1,0 +1,15 @@
+# windows_exporter settings for watching Mirror. Setup steps are in docs/MONITORING.md.
+collectors:
+  # process: CPU, memory and I/O per program.
+  # cpu: only used to count the PC's cores, so the dashboard can show the bot's share of the whole PC
+  enabled: process,cpu
+collector:
+  process:
+    # the bot (node) and the helper programs it starts for each song. the dashboard narrows
+    # these further to processes run by the mirrorbot account
+    include: "^(node|yt-dlp|ffmpeg)$"
+web:
+  # only reachable from this machine
+  listen-address: "127.0.0.1:9182"
+log:
+  level: warn
