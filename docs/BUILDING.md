@@ -26,7 +26,7 @@ You must run ./build.bat and restart the bot whenever you make a change to the p
 
 ## Optional: stats for monitoring
 
-Set `metrics_port` in `config.json` (for example `9464`) and rebuild to have the bot serve stats about itself at `http://127.0.0.1:<port>/metrics`, in the format Prometheus reads. They cover the bot's own CPU, memory and network traffic, servers playing music, commands used, player errors, the gateway ping and the size of the `data` and `logs` folders. The stats are only reachable from the machine running the bot. Leave `metrics_port` empty to turn them off.
+Set `metrics_port` in `config.json` (for example `9464`) and rebuild to have the bot serve stats about itself at `http://127.0.0.1:<port>/metrics`, in the format Prometheus reads. They cover the bot's own CPU, memory and network traffic (including song downloads by yt-dlp), servers playing music, commands used, player errors, the gateway ping and the size of the `data` and `logs` folders. The stats are only reachable from the machine running the bot. Leave `metrics_port` empty to turn them off.
 
 ## Upgrading an existing install (discord.js 13 → 14)
 
