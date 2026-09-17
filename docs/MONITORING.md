@@ -111,15 +111,21 @@ Copy-Item C:\Mirror-TS\monitoring\grafana\custom.ini "C:\Program Files\GrafanaLa
 Restart-Service Grafana
 ```
 
-Allow the dashboard only from the PC you'll view it on (here `192.168.68.59`). First list any Grafana firewall rules the installer created, and remove or disable any that allow other addresses:
+Allow the dashboard only from the PC you'll view it on. Below, replace:
+- `<viewing-pc-ip>` with that PC's local IP address.
+- `<bot-pc-ip>` with the local IP address of the PC running the bot.
+
+To find a PC's local IP address, run `ipconfig` on it. Reserve both addresses in your router so they don't change.
+
+First list any Grafana firewall rules the installer created, and remove or disable any that allow other addresses:
 
 ```powershell
 Get-NetFirewallRule | Where-Object DisplayName -match 'grafana' | Format-Table DisplayName, Enabled, Direction, Action
-New-NetFirewallRule -DisplayName "Grafana - upstairs PC only" -Direction Inbound -Protocol TCP -LocalPort 3000 -RemoteAddress 192.168.68.59 -Action Allow -Profile Private
+New-NetFirewallRule -DisplayName "Grafana - viewing PC only" -Direction Inbound -Protocol TCP -LocalPort 3000 -RemoteAddress <viewing-pc-ip> -Action Allow -Profile Private
 ```
 
 Then, on the viewing PC:
-1. Open `http://192.168.68.55:3000`.
+1. Open `http://<bot-pc-ip>:3000`.
 2. Sign in as `admin` / `admin`.
 3. Set a strong new password when prompted.
 4. Open **Dashboards → Mirror → Mirror bot**.
