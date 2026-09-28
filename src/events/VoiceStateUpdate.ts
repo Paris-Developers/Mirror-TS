@@ -7,7 +7,7 @@ import { VoiceConnectionStatus } from 'discord-voip';
 import { silencedUsers } from '../slashcommands/SilenceMember';
 import { handledHere } from '../resources/instanceGuard';
 import { queueBusy } from '../resources/CustomPlayer';
-import { followDefaultChannel } from '../slashcommands/DefaultVc';
+import { followPeople } from '../resources/autoJoin';
 
 export class VoiceStateUpdate implements EventHandler {
 	eventName = 'voiceStateUpdate';
@@ -29,8 +29,8 @@ export class VoiceStateUpdate implements EventHandler {
 			}
 			return; //ignores bots
 		}
-		//someone arriving in the server's default channel brings Mirror in with them
-		await followDefaultChannel(bot, oldState, newState);
+		//with auto-join on, someone joining voice brings Mirror in with them
+		await followPeople(bot, oldState, newState);
 		let ourId = newState.guild.members.me?.voice.channelId; //checks the voice channel id that mirror is sitting in
 		if (!ourId || newState.channelId != ourId) return; //if the new channel of the user doesnt match mirrors, end
 		if (oldState.channelId == newState.channelId) return; //if the new channel and the old channel are the same, end

@@ -73,7 +73,7 @@ async function showCard(bot: Bot, guildId: string) {
 	const queue = bot.player.nodes.get(guildId);
 	const track = queue?.currentTrack;
 	if (!queue || !track || isSoundFile(track)) return;
-	//music started without /play, such as from the default voice channel, has nowhere to post
+	//a queue Mirror opened by itself, such as when auto-join follows someone in, has nowhere to post
 	const channel = (queue.metadata as MusicMetadata | null)?.channel;
 	if (!channel) return;
 

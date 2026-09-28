@@ -3,7 +3,7 @@ import { Bot } from '../Bot';
 import { bdayTimes } from '../slashcommands/BirthdayConfig';
 import { birthdayTimer } from '../resources/birthdayTimer';
 import { registerSlashCommands } from '../resources/registerSlashCommands';
-import { launchVoice, watchDefaultVoice } from '../slashcommands/DefaultVc';
+import { startAutoJoin } from '../resources/autoJoin';
 import config from '../resources/config';
 import { ActivityType } from 'discord.js';
 import { handledHere } from '../resources/instanceGuard';
@@ -22,9 +22,8 @@ export class Ready implements EventHandler {
 			}
 		};
 		//voice goes first and doesn't wait: syncing commands with Discord can be slow, and joining
-		//the default channels doesn't depend on it
-		watchDefaultVoice(bot);
-		void step('default voice channels', () => launchVoice(bot));
+		//people already in voice doesn't depend on it
+		void step('auto-join', () => startAutoJoin(bot));
 		await step('slash commands', () => registerSlashCommands(bot));
 		await step('status', () =>
 			bot.client.user?.setActivity(config.message, {

@@ -6,7 +6,7 @@ import {
 	GatewayOpcodes,
 } from 'discord.js';
 import { VoiceConnection, VoiceConnectionStatus, getVoiceConnection } from 'discord-voip';
-import { leftOnPurpose } from './DefaultVc';
+import { leftOnPurpose } from '../resources/autoJoin';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
