@@ -14,21 +14,38 @@ const maxLength = 4096;
 //the update to send: what follows the command word in the same message (after a space or a new line,
 //with its formatting kept), or else a .txt file attached to it, or else the message it replies to.
 //a long paste arrives as an attached message.txt, and replying lets the update be read over first
-async function updateText(message: Message): Promise<string> {
+//when there's no update, problem says what Mirror did find, so the owner knows what to change
+async function updateText(message: Message): Promise<{ text: string; problem?: string }> {
 	const typed = message.content.replace(/^\S+\s*/, '').trim();
-	if (typed) return typed;
+	if (typed) return { text: typed };
+	const fromFile = await attachedText(message);
+	if (fromFile) return { text: fromFile };
+	if (!message.reference?.messageId) return { text: '' };
+	let original: Message;
+	try {
+		original = await message.fetchReference();
+	} catch (error) {
+		return {
+			text: '',
+			problem: `Mirror couldn't read the message you replied to (${error instanceof Error ? error.message : error}). It needs View Channel and Read Message History in that channel.`,
+		};
+	}
+	const text = original.content.trim() || (await attachedText(original));
+	if (text) return { text };
+	return {
+		text: '',
+		problem: `The message you replied to (by ${original.author.username}) has no text Mirror can read. Reply to the message that holds the update itself.`,
+	};
+}
+
+//the text of a .txt file attached to a message, which is how Discord sends a long pasted message
+async function attachedText(message: Message): Promise<string> {
 	const file = message.attachments.find(
 		(attachment) => attachment.name.toLowerCase().endsWith('.txt') || !!attachment.contentType?.startsWith('text/plain')
 	);
-	if (file) {
-		const response = await fetch(file.url);
-		if (response.ok) return (await response.text()).trim();
-	}
-	if (message.reference?.messageId) {
-		const original = await message.fetchReference().catch(() => null);
-		if (original) return original.content.trim();
-	}
-	return '';
+	if (!file) return '';
+	const response = await fetch(file.url);
+	return response.ok ? (await response.text()).trim() : '';
 }
 
 export class SendUpdate implements MessageCommand {
@@ -46,8 +63,11 @@ export class SendUpdate implements MessageCommand {
 		const answer = (content: string) =>
 			message.reply({ content, allowedMentions: { repliedUser: false } }).catch(() => {});
 		try {
-			const content = await updateText(message);
-			bot.logger.debug(`$sendupdate got ${content.length} characters of update`);
+			const { text: content, problem } = await updateText(message);
+			bot.logger.info(
+				`$sendupdate: ${content.length} characters of update (reply: ${!!message.reference?.messageId}, attachments: ${message.attachments.size})${problem ? `. ${problem}` : ''}`
+			);
+			if (problem) return void (await answer(problem));
 			if (!content) {
 				return void (await answer(
 					[
