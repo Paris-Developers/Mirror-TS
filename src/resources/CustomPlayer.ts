@@ -1,8 +1,9 @@
 import { Bot } from '../Bot';
-import { GuildNodeCreateOptions, GuildQueue, Player, QueueRepeatMode } from 'discord-player';
+import { GuildNodeCreateOptions, GuildQueue, Player } from 'discord-player';
 import {
 	ChannelType,
 	Guild,
+	MessageFlags,
 	PermissionFlagsBits,
 	User,
 	VoiceBasedChannel,
@@ -20,7 +21,7 @@ import { YoutubeExtractor } from 'discord-player-youtubei';
 import { fileSearchOptions, registerExtractors, userSearchOptions } from './extractors';
 import { playerErrors, tracksStarted } from './metrics';
 import { endCard, registerNowPlaying } from './nowPlaying';
-import { leftOnPurpose, rejoinDefaultVoice, stayedIn } from '../slashcommands/DefaultVc';
+import { autoJoinOn, leftOnPurpose, rejoinPeople, stayedIn } from './autoJoin';
 
 //a join that failed for a reason worth telling the person who asked. the message is written for them
 export class VoiceJoinError extends Error {}
@@ -264,8 +265,8 @@ export class CustomPlayer extends Player {
 		//Discord confirms the leave a moment later. the next join waits for that, so it doesn't take
 		//the confirmation for a disconnect of its own
 		await this.waitForBotIn(queue.guild, null, 3000).catch(() => {});
-		//a server with a default channel gets Mirror back once voice works again
-		rejoinDefaultVoice(this.bot, queue.guild.id);
+		//with auto-join on, Mirror goes back to wherever people are once voice works again
+		rejoinPeople(this.bot, queue.guild.id);
 	}
 
 	//resolves on the connection's next change of status, or after ms, whichever comes first
@@ -380,21 +381,23 @@ export class CustomPlayer extends Player {
 		//throw the queue away once Mirror is disconnected. the library has already let go of the
 		//connection by then
 		this.events.on('disconnect', (queue) => {
-			//someone disconnected Mirror (or it was kicked), so it doesn't return to a default channel by itself
+			//someone disconnected Mirror (or it was kicked), so auto-join keeps it out for now
 			leftOnPurpose(queue.guild.id);
 			this.discardQueue(queue);
 		});
 
-		//everyone left: stop the music but stay in the channel, so intros play for whoever comes back
-		//and /defaultvc keeps Mirror where it was put. an empty queue also lets people in another
-		//channel pull Mirror over with /join
+		//everyone has been gone for a little while (leaveOnEmptyCooldown): stop any music and leave.
+		//Discord shows a voice channel as in use while Mirror sits in it, even alone. with auto-join on,
+		//Mirror follows the next person into voice, or goes where people already are (autoJoin.ts)
 		this.events.on('emptyChannel', (queue) => {
-			if (!queue.currentTrack && !queue.tracks.size) return;
-			void endCard(this.bot, queue.guild.id, 'Stopped because everyone left the voice channel');
-			if (queue.repeatMode) queue.setRepeatMode(QueueRepeatMode.OFF);
-			//a paused song never reaches its end, so it has to be unpaused to be stopped
-			if (queue.node.isPaused()) queue.node.setPaused(false);
-			queue.node.stop();
+			//the channel is gone from the queue once it's thrown away, so it's noted first
+			const channel = queue.channel;
+			const hadMusic = !!(queue.currentTrack || queue.tracks.size);
+			if (hadMusic) void endCard(this.bot, queue.guild.id, 'Stopped because everyone left the voice channel');
+			this.discardQueue(queue);
+			if (channel) void this.sayLeftEmpty(channel, hadMusic);
+			//people may be in another channel already
+			rejoinPeople(this.bot, queue.guild.id);
 		});
 
 		this.events.on('playerStart', (queue) => {
@@ -438,6 +441,22 @@ export class CustomPlayer extends Player {
 		this.bot.client.on('shardReady', nudge);
 
 		registerNowPlaying(this.bot);
+	}
+
+	//says in the voice channel's own chat why Mirror just left, so nobody wonders where it went. it's
+	//sent without a notification, and a channel Mirror can't post in is simply skipped
+	private async sayLeftEmpty(channel: VoiceBasedChannel, hadMusic: boolean) {
+		if (!channel.isSendable()) return;
+		const left = hadMusic ? 'stopped the music and left' : 'left';
+		const back = autoJoinOn(channel.guild.id) ? " I'll be back when someone joins." : '';
+		await channel
+			.send({
+				content: `👋 Nobody's here, so I ${left}.${back}`,
+				flags: MessageFlags.SuppressNotifications,
+			})
+			.catch((error) =>
+				this.bot.logger.debug(`[${channel.guild.name}] Could not say why Mirror left ${channel.name}: ${error}`)
+			);
 	}
 
 	//a song whose audio arrived while voice wasn't ready is left half started: the player stays idle
@@ -524,8 +543,8 @@ export class CustomPlayer extends Player {
 		if (queueBusy(queue)) void endCard(this.bot, queue.guild.id, 'Music stopped: the voice connection was lost');
 		if (this.nodes.get(queue.guild.id) === queue) queue.delete();
 		else queue.dispatcher?.destroy();
-		//a server with a default channel gets Mirror back once voice works again
-		rejoinDefaultVoice(this.bot, queue.guild.id);
+		//with auto-join on, Mirror goes back to wherever people are once voice works again
+		rejoinPeople(this.bot, queue.guild.id);
 	}
 
 	private lostInterest(queue: GuildQueue, connection: VoiceConnection): boolean {

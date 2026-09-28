@@ -4,7 +4,7 @@ import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 import { respond } from '../resources/respond';
-import { leftOnPurpose } from './DefaultVc';
+import { leftOnPurpose } from '../resources/autoJoin';
 
 export class DestroyQueue implements SlashCommand {
 	name: string = 'destroyqueue';
