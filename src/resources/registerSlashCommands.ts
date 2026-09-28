@@ -104,8 +104,15 @@ export async function registerSlashCommands(bot: Bot): Promise<boolean> {
 		}
 		//commands set inside one server appear there straight away, which is what debugging wants
 		await send(bot, testServer.commands, wanted, `in ${testServer.name}`);
-		//the copies every server sees would double up with them, so they go
-		await removeLeftovers(bot, application.commands, 'in every server');
+		//the commands every server sees are left alone, even though the test server then lists each
+		//one twice. if this token is also the live bot's, removing them would take /play and the rest
+		//away from every server until the live bot restarts
+		const everywhere = await application.commands.fetch({});
+		if (everywhere.size) {
+			bot.logger.info(
+				`Left the ${everywhere.size} commands every server sees alone, so ${testServer.name} may list commands twice. If this is the live bot's token, give test copies their own bot application instead`
+			);
+		}
 		return true;
 	}
 

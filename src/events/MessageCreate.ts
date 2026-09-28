@@ -1,14 +1,19 @@
-import { Message, TextChannel } from 'discord.js';
+import { Message } from 'discord.js';
 import { Bot } from '../Bot';
 import { Keyword } from '../keywords/Keyword';
 import { MessageCommand } from '../messagecommands/MessageCommand';
 import { EventHandler } from './EventHandler';
+import { handledHere } from '../resources/instanceGuard';
 
 export class MessageCreate implements EventHandler {
 	eventName = 'messageCreate';
 	async process(bot: Bot, message: Message): Promise<void> {
 		//ignore all bots
 		if (message.author.bot) return;
+		if (!handledHere(bot, message.guildId)) return;
+		//$ commands and keywords are for servers. A direct message used to crash the permission check,
+		//which looks the bot up in the server, so none of them ever ran there anyway
+		if (!message.inGuild()) return;
 
 		var prefix = bot.prefix;
 
@@ -30,27 +35,18 @@ export class MessageCreate implements EventHandler {
 		//if the command/keyword doesn't exist, just exit
 		if (!command) return;
 
-		if (command.requiredPermissions) {
-			if (
-				!(await bot.msgPermsCheck(bot, message, command.requiredPermissions))
-			) {
-				// We don't have all the permissions we need. Log and return.
-				if (!(message.channel instanceof TextChannel)) {
-					bot.logger.error(
-						`Somehow permissionsCheck returned false in a non-textchannel. Offending command: ${command.name}`
-					);
-				} else {
-					bot.logger.warn(
-						`Missing permissions to use ${command.name} in channel: ${
-							message.channel!.name
-						}, in ${message.guild!.name}`
-					);
-				}
-				return;
-			}
+		if (!(await bot.msgPermsCheck(bot, message, command.requiredPermissions))) {
+			// We don't have all the permissions we need. Log and return.
+			bot.logger.warn(
+				`Missing permissions to use ${command.name} in channel: ${message.channel.name}, in ${message.guild.name}`
+			);
+			return;
 		}
 
-		//run command/keyword
-		command.run(bot, message, args);
+		//run command/keyword. They catch their own errors, so this only logs one that gets past them,
+		//under the command's name rather than as a bare unhandled rejection
+		command
+			.run(bot, message, args)
+			.catch((error) => bot.logger.commandError(message.channelId, command.name, error));
 	}
 }

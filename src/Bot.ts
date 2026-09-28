@@ -1,4 +1,5 @@
-import { Client, Guild, EmbedBuilder, TextChannel } from 'discord.js';
+import { Client, Guild, EmbedBuilder, TextChannel, Events } from 'discord.js';
+import { hostname } from 'os';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
 import { permissionsCheck } from './resources/permissionsCheck';
@@ -17,6 +18,8 @@ import Enmap from 'enmap';
 import { registerEvents } from './resources/registerEvents';
 import { CustomPlayer } from './resources/CustomPlayer';
 import { startMetrics } from './resources/metrics';
+import { refusedExitCode, startupCheck } from './resources/instanceGuard';
+import { checkVoiceDependencies } from './resources/voiceDependencies';
 
 export class Bot {
 	public logger: CustomLogger;
@@ -38,7 +41,9 @@ export class Bot {
 		public client: Client,
 		public prefix: string,
 		public mode: string,
-		public test_server: string
+		public test_server: string,
+		//the machine the live bot runs on, from config.json. optional, see startupCheck
+		public production_host?: string
 	) {
 		//class fields initialize before constructor parameters are assigned, so the player
 		//(which reads this.client) has to be created here rather than as a field
@@ -57,6 +62,12 @@ export class Bot {
 	public async start(): Promise<void> {
 		await this.logger.initialize();
 		this.logger.info('Logging initialized');
+		if (!startupCheck(this)) {
+			//this copy must not log in. the pause lets the reason reach the log file before exiting
+			process.exitCode = refusedExitCode;
+			setTimeout(() => process.exit(refusedExitCode), 1000);
+			return;
+		}
 		//before anything connects out, so the stats count all of the bot's traffic
 		startMetrics(this);
 		await registerEvents(this);
@@ -65,6 +76,13 @@ export class Bot {
 		await importMessageCommands(this);
 		await importKeywords(this);
 		await this.player.loadExtractors();
+		await checkVoiceDependencies(this);
+		//names the machine and the bot account together, so two copies logged in as the same bot show up
+		this.client.once(Events.ClientReady, (client) =>
+			this.logger.info(
+				`Logged in as ${client.user.tag} (${client.user.id}) on ${hostname()} in ${this.mode} mode`
+			)
+		);
 		this.client.login(this.token);
 		this.player.registerPlayerEvents();
 	}

@@ -11,7 +11,8 @@ export interface SlashCommand {
 	name: string;
 	description: string;
 	options: Array<Option | Subcommand>;
-	//an array of PermissionFlagsBits
+	//an array of PermissionFlagsBits Mirror needs in the channel the command is used in. InteractionCreate
+	//checks them and tells the person which are missing. Answering the command itself needs none of them
 	requiredPermissions: Array<bigint>;
 	//function that will run on command execution
 	run(bot: Bot, interaction: ChatInputCommandInteraction): Promise<void>;

@@ -1,5 +1,6 @@
 import { EventHandler } from './EventHandler';
 import { Bot } from '../Bot';
+import { handledHere } from '../resources/instanceGuard';
 import {
 	Guild,
 	EmbedBuilder,
@@ -13,6 +14,7 @@ import {
 export class GuildCreate implements EventHandler {
 	eventName = 'guildCreate';
 	async process(bot: Bot, guild: Guild): Promise<void> {
+		if (!handledHere(bot, guild.id)) return;
 		let embed = new EmbedBuilder()
 			.setTitle('**:mirror: Mirror has arrived!**')
 			.setDescription(

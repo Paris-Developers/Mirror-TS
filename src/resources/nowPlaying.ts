@@ -94,6 +94,11 @@ async function showCard(bot: Bot, guildId: string) {
 }
 
 //the card stays in the channel as a record of what played, without its buttons
+//ends the card with a reason, for music Mirror stops by itself (everyone left, voice lost)
+export function endCard(bot: Bot, guildId: string, note: string) {
+	return finish(bot, guildId, note);
+}
+
 async function finish(bot: Bot, guildId: string, note: string, channel?: SendableChannels) {
 	clearTimeout(pending.get(guildId));
 	pending.delete(guildId);
@@ -234,8 +239,11 @@ export async function handleNowPlayingButton(bot: Bot, interaction: ButtonIntera
 			queue.node.skip();
 			return;
 		case 'stop':
-			//clears the queue and stops, but Mirror stays in the channel
+			//clears the queue and stops, but Mirror stays in the channel. a looping song would
+			//otherwise start over, and a paused one would never reach its end
 			await interaction.deferUpdate();
+			if (queue.repeatMode) queue.setRepeatMode(QueueRepeatMode.OFF);
+			if (queue.node.isPaused()) queue.node.setPaused(false);
 			queue.node.stop();
 			await finish(bot, guild.id, `Stopped by ${who}`);
 			return;

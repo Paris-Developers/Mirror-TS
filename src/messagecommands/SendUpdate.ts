@@ -1,7 +1,7 @@
 import { Message, EmbedBuilder, TextChannel, PermissionFlagsBits } from 'discord.js';
 import { Bot } from '../Bot';
 import { MessageCommand } from './MessageCommand';
-import config from '../../config.json';
+import config from '../resources/config';
 import { updateChannels } from '../slashcommands/Update';
 
 export class SendUpdate implements MessageCommand {

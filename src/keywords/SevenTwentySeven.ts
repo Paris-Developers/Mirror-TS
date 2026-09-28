@@ -24,12 +24,17 @@ export class SevenTwentySeven implements Keyword {
 				.setColor('#ff66aa')
 				.setImage('https://c.tenor.com/zbPLwrk_K44AAAAC/wysi.gif')
 				.setTitle('**__WHEN YOU FUCKING SEE IT__**');
-			if (message.channel.isSendable()) message.channel.send({ embeds: [embed] });
+			if (message.channel.isSendable()) await message.channel.send({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.commandError(message.channel!.id, this.name, err);
-			message.reply({
-				content: 'Error: contact a developer to investigate',
-			});
+			bot.logger.commandError(message.channelId, this.name, err);
+			//the keyword message is usually deleted by now, and Discord refuses a reply to a deleted
+			//message unless it's allowed to send it as a plain message instead
+			await message
+				.reply({
+					content: 'Error: contact a developer to investigate',
+					failIfNotExists: false,
+				})
+				.catch((error) => bot.logger.warn(`Could not report the ${this.name} error:`, error));
 			return;
 		}
 	}

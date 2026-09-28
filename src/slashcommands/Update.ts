@@ -13,7 +13,7 @@ import {
 	PermissionFlagsBits,
 } from 'discord.js';
 import { SlashCommand } from './SlashCommand';
-import config from '../../config.json';
+import config from '../resources/config';
 import Enmap from 'enmap';
 import { Option, Subcommand } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';

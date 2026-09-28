@@ -13,7 +13,7 @@ import {
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { find } from 'geo-tz';
-import config from '../../config.json';
+import config from '../resources/config';
 import { Option, Subcommand } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
 

@@ -1,10 +1,8 @@
 import {
-	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
 	CacheType,
 	VoiceChannel,
 	GuildMember,
-	TextChannel,
 	EmbedBuilder,
 	Guild,
 	MessageFlags,
@@ -14,6 +12,7 @@ import {
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
+import { handledHere } from '../resources/instanceGuard';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
@@ -38,10 +37,9 @@ export class DefaultVc implements SlashCommand {
 	): Promise<void> {
 		try {
 			let member = interaction.member as GuildMember;
-			if (
-				!(interaction.channel instanceof TextChannel) ||
-				!member.permissionsIn(interaction.channel!).has(PermissionFlagsBits.Administrator)
-			) {
+			//Administrator applies to the whole server, so it's checked there rather than on the
+			//channel the command was typed in, which may be a thread or a voice channel's chat
+			if (!member.permissions.has(PermissionFlagsBits.Administrator)) {
 				interaction.reply({
 					content:
 						'This command is only for people with Administrator permissions',
@@ -57,9 +55,9 @@ export class DefaultVc implements SlashCommand {
 				});
 				return;
 			}
-			if (!interaction.guild?.members.me?.permissionsIn(channel.id).has(PermissionFlagsBits.Connect)) {
+			if (!interaction.guild?.members.me?.permissionsIn(channel.id).has([PermissionFlagsBits.Connect, PermissionFlagsBits.Speak])) {
 				interaction.reply({
-					content: 'I do not have permission to Connect to that VC',
+					content: 'I need permission to Connect and Speak in that VC',
 					flags: MessageFlags.Ephemeral,
 				});
 				return;
@@ -85,19 +83,87 @@ export class DefaultVc implements SlashCommand {
 	managerRequired?: boolean | undefined = true;
 }
 
+//joins every server's default channel at startup. an idle queue keeps Mirror sitting in the
+//channel, ready for music or intros
 export async function launchVoice(bot: Bot): Promise<void> {
-	for (const [guild, channel] of defaultVc.entries()) {
-		let guildCheck = bot.client.guilds.cache.get(guild.toString()) as Guild;
-		if (!guildCheck) {
-			defaultVc.delete(guild);
-			continue;
+	await Promise.all(
+		[...defaultVc.keys()].map(async (guildId) => {
+			//a debug copy neither joins other servers nor forgets their settings
+			if (!handledHere(bot, guildId.toString())) return;
+			const guild = bot.client.guilds.cache.get(guildId.toString());
+			if (!guild) {
+				//Mirror was removed from that server
+				defaultVc.delete(guildId);
+				return;
+			}
+			//a server Discord can't reach right now is joined when it comes back (guildAvailable)
+			if (!guild.available) return;
+			if (!(await joinDefaultVoice(bot, guild))) rejoinDefaultVoice(bot, guild.id);
+		})
+	);
+}
+
+//Mirror loses its voice connections when its own connection to Discord has to start over, or when
+//a voice connection breaks for good. servers with a default channel get Mirror back afterwards, but
+//not after someone disconnects it or uses /leave on purpose
+export function watchDefaultVoice(bot: Bot) {
+	const comeBack = (guild: Guild) => {
+		if (!handledHere(bot, guild.id) || leftServers.has(guild.id)) return;
+		if (defaultVc.has(guild.id) && !guild.members.me?.voice.channelId) rejoinDefaultVoice(bot, guild.id);
+	};
+	bot.client.on('shardReady', () => bot.client.guilds.cache.forEach(comeBack));
+	bot.client.on('guildAvailable', comeBack);
+}
+
+//servers where Mirror was sent out of voice on purpose (/leave, /destroyqueue, a moderator's
+//Disconnect). it stays out until it's brought back into a channel. forgotten on restart, when Mirror
+//joins its default channels again as it always has
+const leftServers = new Set<string>();
+export function leftOnPurpose(guildId: string) {
+	leftServers.add(guildId);
+	clearTimeout(rejoinTimers.get(guildId));
+	rejoinTimers.delete(guildId);
+}
+export function stayedIn(guildId: string) {
+	leftServers.delete(guildId);
+}
+
+//tries again later, backing off, until Mirror is back in the default channel or in any channel
+const rejoinDelays = [10, 30, 60, 300, 300, 300]; //seconds
+const rejoinTimers = new Map<string, NodeJS.Timeout>();
+export function rejoinDefaultVoice(bot: Bot, guildId: string, attempt = 0) {
+	if (!handledHere(bot, guildId) || leftServers.has(guildId)) return;
+	if (!defaultVc.has(guildId) || rejoinTimers.has(guildId) || attempt >= rejoinDelays.length) return;
+	const timer = setTimeout(async () => {
+		rejoinTimers.delete(guildId);
+		const guild = bot.client.guilds.cache.get(guildId);
+		//someone brought Mirror into a channel in the meantime
+		if (!guild?.available || guild.members.me?.voice.channelId || bot.player.isJoining(guildId)) return;
+		if (!(await joinDefaultVoice(bot, guild))) rejoinDefaultVoice(bot, guildId, attempt + 1);
+	}, rejoinDelays[attempt] * 1000);
+	timer.unref();
+	rejoinTimers.set(guildId, timer);
+}
+
+//returns false when the join should be tried again later
+async function joinDefaultVoice(bot: Bot, guild: Guild): Promise<boolean> {
+	const channel = guild.channels.cache.get(String(defaultVc.get(guild.id)));
+	if (!channel?.isVoiceBased()) {
+		//the channel was deleted. only forget it when the server is fully loaded: during a Discord
+		//outage a server is listed without its channels, and the setting would be lost for nothing
+		if (guild.available) {
+			defaultVc.delete(guild.id);
+			bot.logger.warn(`[${guild.name}] The default voice channel no longer exists, so it was forgotten`);
 		}
-		//an idle queue keeps Mirror sitting in the channel, ready for music or intros
-		const queue = bot.player.nodes.create(guildCheck, bot.player.playOptions);
-		try {
-			if (!queue.connection) await queue.connect(channel);
-		} catch (err) {
-			bot.logger.warn(`Could not join the default voice channel in ${guildCheck.name}`);
-		}
+		return true;
+	}
+	try {
+		await bot.player.joinVoice(bot.player.nodes.create(guild, bot.player.playOptions), channel);
+		return true;
+	} catch (err) {
+		bot.logger.warn(
+			`[${guild.name}] Could not join the default voice channel ${channel.name}: ${err instanceof Error ? err.message : err}`
+		);
+		return false;
 	}
 }

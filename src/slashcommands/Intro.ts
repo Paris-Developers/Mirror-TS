@@ -12,6 +12,8 @@ import { SlashCommand } from './SlashCommand';
 import { Bot } from '../Bot';
 import { silencedUsers } from './SilenceMember';
 import { Option, Subcommand } from './Option';
+import { downloadTrack } from '../resources/downloadTrack';
+import { YoutubeExtractor } from 'discord-player-youtubei';
 
 //how much of the chosen video is kept and played back
 const INTRO_SECONDS = 5;
@@ -54,6 +56,14 @@ export class Intro implements SlashCommand {
 				});
 				return;
 			}
+			//Spotify, SoundCloud and Apple Music links find their song on their own site, which
+			//intros can't be recorded from
+			if (track.extractor?.identifier !== YoutubeExtractor.identifier) {
+				interaction.editReply({
+					content: 'Intros have to come from YouTube. Paste a YouTube link, or type the video\'s name to search for it.',
+				});
+				return;
+			}
 			//only the first few seconds are kept, so length barely matters, and ffmpeg stops on its
 			//own even for a livestream. YouTube sometimes returns a video with no duration at all,
 			//which is not a reason to refuse it, so only a known-long video is turned away
@@ -66,7 +76,8 @@ export class Intro implements SlashCommand {
 
 			const folder = path.resolve(`data/intros/${interaction.guild!.id}`);
 			await fs.promises.mkdir(folder, { recursive: true });
-			await bot.player.downloadTrack(
+			await downloadTrack(
+				bot.player,
 				track,
 				path.join(folder, `${interaction.user.id}.mp4`),
 				INTRO_SECONDS

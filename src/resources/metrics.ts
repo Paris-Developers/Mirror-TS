@@ -10,7 +10,7 @@ import net from 'net';
 import path from 'path';
 import { readdir, stat } from 'fs/promises';
 import type { Bot } from '../Bot';
-import config from '../../config.json';
+import config from './config';
 
 const registry = new Registry();
 
@@ -152,7 +152,7 @@ async function folderSize(folder: string): Promise<number> {
 
 //metrics_port is optional and absent from most config.json files, so it is read defensively
 function metricsPort(): number | undefined {
-	const value = Number((config as Record<string, unknown>)['metrics_port']);
+	const value = Number(config.metrics_port);
 	return Number.isInteger(value) && value > 0 && value < 65536 ? value : undefined;
 }
 

@@ -34,12 +34,17 @@ export class fuckimissheralready implements MessageCommand {
 				.setColor('#0071b6')
 				.setImage(jsonData.url)
 				.setFooter({ text: 'I feel you bro' });
-			if (message.channel.isSendable()) message.channel.send({ embeds: [embed] });
+			if (message.channel.isSendable()) await message.channel.send({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.commandError(message.channel!.id, this.name, err);
-			message.reply({
-				content: 'Error: contact a developer to investigate',
-			});
+			bot.logger.commandError(message.channelId, this.name, err);
+			//the command message is usually deleted by now, and Discord refuses a reply to a deleted
+			//message unless it's allowed to send it as a plain message instead
+			await message
+				.reply({
+					content: 'Error: contact a developer to investigate',
+					failIfNotExists: false,
+				})
+				.catch((error) => bot.logger.warn(`Could not report the ${this.name} error:`, error));
 			return;
 		}
 	}
