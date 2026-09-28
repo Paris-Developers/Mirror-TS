@@ -21,13 +21,13 @@ export let defaultVc = new Enmap({ name: 'defaultVc' });
 export class DefaultVc implements SlashCommand {
 	name: string = 'defaultvc';
 	description =
-		'[MANAGER] Set voice channel for Mirror to join upon restart, will not play an intro';
+		'[MANAGER] Set voice channel for Mirror to join upon restart, or leave it out to clear it';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'channel',
-			'The channel you wish to designate as the default',
+			'The channel you wish to designate as the default. Leave it out to clear the default',
 			ApplicationCommandOptionType.Channel,
-			true
+			false
 		),
 	];
 	requiredPermissions: bigint[] = [];
@@ -48,6 +48,25 @@ export class DefaultVc implements SlashCommand {
 				return;
 			}
 			let channel = interaction.options.getChannel('channel');
+			//no channel given clears the default, so Mirror stops joining a channel by itself
+			if (!channel) {
+				const guildId = interaction.guild!.id;
+				if (!defaultVc.has(guildId)) {
+					interaction.reply({
+						content: 'There is no default voice channel set',
+						flags: MessageFlags.Ephemeral,
+					});
+					return;
+				}
+				forgetDefaultVoice(guildId);
+				let embed = new EmbedBuilder()
+					.setColor(colorCheck(guildId))
+					.setDescription(
+						'Cleared your default voice channel. Mirror will no longer join a channel on its own when it restarts'
+					);
+				interaction.reply({ embeds: [embed] });
+				return;
+			}
 			if (!(channel instanceof VoiceChannel)) {
 				interaction.reply({
 					content: 'Channel must be a voice channel',
@@ -126,6 +145,13 @@ export function leftOnPurpose(guildId: string) {
 }
 export function stayedIn(guildId: string) {
 	leftServers.delete(guildId);
+}
+
+//forgets a server's default channel, and any rejoin that was waiting to happen
+function forgetDefaultVoice(guildId: string) {
+	defaultVc.delete(guildId);
+	clearTimeout(rejoinTimers.get(guildId));
+	rejoinTimers.delete(guildId);
 }
 
 //tries again later, backing off, until Mirror is back in the default channel or in any channel
