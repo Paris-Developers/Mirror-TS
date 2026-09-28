@@ -3,6 +3,7 @@ import { GuildNodeCreateOptions, GuildQueue, Player } from 'discord-player';
 import {
 	ChannelType,
 	Guild,
+	MessageFlags,
 	PermissionFlagsBits,
 	User,
 	VoiceBasedChannel,
@@ -20,7 +21,7 @@ import { YoutubeExtractor } from 'discord-player-youtubei';
 import { fileSearchOptions, registerExtractors, userSearchOptions } from './extractors';
 import { playerErrors, tracksStarted } from './metrics';
 import { endCard, registerNowPlaying } from './nowPlaying';
-import { leftOnPurpose, rejoinDefaultVoice, stayedIn } from '../slashcommands/DefaultVc';
+import { defaultVc, leftOnPurpose, rejoinDefaultVoice, stayedIn } from '../slashcommands/DefaultVc';
 
 //a join that failed for a reason worth telling the person who asked. the message is written for them
 export class VoiceJoinError extends Error {}
@@ -389,9 +390,12 @@ export class CustomPlayer extends Player {
 		//Discord shows a voice channel as in use while Mirror sits in it, even alone. in a server with a
 		//default channel, the next person to arrive there brings Mirror back (followDefaultChannel)
 		this.events.on('emptyChannel', (queue) => {
-			if (queue.currentTrack || queue.tracks.size)
-				void endCard(this.bot, queue.guild.id, 'Stopped because everyone left the voice channel');
+			//the channel is gone from the queue once it's thrown away, so it's noted first
+			const channel = queue.channel;
+			const hadMusic = !!(queue.currentTrack || queue.tracks.size);
+			if (hadMusic) void endCard(this.bot, queue.guild.id, 'Stopped because everyone left the voice channel');
 			this.discardQueue(queue);
+			if (channel) void this.sayLeftEmpty(channel, hadMusic);
 		});
 
 		this.events.on('playerStart', (queue) => {
@@ -435,6 +439,22 @@ export class CustomPlayer extends Player {
 		this.bot.client.on('shardReady', nudge);
 
 		registerNowPlaying(this.bot);
+	}
+
+	//says in the voice channel's own chat why Mirror just left, so nobody wonders where it went. it's
+	//sent without a notification, and a channel Mirror can't post in is simply skipped
+	private async sayLeftEmpty(channel: VoiceBasedChannel, hadMusic: boolean) {
+		if (!channel.isSendable()) return;
+		const left = hadMusic ? 'stopped the music and left' : 'left';
+		const back = defaultVc.get(channel.guild.id) === channel.id ? " I'll be back when someone joins." : '';
+		await channel
+			.send({
+				content: `👋 Nobody's here, so I ${left}.${back}`,
+				flags: MessageFlags.SuppressNotifications,
+			})
+			.catch((error) =>
+				this.bot.logger.debug(`[${channel.guild.name}] Could not say why Mirror left ${channel.name}: ${error}`)
+			);
 	}
 
 	//a song whose audio arrived while voice wasn't ready is left half started: the player stays idle
