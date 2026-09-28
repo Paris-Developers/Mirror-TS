@@ -8,9 +8,11 @@ import { Keyword } from './keywords/Keyword';
 import { MessageCommand } from './messagecommands/MessageCommand';
 import {
 	importSlashCommands,
+	importUserCommands,
 	importMessageCommands,
 	importKeywords,
 } from './resources/dynamicImports';
+import { UserCommand } from './usercommands/UserCommand';
 import Enmap from 'enmap';
 import { registerEvents } from './resources/registerEvents';
 import { CustomPlayer } from './resources/CustomPlayer';
@@ -26,6 +28,7 @@ export class Bot {
 
 	//data stores
 	public slashCommands: Array<SlashCommand> = [];
+	public userCommands: Array<UserCommand> = [];
 	public messageCommands: Array<MessageCommand> = [];
 	public keywords: Array<Keyword> = [];
 	public songRecs: Enmap = new Enmap({ name: 'songs' });
@@ -58,6 +61,7 @@ export class Bot {
 		startMetrics(this);
 		await registerEvents(this);
 		await importSlashCommands(this);
+		await importUserCommands(this);
 		await importMessageCommands(this);
 		await importKeywords(this);
 		await this.player.loadExtractors();

@@ -25,6 +25,20 @@ export async function importSlashCommands(bot: Bot) {
 	}
 }
 
+export async function importUserCommands(bot: Bot) {
+	//commands on the right-click menu for a person, such as looking up a birthday
+	let files = await promisedReaddir(`${__dirname}/../usercommands/`);
+	for (let file of files) {
+		if (!file.endsWith('.js')) continue;
+		if (file == 'UserCommand.js') continue;
+		let module = await import(pathToFileURL(path.join(__dirname, '..', 'usercommands', file)).href);
+		let command = new module[path.parse(file).name]();
+		let commandName = command.name;
+		bot.logger.info(`Loaded right-click command ${commandName}`);
+		bot.userCommands.push(command);
+	}
+}
+
 export async function importMessageCommands(bot: Bot) {
 	let files = await promisedReaddir(`${__dirname}/../messagecommands/`);
 	for (let file of files) {

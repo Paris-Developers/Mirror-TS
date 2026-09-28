@@ -94,8 +94,9 @@ export function silenceCheck(interaction: Interaction): boolean {
 	if (member?.roles.cache.has(silenced)) return true;
 	silenced = silencedUsers.get(interaction.guild!.id);
 	if(!silenced) return false;
+	//compare against the person who used the command: their member may not be in the cache
 	for (let user of silenced) {
-		if (user == member!.id) return true;
+		if (user == interaction.user.id) return true;
 	}
 	return false;
 }

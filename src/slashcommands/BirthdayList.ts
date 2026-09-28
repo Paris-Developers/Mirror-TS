@@ -13,28 +13,20 @@ import {
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
-import { bdayDates } from './Birthday';
 import { accentColor, addHeading, cardReply, commandMention, divider, handleControls } from '../resources/cards';
+import {
+	Birthday,
+	daysAway,
+	months,
+	nextBirthdays,
+	savedBirthday,
+	shortDate,
+} from '../resources/birthdayDates';
 
-const months = [
-	'January',
-	'February',
-	'March',
-	'April',
-	'May',
-	'June',
-	'July',
-	'August',
-	'September',
-	'October',
-	'November',
-	'December',
-];
 //a month with more birthdays than this is split over several pages, keeping each page readable
 //and well inside Discord's limit on text in a message
 const perPage = 40;
 
-type Birthday = { memberId: string; month: number; day: number };
 type Page = { month: number; part: number; parts: number; birthdays: Birthday[] };
 
 export class BirthdayList implements SlashCommand {
@@ -47,15 +39,11 @@ export class BirthdayList implements SlashCommand {
 			await interaction.deferReply();
 			const guild = interaction.guild!;
 
-			//birthdays are saved per user as DD-MM, so only members of this server are listed
+			//birthdays are saved per user, so only members of this server are listed
 			const birthdays: Birthday[] = [];
 			for (const member of (await guild.members.fetch()).values()) {
-				const saved = bdayDates.get(member.id);
-				if (typeof saved !== 'string') continue;
-				const [day, month] = saved.split('-').map(Number);
-				if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-					birthdays.push({ memberId: member.id, month, day });
-				}
+				const birthday = savedBirthday(member.id);
+				if (birthday) birthdays.push(birthday);
 			}
 			birthdays.sort((a, b) => a.month - b.month || a.day - b.day);
 
@@ -105,48 +93,6 @@ function paginate(birthdays: Birthday[]): Page[] {
 	}
 	return pages;
 }
-
-//the next date this birthday falls on, today included. Feb 29 falls back to Feb 28 in other years
-function nextDate(month: number, day: number, today: Date): Date {
-	for (let year = today.getFullYear(); ; year++) {
-		let date = new Date(year, month - 1, day);
-		if (date.getMonth() !== month - 1) date = new Date(year, month, 0);
-		if (date >= today) return date;
-	}
-}
-
-function startOfToday(): Date {
-	const now = new Date();
-	return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-}
-
-//everyone whose birthday is the soonest one coming up
-function nextBirthdays(birthdays: Birthday[]): Birthday[] {
-	const today = startOfToday();
-	let soonest = Infinity;
-	let found: Birthday[] = [];
-	for (const birthday of birthdays) {
-		const time = nextDate(birthday.month, birthday.day, today).getTime();
-		if (time < soonest) {
-			soonest = time;
-			found = [birthday];
-		} else if (time === soonest) {
-			found.push(birthday);
-		}
-	}
-	return found;
-}
-
-function daysAway(birthday: Birthday): string {
-	const today = startOfToday();
-	const days = Math.round((nextDate(birthday.month, birthday.day, today).getTime() - today.getTime()) / 86400000);
-	if (days === 0) return 'today 🎉';
-	if (days === 1) return 'tomorrow';
-	return `in ${days} days`;
-}
-
-const shortDate = (birthday: Birthday) =>
-	`${months[birthday.month - 1].slice(0, 3)} ${String(birthday.day).padStart(2, '0')}`;
 
 const pageName = (page: Page) =>
 	page.parts > 1 ? `${months[page.month - 1]} (${page.part}/${page.parts})` : months[page.month - 1];

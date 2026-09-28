@@ -25,6 +25,25 @@ export class InteractionCreate implements EventHandler {
 				bot.logger.error('Now playing button failed:', error)
 			);
 		}
+		//entries on the right-click menu for a person, such as Birthday
+		if (interaction.isUserContextMenuCommand()) {
+			let command = bot.userCommands.find(
+				(command) => command.name === interaction.commandName
+			);
+			if (!command) return;
+			commandsUsed.inc({
+				command: command.name,
+				guild: interaction.guild?.name ?? 'direct message',
+			});
+			//silenced members are only known inside a server; in a direct message there is no one to check
+			if (command.blockSilenced && interaction.inGuild() && silenceCheck(interaction)) {
+				return void interaction.reply({
+					content: 'This command cannot be used by silenced members',
+					flags: MessageFlags.Ephemeral,
+				});
+			}
+			return void command.run(bot, interaction);
+		}
 		if (!interaction.isChatInputCommand()) return;
 
 		//attempt to find the command from the array of all of them

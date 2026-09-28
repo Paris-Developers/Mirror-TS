@@ -1,99 +1,19 @@
+//Call: Slash command birthday
+//Saves the day and month someone was born, so Mirror can wish them a happy birthday
 import {
-	ChatInputCommandInteraction,
-	CacheType,
-	EmbedBuilder,
-	ApplicationCommandDataResolvable,
-	MessageFlags,
 	ApplicationCommandOptionType,
+	CacheType,
+	ChatInputCommandInteraction,
+	EmbedBuilder,
+	MessageFlags,
 } from 'discord.js';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
+import { daysInMonth, longDate, months, monthNumber } from '../resources/birthdayDates';
 import { Option } from './Option';
 import { silencedUsers } from './SilenceMember';
 import { SlashCommand } from './SlashCommand';
-
-type monthIndex = { [index: string]: number };
-const monthCode = {
-	january: 1,
-	february: 2,
-	march: 3,
-	april: 4,
-	may: 5,
-	june: 6,
-	july: 7,
-	august: 8,
-	september: 9,
-	october: 10,
-	november: 11,
-	december: 12,
-} as monthIndex;
-
-const dayCap = {
-	january: 31,
-	february: 29,
-	march: 31,
-	april: 30,
-	may: 31,
-	june: 30,
-	july: 31,
-	august: 31,
-	september: 30,
-	october: 31,
-	november: 30,
-	december: 31,
-} as monthIndex;
-
-const months = [
-	{
-		name: 'January',
-		value: 'january',
-	},
-	{
-		name: 'February',
-		value: 'february',
-	},
-	{
-		name: 'March',
-		value: 'march',
-	},
-	{
-		name: 'April',
-		value: 'april',
-	},
-	{
-		name: 'May',
-		value: 'may',
-	},
-	{
-		name: 'June',
-		value: 'june',
-	},
-	{
-		name: 'July',
-		value: 'july',
-	},
-	{
-		name: 'August',
-		value: 'august',
-	},
-	{
-		name: 'September',
-		value: 'september',
-	},
-	{
-		name: 'October',
-		value: 'october',
-	},
-	{
-		name: 'November',
-		value: 'november',
-	},
-	{
-		name: 'December',
-		value: 'december',
-	},
-];
 
 export let bdayDates = new Enmap({ name: 'bdayDates' });
 
@@ -108,7 +28,7 @@ export class Birthday implements SlashCommand {
 			ApplicationCommandOptionType.String,
 			true,
 			'may',
-			months
+			months.map((month) => ({ name: month, value: month.toLowerCase() }))
 		),
 		new Option(
 			'day',
@@ -118,6 +38,9 @@ export class Birthday implements SlashCommand {
 		),
 	];
 	requiredPermissions: bigint[] = [];
+	//birthdays are saved for everywhere at once, but the command reads the server's silenced
+	//members and color, so it belongs in a server rather than a direct message
+	guildRequired?: boolean | undefined = true;
 	async run(
 		bot: Bot,
 		interaction: ChatInputCommandInteraction<CacheType>
@@ -131,11 +54,10 @@ export class Birthday implements SlashCommand {
 				});
 			}
 
-			if (
-				interaction.options.getInteger('day')! >
-					dayCap[interaction.options.getString('month')!] ||
-				interaction.options.getInteger('day')! < 1
-			) {
+			const month = monthNumber(interaction.options.getString('month')!);
+			const day = interaction.options.getInteger('day')!;
+			//February keeps its 29th, since people born on it still want it saved
+			if (!month || day < 1 || day > daysInMonth(month)) {
 				return void interaction.reply({
 					content: 'Please enter a valid date',
 					flags: MessageFlags.Ephemeral,
@@ -143,20 +65,14 @@ export class Birthday implements SlashCommand {
 			}
 
 			//store the date of birth in numerical form  DD-MM
-			let formattedBirthday = `${interaction.options.getInteger('day')}-${
-				monthCode[interaction.options.getString('month')!]
-			}`;
-
-			//set the new birthday into the enmap
-			bdayDates.set(interaction.user.id, formattedBirthday);
-			let monthCap =
-				interaction.options.getString('month')!.charAt(0).toUpperCase() +
-				interaction.options.getString('month')!.slice(1);
+			bdayDates.set(interaction.user.id, `${day}-${month}`);
 			let embed = new EmbedBuilder()
 				.setDescription(
-					`Successfully set your birthday to: ${monthCap} ${interaction.options.getInteger(
-						'day'
-					)}`
+					`Successfully set your birthday to: ${longDate({
+						memberId: interaction.user.id,
+						month,
+						day,
+					})}`
 				)
 				.setColor(colorCheck(interaction.guild!.id));
 			interaction.reply({ embeds: [embed] });

@@ -16,7 +16,15 @@ import { SlashCommand } from './SlashCommand';
 
 const supportServer = 'https://discord.gg/uvdg2R5PAU';
 
-type Category = { id: string; label: string; emoji: string; blurb: string; commands: string[] };
+type Category = {
+	id: string;
+	label: string;
+	emoji: string;
+	blurb: string;
+	commands: string[];
+	//anything worth knowing that isn't a slash command, shown under the category's list
+	note?: string;
+};
 const categories: Category[] = [
 	{
 		id: 'voice',
@@ -38,6 +46,7 @@ const categories: Category[] = [
 		emoji: '🎲',
 		blurb: 'Lookups, birthdays, polls and assorted silliness.',
 		commands: ['weather', 'stock', 'nasa', 'birthday', 'birthdaylist', 'poll', 'roll', 'kanye', 'kawaii', 'tickle', 'mirror', 'nut'],
+		note: "Right-click anyone (or hold their name on a phone) and pick **Apps → Birthday** to see when it's their birthday.",
 	},
 	{
 		id: 'setup',
@@ -101,8 +110,9 @@ function helpCard(bot: Bot, guildId: string | undefined, current: string, contro
 	const category = categories.find((c) => c.id === current);
 	if (category) {
 		const lines = commandsIn(bot, category).map((name) => `${commandMention(bot, name)} · ${descriptionOf(bot, name)}`);
+		const note = category.note ? ['', `-# ${category.note}`] : [];
 		card.addTextDisplayComponents((text) =>
-			text.setContent([`### ${category.emoji} ${category.label}`, category.blurb, '', ...lines].join('\n'))
+			text.setContent([`### ${category.emoji} ${category.label}`, category.blurb, '', ...lines, ...note].join('\n'))
 		);
 	} else {
 		card.addTextDisplayComponents((text) =>
