@@ -11,6 +11,26 @@ import { updateChannels } from '../slashcommands/Update';
 //the most Discord allows in an embed's description
 const maxLength = 4096;
 
+//the update to send: what follows the command word in the same message (after a space or a new line,
+//with its formatting kept), or else a .txt file attached to it, or else the message it replies to.
+//a long paste arrives as an attached message.txt, and replying lets the update be read over first
+async function updateText(message: Message): Promise<string> {
+	const typed = message.content.replace(/^\S+\s*/, '').trim();
+	if (typed) return typed;
+	const file = message.attachments.find(
+		(attachment) => attachment.name.toLowerCase().endsWith('.txt') || !!attachment.contentType?.startsWith('text/plain')
+	);
+	if (file) {
+		const response = await fetch(file.url);
+		if (response.ok) return (await response.text()).trim();
+	}
+	if (message.reference?.messageId) {
+		const original = await message.fetchReference().catch(() => null);
+		if (original) return original.content.trim();
+	}
+	return '';
+}
+
 export class SendUpdate implements MessageCommand {
 	name: string = 'sendupdate';
 	//the answer goes back to the owner as a reply, and each update channel is checked as it's posted to
@@ -26,12 +46,16 @@ export class SendUpdate implements MessageCommand {
 		const answer = (content: string) =>
 			message.reply({ content, allowedMentions: { repliedUser: false } }).catch(() => {});
 		try {
-			//everything after the command word, whether a space or a new line comes after it, with its
-			//line breaks and formatting kept
-			const content = message.content.replace(/^\S+\s*/, '').trim();
+			const content = await updateText(message);
+			bot.logger.debug(`$sendupdate got ${content.length} characters of update`);
 			if (!content) {
 				return void (await answer(
-					'Put the update after the command, for example `$sendupdate` followed by the message. New lines and **formatting** are kept.'
+					[
+						'There was no update to send. Any of these works:',
+						'- `$sendupdate` followed by the update, in the same message (new lines and **formatting** are kept)',
+						'- write the update as a normal message first, then reply to it with `$sendupdate`',
+						'- `$sendupdate` with the update attached as a `.txt` file (Discord does this by itself when a long message is pasted)',
+					].join('\n')
 				));
 			}
 			if (content.length > maxLength) {
