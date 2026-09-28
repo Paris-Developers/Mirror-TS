@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from 'discord.js';
+import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
 
 type Choices = {
 	name: string;
@@ -11,6 +11,7 @@ type JsonOption = {
 	type: number;
 	required: boolean;
 	choices: Array<Choices> | undefined;
+	channel_types?: Array<ChannelType>;
 };
 
 export class Option {
@@ -26,6 +27,8 @@ export class Option {
 	_choices: Array<Choices> | undefined;
 	//Placeholder value, will be used eventually for automated testing.
 	public _placeholder: string | boolean | number | undefined;
+	//for a channel option, the kinds of channel Discord offers in its picker. all of them when unset
+	_channelTypes: Array<ChannelType> | undefined;
 
 	constructor(
 		name: string,
@@ -43,6 +46,12 @@ export class Option {
 		this._placeholder = placeholder;
 	}
 
+	//limits a channel option's picker to these kinds of channel, so a wrong one can't be chosen
+	onlyChannels(...types: Array<ChannelType>): this {
+		this._channelTypes = types;
+		return this;
+	}
+
 	toJson(): JsonOption {
 		return {
 			name: this._name,
@@ -50,6 +59,7 @@ export class Option {
 			type: this._type,
 			required: this._required,
 			choices: this._choices,
+			...(this._channelTypes ? { channel_types: this._channelTypes } : {}),
 		};
 	}
 }

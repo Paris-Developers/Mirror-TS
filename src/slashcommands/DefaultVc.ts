@@ -10,7 +10,9 @@ import {
 	MessageFlags,
 	ApplicationCommandOptionType,
 	PermissionFlagsBits,
+	ChannelType,
 } from 'discord.js';
+import { VoiceConnectionStatus } from 'discord-voip';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
@@ -30,7 +32,7 @@ export class DefaultVc implements SlashCommand {
 			'The channel you wish to designate as the default. Leave it out to clear the default',
 			ApplicationCommandOptionType.Channel,
 			false
-		),
+		).onlyChannels(ChannelType.GuildVoice),
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
@@ -91,7 +93,7 @@ export class DefaultVc implements SlashCommand {
 				);
 			interaction.reply({ embeds: [embed] });
 			//people may already be in it
-			if (!interaction.guild!.members.me?.voice.channelId) void joinDefaultVoice(bot, interaction.guild!);
+			if (!inVoice(bot, interaction.guild!)) void joinDefaultVoice(bot, interaction.guild!);
 			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
@@ -132,7 +134,7 @@ export async function launchVoice(bot: Bot): Promise<void> {
 export function watchDefaultVoice(bot: Bot) {
 	const comeBack = (guild: Guild) => {
 		if (!handledHere(bot, guild.id) || leftServers.has(guild.id)) return;
-		if (defaultVc.has(guild.id) && !guild.members.me?.voice.channelId) rejoinDefaultVoice(bot, guild.id);
+		if (defaultVc.has(guild.id) && !inVoice(bot, guild)) rejoinDefaultVoice(bot, guild.id);
 	};
 	bot.client.on('shardReady', () => bot.client.guilds.cache.forEach(comeBack));
 	bot.client.on('guildAvailable', comeBack);
@@ -169,8 +171,16 @@ export async function followDefaultChannel(bot: Bot, oldState: VoiceState, newSt
 	}
 	if (newState.channelId !== defaultId || oldState.channelId === defaultId) return;
 	//Mirror is busy elsewhere, on its way, or was sent away while people are still here
-	if (guild.members.me?.voice.channelId || bot.player.isJoining(guild.id) || leftServers.has(guild.id)) return;
+	if (inVoice(bot, guild) || bot.player.isJoining(guild.id) || leftServers.has(guild.id)) return;
 	await joinDefaultVoice(bot, guild);
+}
+
+//whether Mirror really is in a voice channel in this server. Discord's word for it isn't enough: right
+//after a restart it can still show Mirror in the channel the last run was in, with no connection
+//behind it, and Mirror would never follow anyone in
+function inVoice(bot: Bot, guild: Guild): boolean {
+	const connection = bot.player.nodes.get(guild.id)?.connection;
+	return !!connection && connection.state.status !== VoiceConnectionStatus.Destroyed;
 }
 
 //people, not bots, in a voice channel
@@ -195,7 +205,7 @@ export function rejoinDefaultVoice(bot: Bot, guildId: string, attempt = 0) {
 		rejoinTimers.delete(guildId);
 		const guild = bot.client.guilds.cache.get(guildId);
 		//someone brought Mirror into a channel in the meantime
-		if (!guild?.available || guild.members.me?.voice.channelId || bot.player.isJoining(guildId)) return;
+		if (!guild?.available || inVoice(bot, guild) || bot.player.isJoining(guildId)) return;
 		if (!(await joinDefaultVoice(bot, guild))) rejoinDefaultVoice(bot, guildId, attempt + 1);
 	}, rejoinDelays[attempt] * 1000);
 	timer.unref();
