@@ -10,7 +10,7 @@ import {
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { bdayChannels, bdayTimes } from './BirthdayConfig';
-import { defaultVc } from './DefaultVc';
+import { autoJoinOn, defaultVc } from './DefaultVc';
 import { updateChannels } from './Update';
 import { nsfw } from './Nsfw';
 import { managerRoles } from './ManagerRole';
@@ -61,6 +61,7 @@ export class Config implements SlashCommand {
 			const features = [
 				setting('Birthday messages', birthdayChannel && `${channelName(birthdayChannel)}${birthdayTime}`, 'birthdayconfig'),
 				setting('Default voice channel', defaultVc.get(guild.id) && channelName(defaultVc.get(guild.id)), 'defaultvc'),
+				`${autoJoinOn(guild.id) ? '✅' : '❌'} **Auto-join the default voice channel** · ${autoJoinOn(guild.id) ? 'on' : 'off'} · ${commandMention(bot, 'autojoin')}`,
 				setting('Mirror development updates', updateChannels.get(guild.id) && channelName(updateChannels.get(guild.id)), 'update'),
 				`${nsfwOn ? '✅' : '❌'} **NSFW commands** · ${nsfwOn ? 'on' : 'off'} · ${commandMention(bot, 'nsfw')}`,
 				`🎨 **Color** · ${color ? `\`${color}\`` : 'default'} · ${commandMention(bot, 'servercolor')}`,

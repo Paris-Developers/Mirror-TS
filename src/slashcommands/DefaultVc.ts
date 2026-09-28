@@ -16,11 +16,17 @@ import { VoiceConnectionStatus } from 'discord-voip';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
+import { commandMention } from '../resources/cards';
 import { handledHere } from '../resources/instanceGuard';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
 export let defaultVc = new Enmap({ name: 'defaultVc' });
+//whether Mirror joins the default channel by itself (/autojoin). on unless a server turned it off
+export let autoJoin = new Enmap({ name: 'autoJoin' });
+export function autoJoinOn(guildId: string): boolean {
+	return autoJoin.get(guildId) !== false;
+}
 
 export class DefaultVc implements SlashCommand {
 	name: string = 'defaultvc';
@@ -89,7 +95,9 @@ export class DefaultVc implements SlashCommand {
 			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
-					`Sucessfully updated your default voice channel to ${channel}. Mirror joins it whenever someone is in it, and leaves once it's empty`
+					autoJoinOn(interaction.guild!.id)
+						? `Sucessfully updated your default voice channel to ${channel}. Mirror joins it whenever someone is in it, and leaves once it's empty. Turn that off with ${commandMention(bot, 'autojoin')}`
+						: `Sucessfully updated your default voice channel to ${channel}. Auto-join is off, so Mirror only joins when asked. Turn it on with ${commandMention(bot, 'autojoin')}`
 				);
 			interaction.reply({ embeds: [embed] });
 			//people may already be in it
@@ -178,7 +186,7 @@ export async function followDefaultChannel(bot: Bot, oldState: VoiceState, newSt
 //whether Mirror really is in a voice channel in this server. Discord's word for it isn't enough: right
 //after a restart it can still show Mirror in the channel the last run was in, with no connection
 //behind it, and Mirror would never follow anyone in
-function inVoice(bot: Bot, guild: Guild): boolean {
+export function inVoice(bot: Bot, guild: Guild): boolean {
 	const connection = bot.player.nodes.get(guild.id)?.connection;
 	return !!connection && connection.state.status !== VoiceConnectionStatus.Destroyed;
 }
@@ -213,7 +221,9 @@ export function rejoinDefaultVoice(bot: Bot, guildId: string, attempt = 0) {
 }
 
 //returns false when the join should be tried again later
-async function joinDefaultVoice(bot: Bot, guild: Guild): Promise<boolean> {
+export async function joinDefaultVoice(bot: Bot, guild: Guild): Promise<boolean> {
+	//a server that turned auto-join off only gets Mirror when someone asks for it
+	if (!autoJoinOn(guild.id)) return true;
 	const channel = guild.channels.cache.get(String(defaultVc.get(guild.id)));
 	if (!channel?.isVoiceBased()) {
 		//the channel was deleted. only forget it when the server is fully loaded: during a Discord

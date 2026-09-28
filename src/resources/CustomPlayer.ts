@@ -21,7 +21,7 @@ import { YoutubeExtractor } from 'discord-player-youtubei';
 import { fileSearchOptions, registerExtractors, userSearchOptions } from './extractors';
 import { playerErrors, tracksStarted } from './metrics';
 import { endCard, registerNowPlaying } from './nowPlaying';
-import { defaultVc, leftOnPurpose, rejoinDefaultVoice, stayedIn } from '../slashcommands/DefaultVc';
+import { autoJoinOn, defaultVc, leftOnPurpose, rejoinDefaultVoice, stayedIn } from '../slashcommands/DefaultVc';
 
 //a join that failed for a reason worth telling the person who asked. the message is written for them
 export class VoiceJoinError extends Error {}
@@ -446,7 +446,8 @@ export class CustomPlayer extends Player {
 	private async sayLeftEmpty(channel: VoiceBasedChannel, hadMusic: boolean) {
 		if (!channel.isSendable()) return;
 		const left = hadMusic ? 'stopped the music and left' : 'left';
-		const back = defaultVc.get(channel.guild.id) === channel.id ? " I'll be back when someone joins." : '';
+		const comesBack = defaultVc.get(channel.guild.id) === channel.id && autoJoinOn(channel.guild.id);
+		const back = comesBack ? " I'll be back when someone joins." : '';
 		await channel
 			.send({
 				content: `👋 Nobody's here, so I ${left}.${back}`,

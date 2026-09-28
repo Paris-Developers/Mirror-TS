@@ -31,7 +31,8 @@ const categories: Category[] = [
 		label: 'Voice and intros',
 		emoji: '🔊',
 		blurb: 'Mirror joining voice, sound effects, and the intro that plays when you join a channel.',
-		commands: ['join', 'leave', 'defaultvc', 'sicko', 'munch', 'intro', 'removeintro'],
+		commands: ['join', 'leave', 'defaultvc', 'autojoin', 'sicko', 'munch', 'intro', 'removeintro'],
+		note: "With a default voice channel set, Mirror joins it when someone arrives and leaves once it's been empty for 30 seconds. Use **/autojoin off** to keep it out until someone uses /join.",
 	},
 	{
 		id: 'music',
@@ -53,7 +54,7 @@ const categories: Category[] = [
 		label: 'Server setup',
 		emoji: '⚙️',
 		blurb: 'Settings for server managers. See everything at once with /config.',
-		commands: ['config', 'birthdayconfig', 'defaultvc', 'update', 'managerrole', 'silencemember', 'silencerole', 'nsfw', 'servercolor', 'removeintro'],
+		commands: ['config', 'birthdayconfig', 'defaultvc', 'autojoin', 'update', 'managerrole', 'silencemember', 'silencerole', 'nsfw', 'servercolor', 'removeintro'],
 	},
 	{
 		id: 'about',
