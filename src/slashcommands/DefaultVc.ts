@@ -2,6 +2,8 @@ import {
 	ChatInputCommandInteraction,
 	CacheType,
 	VoiceChannel,
+	VoiceBasedChannel,
+	VoiceState,
 	GuildMember,
 	EmbedBuilder,
 	Guild,
@@ -21,7 +23,7 @@ export let defaultVc = new Enmap({ name: 'defaultVc' });
 export class DefaultVc implements SlashCommand {
 	name: string = 'defaultvc';
 	description =
-		'[MANAGER] Set voice channel for Mirror to join upon restart, or leave it out to clear it';
+		'[MANAGER] Set a voice channel Mirror joins while people are in it, or leave it out to clear it';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'channel',
@@ -85,9 +87,11 @@ export class DefaultVc implements SlashCommand {
 			let embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(
-					`Sucessfully updated your default voice channel to ${channel}`
+					`Sucessfully updated your default voice channel to ${channel}. Mirror joins it whenever someone is in it, and leaves once it's empty`
 				);
 			interaction.reply({ embeds: [embed] });
+			//people may already be in it
+			if (!interaction.guild!.members.me?.voice.channelId) void joinDefaultVoice(bot, interaction.guild!);
 			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
@@ -102,8 +106,8 @@ export class DefaultVc implements SlashCommand {
 	managerRequired?: boolean | undefined = true;
 }
 
-//joins every server's default channel at startup. an idle queue keeps Mirror sitting in the
-//channel, ready for music or intros
+//joins every server's default channel at startup, where people are in it. an idle queue keeps
+//Mirror sitting in the channel, ready for music or intros, until everyone leaves
 export async function launchVoice(bot: Bot): Promise<void> {
 	await Promise.all(
 		[...defaultVc.keys()].map(async (guildId) => {
@@ -135,8 +139,8 @@ export function watchDefaultVoice(bot: Bot) {
 }
 
 //servers where Mirror was sent out of voice on purpose (/leave, /destroyqueue, a moderator's
-//Disconnect). it stays out until it's brought back into a channel. forgotten on restart, when Mirror
-//joins its default channels again as it always has
+//Disconnect). it stays out until it's brought back into a channel, or the default channel empties
+//and people gather there again. forgotten on restart
 const leftServers = new Set<string>();
 export function leftOnPurpose(guildId: string) {
 	leftServers.add(guildId);
@@ -145,6 +149,33 @@ export function leftOnPurpose(guildId: string) {
 }
 export function stayedIn(guildId: string) {
 	leftServers.delete(guildId);
+}
+
+//Discord shows a voice channel as in use while anyone is in it, Mirror included, so Mirror only sits
+//in the default channel while people are there: it follows the first person in, and leaves once the
+//channel has been empty for a little while (the player's emptyChannel event, in CustomPlayer).
+//called for every change in a person's voice state, before intros are considered, so the person
+//who brings Mirror in hears their own intro
+export async function followDefaultChannel(bot: Bot, oldState: VoiceState, newState: VoiceState) {
+	const guild = newState.guild;
+	const defaultId = defaultVc.get(guild.id) as string | undefined;
+	if (!defaultId) return;
+	//everyone has left the default channel: whoever gathers there next brings Mirror back, even if
+	//it was sent away with /leave while they were last there
+	if (oldState.channelId === defaultId && newState.channelId !== defaultId) {
+		const channel = guild.channels.cache.get(defaultId);
+		if (channel?.isVoiceBased() && !hasPeople(channel)) leftServers.delete(guild.id);
+		return;
+	}
+	if (newState.channelId !== defaultId || oldState.channelId === defaultId) return;
+	//Mirror is busy elsewhere, on its way, or was sent away while people are still here
+	if (guild.members.me?.voice.channelId || bot.player.isJoining(guild.id) || leftServers.has(guild.id)) return;
+	await joinDefaultVoice(bot, guild);
+}
+
+//people, not bots, in a voice channel
+function hasPeople(channel: VoiceBasedChannel): boolean {
+	return channel.members.some((member) => !member.user.bot);
 }
 
 //forgets a server's default channel, and any rejoin that was waiting to happen
@@ -183,6 +214,8 @@ async function joinDefaultVoice(bot: Bot, guild: Guild): Promise<boolean> {
 		}
 		return true;
 	}
+	//no one to join: the first person to arrive brings Mirror in (followDefaultChannel)
+	if (!hasPeople(channel)) return true;
 	try {
 		await bot.player.joinVoice(bot.player.nodes.create(guild, bot.player.playOptions), channel);
 		return true;

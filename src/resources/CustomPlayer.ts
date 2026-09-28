@@ -1,5 +1,5 @@
 import { Bot } from '../Bot';
-import { GuildNodeCreateOptions, GuildQueue, Player, QueueRepeatMode } from 'discord-player';
+import { GuildNodeCreateOptions, GuildQueue, Player } from 'discord-player';
 import {
 	ChannelType,
 	Guild,
@@ -385,16 +385,13 @@ export class CustomPlayer extends Player {
 			this.discardQueue(queue);
 		});
 
-		//everyone left: stop the music but stay in the channel, so intros play for whoever comes back
-		//and /defaultvc keeps Mirror where it was put. an empty queue also lets people in another
-		//channel pull Mirror over with /join
+		//everyone has been gone for a little while (leaveOnEmptyCooldown): stop any music and leave.
+		//Discord shows a voice channel as in use while Mirror sits in it, even alone. in a server with a
+		//default channel, the next person to arrive there brings Mirror back (followDefaultChannel)
 		this.events.on('emptyChannel', (queue) => {
-			if (!queue.currentTrack && !queue.tracks.size) return;
-			void endCard(this.bot, queue.guild.id, 'Stopped because everyone left the voice channel');
-			if (queue.repeatMode) queue.setRepeatMode(QueueRepeatMode.OFF);
-			//a paused song never reaches its end, so it has to be unpaused to be stopped
-			if (queue.node.isPaused()) queue.node.setPaused(false);
-			queue.node.stop();
+			if (queue.currentTrack || queue.tracks.size)
+				void endCard(this.bot, queue.guild.id, 'Stopped because everyone left the voice channel');
+			this.discardQueue(queue);
 		});
 
 		this.events.on('playerStart', (queue) => {
