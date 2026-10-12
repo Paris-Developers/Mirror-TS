@@ -3,13 +3,13 @@ import {
 	ChatInputCommandInteraction,
 	ContainerBuilder,
 	GuildChannel,
-	MessageFlags,
 	PermissionFlagsBits,
 	escapeMarkdown,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { respond } from '../resources/respond';
 import { SlashCommand } from './SlashCommand';
-import { bdayChannels, bdayTimes } from './BirthdayConfig';
+import { bdayChannels, birthdayTime } from './BirthdayConfig';
 import { autoJoinOn } from '../resources/autoJoin';
 import { updateChannels } from './Update';
 import { nsfw } from './Nsfw';
@@ -48,18 +48,16 @@ export class Config implements SlashCommand {
 					? `✅ **${label}** · ${value}`
 					: `❌ **${label}** · not set up · ${commandMention(bot, command)}`;
 
-			//birthday times are saved as MM-HH-DATEMOD-TIMEZONE
 			const birthdayChannel = bdayChannels.get(guild.id);
-			const [minute, hour, , timezone] = String(bdayTimes.get(guild.id) ?? '').split('-');
-			const birthdayTime =
-				minute && hour && timezone
-					? ` at ${hour.padStart(2, '0')}:${minute.padStart(2, '0')} ${timezone.toUpperCase()}`
-					: '';
+			const time = birthdayTime(guild.id);
+			const timeText = time
+				? ` at ${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')} ${time.timezone.toUpperCase()}`
+				: '';
 			const nsfwOn = nsfw.get(guild.id) == 'on';
 			const color = serverColors.get(guild.id);
 
 			const features = [
-				setting('Birthday messages', birthdayChannel && `${channelName(birthdayChannel)}${birthdayTime}`, 'birthdayconfig'),
+				setting('Birthday messages', birthdayChannel && `${channelName(birthdayChannel)}${timeText}`, 'birthdayconfig'),
 				`${autoJoinOn(guild.id) ? '✅' : '❌'} **Auto-join voice** · ${autoJoinOn(guild.id) ? 'on' : 'off'} · ${commandMention(bot, 'autojoin')}`,
 				setting('Mirror development updates', updateChannels.get(guild.id) && channelName(updateChannels.get(guild.id)), 'update'),
 				`${nsfwOn ? '✅' : '❌'} **NSFW commands** · ${nsfwOn ? 'on' : 'off'} · ${commandMention(bot, 'nsfw')}`,
@@ -96,13 +94,10 @@ export class Config implements SlashCommand {
 					text.setContent(`### Permissions in <#${channel.id}>\n${permissions}`)
 				);
 
-			return void interaction.reply({ components: [card], ...cardReply });
+			return void (await respond(interaction, { components: [card], ...cardReply }, false));
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return void interaction.reply({
-				content: 'Error detected, contact an admin to investigate.',
-				flags: MessageFlags.Ephemeral,
-			});
+			return void (await respond(interaction, 'Error: contact a developer to investigate'));
 		}
 	}
 	guildRequired?: boolean | undefined = true;

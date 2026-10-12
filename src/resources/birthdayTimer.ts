@@ -1,80 +1,101 @@
 import { bdayDates } from '../slashcommands/Birthday';
 import cron from 'node-cron';
 import { Bot } from '../Bot';
-import { EmbedBuilder, TextChannel, User } from 'discord.js';
-import { bdayChannels, bdayTimes } from '../slashcommands/BirthdayConfig';
+import { EmbedBuilder, GuildMember, PermissionFlagsBits, TextChannel } from 'discord.js';
+import { bdayChannels, birthdayTime, cronTimezone } from '../slashcommands/BirthdayConfig';
+import { silencedRole } from '../slashcommands/SilenceRole';
 import { silencedUsers } from '../slashcommands/SilenceMember';
 
 //running cron jobs can't be saved to disk, so they live in a plain Map
 export let bdayCrons = new Map<string, ReturnType<typeof cron.schedule>>();
 
-export async function birthdayTimer(guild: string, bot: Bot): Promise<void> {
-	//grab the stored infostring from the enmap, if empty: return
-	let infoString = bdayTimes.ensure(guild, '') as String;
-	if (infoString == '') {
-		bot.logger.info(`Embed value did not exist for guild: ${guild}.`);
-		return;
+//returns whether the guild now has a running job, so a time node-cron won't take can be reported
+//back to whoever set it instead of leaving the server with no timer at all
+export async function birthdayTimer(guild: string, bot: Bot): Promise<boolean> {
+	let time = birthdayTime(guild);
+	if (!time) {
+		bot.logger.info(`No usable birthday time saved for guild: ${guild}.`);
+		return false;
 	}
-	//split the infoarray to be interpreted and interpolate the cron string to be accurate
-	let infoArray = infoString.split('-'); //[0]=MM [1]=HH [2]=DATEMOD [3]=Timezone for notes
-	let cronTime = `${infoArray[0]} ${infoArray[1]} * * *`;
+	let cronTime = `${time.minute} ${time.hour} * * *`;
+	let timezone = cronTimezone(time.timezone);
 
-	//if a cronJob already exists for a guild we will want to end it before scheduling a new one.
-	let task = bdayCrons.get(guild);
-	if (task) {
-		task.stop();
+	let task: ReturnType<typeof cron.schedule>;
+	try {
+		//node-cron keeps the job on the chosen timezone's wall clock, so 8:00 PST stays 8:00 PST
+		//whatever the bot machine is set to, and daylight saving is handled for us
+		task = cron.schedule(
+			cronTime,
+			async () => {
+				//this will run daily at the specified time:
+				//the date is read in the person's own timezone, since the bot machine's clock may
+				//already be on the next day
+				let today = localDate(timezone);
+				let dayString = `${today.day}-${today.month}`;
+
+				//for every birthday in the enmap, check if it matches the current date
+				bdayDates.entries().forEach(async ([userId, bday]) => {
+					//if a persons birthday matches the current date we are checking
+					if (dayString == bday) {
+						let birthGuild = bot.client.guilds.cache.get(guild);
+						if (!birthGuild) return;
+						try {
+							var member = await birthGuild.members.fetch(userId.toString());
+						} catch (err) {
+							return;
+						}
+
+						//silenced members get no message, by role as well as by name
+						if (silenced(member)) return;
+
+						//check if the channel exists
+						let targetChannel = bot.client.channels!.cache.get(
+							bdayChannels.get(guild)
+						) as TextChannel;
+						if (!targetChannel) return;
+
+						//create embed and send
+						const bdayEmbed = new EmbedBuilder()
+							.setDescription(`**:birthday: Happy Birthday <@${userId}> :tada:**`)
+							.setColor(member.displayHexColor)
+							.setFooter({
+								text: `${today.month}-${today.day}-${today.year}`,
+								iconURL: member.displayAvatarURL(),
+							});
+						let message = await targetChannel.send({ embeds: [bdayEmbed] });
+						await message.react('🥳');
+					}
+				});
+			},
+			{ timezone }
+		);
+	} catch (err) {
+		bot.logger.error(`Could not schedule birthdays for guild ${guild}:`, err);
+		return false;
 	}
 
-	//schedule a new cron into task
-	task = cron.schedule(cronTime, async () => {
-		//this will run daily at the specified time:
-		//create a day object, ensure that Mirror knows what date to scan
-		let today = new Date();
-		let dayString = new String();
-		let dateMod = infoArray[2];
-		if (dateMod == 'x') today.setDate(today.getDate());
-		if (dateMod == 'minus') today.setDate(today.getDate() - 1); //yes these look weird but the Date fxn is smart enough to make the adjustment between months/years
-		if (dateMod == 'plus') today.setDate(today.getDate() + 1);
-		dayString = `${today.getDate()}-${today.getMonth() + 1}`;
-
-		//for every birthday in the enmap, check if it matches the current date
-		bdayDates.entries().forEach(async ([userId, bday]) => {
-			//if a persons birthday matches the current date we are checking
-			if (dayString == bday) {
-				//TODO: check if the user exists in the guild
-				let birthGuild = bot.client.guilds.cache.get(guild);
-				if(!birthGuild) return;
-				try{
-					var member = await birthGuild.members.fetch(userId.toString());
-				} catch(err){
-					return
-				}
-
-				//check if the user is silenced into the guild
-				let userArray = silencedUsers.ensure(birthGuild.id, []);
-				if (userArray.includes(userId)) return;
-
-				//check if the channel exists
-				let targetChannel = bot.client.channels!.cache.get(
-					bdayChannels.get(guild)
-				) as TextChannel;
-				if (!targetChannel) return;
-
-				//create embed and send
-				const bdayEmbed = new EmbedBuilder()
-					.setDescription(`**:birthday: Happy Birthday <@${userId}> :tada:**`)
-					.setColor(member.displayHexColor)
-					.setFooter({
-						text: `${
-							today.getMonth() + 1
-						}-${today.getDate()}-${today.getFullYear()}`,
-						iconURL: member.displayAvatarURL(),
-					});
-				let message = await targetChannel.send({ embeds: [bdayEmbed] });
-				await message.react('🥳');
-			}
-		});
-	});
-	//set task as the current cronJob for the guild
+	//the running job is only replaced once the new one exists, so a time node-cron refuses leaves
+	//the server with the timer it already had
+	let previous = bdayCrons.get(guild);
+	if (previous) previous.stop();
 	bdayCrons.set(guild, task);
+	return true;
+}
+
+//mirrors silenceCheck in SilenceRole, which needs an interaction and so can't be used from a timer
+function silenced(member: GuildMember): boolean {
+	if (member.permissions.has(PermissionFlagsBits.Administrator)) return false;
+	if (member.roles.cache.has(silencedRole.get(member.guild.id))) return true;
+	return (silencedUsers.ensure(member.guild.id, []) as string[]).includes(member.id);
+}
+
+function localDate(timezone: string): { day: number; month: number; year: number } {
+	const parts = new Intl.DateTimeFormat('en-US', {
+		timeZone: timezone,
+		day: 'numeric',
+		month: 'numeric',
+		year: 'numeric',
+	}).formatToParts(new Date());
+	const part = (type: string) => Number(parts.find((found) => found.type === type)?.value);
+	return { day: part('day'), month: part('month'), year: part('year') };
 }
