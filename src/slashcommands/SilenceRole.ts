@@ -1,5 +1,4 @@
 import {
-	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
 	CacheType,
 	Role,
@@ -16,13 +15,14 @@ import { managerRoles } from './ManagerRole';
 import { silencedUsers } from './SilenceMember';
 import { Option, Subcommand } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
+import { respond } from '../resources/respond';
 
 export const silencedRole = new Enmap({ name: 'SilencedRole' });
 
 export class SilenceRole implements SlashCommand {
 	name: string = 'silencerole';
 	description: string =
-		'[MANAGER] Set a role from using Intro, Music, or Birthday commands';
+		'[MANAGER] Silence a role from using Intro, Music, or Birthday commands';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'role',
@@ -76,11 +76,8 @@ export class SilenceRole implements SlashCommand {
 				);
 			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return void interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			return void (await respond(interaction, 'Error: contact a developer to investigate'));
 		}
 	}
 	guildRequired?: boolean | undefined = true;
