@@ -4,16 +4,6 @@ openweathermap:
  - documentation: https://openweathermap.org/current 
  - sample: http://api.openweathermap.org/data/2.5/weather?q=$<CITY>&appid=<TOKEN> 
 
-newsapi:
- - website: https://newsapi.org
- - documentation: https://newsapi.org/docs
- - sample link: https://newsapi.org/v2/<everything?>&from=<YYYY-MM-DD>&sortBy=publishedAt&apiKey=<news_token>
- 
-cloud.iexapis (Stock API):
- - website: https://cloud.iexapis.com/
- - documentation: https://iexcloud.io/docs/api/#rest-how-to
- - sample link: https://clous.iexapis/stable/stock/<TICKER>/quote?token=<stock_token>
-
 nasa:
  - webite: https://api.nasa.gov/
  - documentation: https://api.nasa.gov/
@@ -22,5 +12,8 @@ nasa:
 nekos.best:
  - website: https://nekos.best/
  - documentation: https://docs.nekos.best/
- - link syntax: https://nekos.best/<ENDPOINT>
+ - link syntax: https://nekos.best/api/v2/<ENDPOINT>
+
+/stock (no API any more):
+ - IEX Cloud (cloud.iexapis.com) shut down in August 2024, so /stock has no provider and `stock_token` in `config.json` does nothing. Whatever replaces it goes here.
 
