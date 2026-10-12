@@ -2,14 +2,13 @@
 //Returns a random kanye quote
 import {
 	CacheType,
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	EmbedBuilder,
-	MessageFlags,
 	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
+import { respond } from '../resources/respond';
 import { SlashCommand } from './SlashCommand';
 
 export class Kanye implements SlashCommand {
@@ -34,14 +33,13 @@ export class Kanye implements SlashCommand {
 					text: 'Kanye West',
 					iconURL: 'https://imgur.com/olrP4cN.jpeg',
 				});
-			interaction.reply({ embeds: [embed] });
+			await respond(interaction, { embeds: [embed] }, false);
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}
+	//the embed takes the server's color, so there has to be a server to take it from
+	guildRequired?: boolean | undefined = true;
 }

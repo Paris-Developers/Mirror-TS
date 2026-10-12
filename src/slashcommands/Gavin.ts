@@ -3,17 +3,15 @@
 //Returns Gavins gym PR's, options to allow you to set new PRs from the text channel.
 
 import {
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	EmbedBuilder,
-	Options,
-	MessageFlags,
 	ApplicationCommandOptionType,
 	PermissionFlagsBits,
 } from 'discord.js';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
+import { respond } from '../resources/respond';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
@@ -85,7 +83,7 @@ export class Gavin implements SlashCommand {
 					.setDescription(
 						`GAVIN'S CURRENT PRS:\n BENCH: ${bench} LB \n SQUAT: ${squat} LB \n DEADLIFT: ${deadlift} LB \n`
 					);
-				interaction.reply({ embeds: [embed] });
+				await respond(interaction, { embeds: [embed] }, false);
 				return;
 			}
 			if (options.getSubcommand() == 'lift') {
@@ -98,13 +96,13 @@ export class Gavin implements SlashCommand {
 				if (!toprint) {
 					//theoretically, this will never run because we are using slash command choices
 					bot.logger.warn(`${this.name} ran without a valid Choice selected`);
-					interaction.reply('INVALID LOOKUP');
+					await respond(interaction, 'INVALID LOOKUP');
 					return;
 				}
 				const embed = new EmbedBuilder()
 					.setColor(colorCheck(interaction.guild!.id))
 					.setDescription(`GAVIN'S ${type!.toUpperCase()} PR: ${toprint}`);
-				interaction.reply({ embeds: [embed] });
+				await respond(interaction, { embeds: [embed] }, false);
 				return;
 			}
 			if (options.getSubcommand() == 'setlift') {
@@ -120,19 +118,18 @@ export class Gavin implements SlashCommand {
 					.setDescription(
 						`UPDATED GAVIN'S ${type!.toUpperCase()} PR TO: ${lift}\nGOOD JOB SOLDIER`
 					);
-				interaction.reply({ embeds: [embed] });
+				await respond(interaction, { embeds: [embed] }, false);
 				return;
 			}
-			bot.logger.warn(`${this.name} finished without hiting a subcommand`);
+			bot.logger.warn(`${this.name} finished without hitting a subcommand`);
 			//slash commands make it pretty easy to validate user input before the command is actually run, so theoretically this shouldn't ever run either.
-			interaction.reply('Something screwed up. This should never happen.');
+			await respond(interaction, 'Something screwed up. This should never happen.');
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}
+	//the embed takes the server's color, so there has to be a server to take it from
+	guildRequired?: boolean | undefined = true;
 }
