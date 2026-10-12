@@ -2,14 +2,13 @@ import {
 	ChatInputCommandInteraction,
 	CacheType,
 	EmbedBuilder,
-	User,
-	MessageFlags,
 	ApplicationCommandOptionType,
 } from 'discord.js';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
+import { respond } from '../resources/respond';
 
 const nuts = new Enmap({ name: 'nuts' });
 const gifArray = [
@@ -58,13 +57,10 @@ export class Nut implements SlashCommand {
 	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
 		try {
 			const embed = new EmbedBuilder().setColor('#FDA50F');
-			if (
-				Math.random() == 0.69 ||
-				Math.random() == 0.42 ||
-				Math.random() == 1 ||
-				Math.random() == 0
-			) {
-				let index = Math.floor((Math.random() * 100) / 7);
+			//a rare treat: asking Math.random() for an exact 0.69 never paid out, and the index it
+			//picked ran well past the end of the array
+			if (Math.random() < 0.05) {
+				let index = Math.floor(Math.random() * gifArray.length);
 				embed.setImage(gifArray[index]);
 			}
 
@@ -152,11 +148,8 @@ export class Nut implements SlashCommand {
 				return;
 			};
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return void interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			return void (await respond(interaction, 'Error: contact a developer to investigate'));
 		}
 	}
 
