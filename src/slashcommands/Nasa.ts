@@ -2,10 +2,8 @@
 //Returns the Nasa Image of the Day and corresponding description
 import {
 	CacheType,
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	EmbedBuilder,
-	MessageFlags,
 	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
@@ -13,6 +11,7 @@ import { SlashCommand } from './SlashCommand';
 import config from '../resources/config';
 import { Option, Subcommand } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
+import { respond } from '../resources/respond';
 
 export class Nasa implements SlashCommand {
 	name: string = 'nasa';
@@ -33,7 +32,6 @@ export class Nasa implements SlashCommand {
 			);
 			let jsonData = await res.json();
 			let footer = `${jsonData.date} NASA Astronomy Picture of the day`; //we need this for the deprecation error we are getting with .setFooter()
-			bot.logger.debug(jsonData); // <- remove eventually;
 			var embed = new EmbedBuilder()
 				.setColor(colorCheck(interaction.guild!.id))
 				.setDescription(`${jsonData.explanation.substr(0, 200)}...`)
@@ -42,14 +40,13 @@ export class Nasa implements SlashCommand {
 				.setTitle(`**${jsonData.title}**`)
 				.setURL('https://apod.nasa.gov/apod/astropix.html');
 			if (jsonData.copyright) embed.setAuthor({ name: jsonData.copyright }); //checks to see if the copyright item exists, then it will include it in the author slot.
-			interaction.editReply({ embeds: [embed] }); //technically deferReply() creates the reply, so we need to edit that.
+			await interaction.editReply({ embeds: [embed] }); //technically deferReply() creates the reply, so we need to edit that.
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			//the reply was already deferred above, so reply() would throw and leave them on "thinking"
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}
+	guildRequired?: boolean | undefined = true;
 }
