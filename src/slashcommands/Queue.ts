@@ -1,15 +1,15 @@
 import {
-	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
 	CacheType,
-	Message,
 	EmbedBuilder,
-	GuildMember,
-	MessageFlags,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { SlashCommand } from './SlashCommand';
+import { respond } from '../resources/respond';
+
+//an embed field can't hold a whole queue, so only the next few tracks are listed
+const listed = 15;
 
 export class Queue implements SlashCommand {
 	name: string = 'queue';
@@ -39,7 +39,7 @@ export class Queue implements SlashCommand {
 				artistString = artistString + track.author + '\n';
 				timeString = timeString + track.duration + '\n';
 				ptr++;
-				if (ptr == 16) break;
+				if (ptr > listed) break;
 			}
 			let footerText = `${Math.round(
 				queue.estimatedDuration / 1000 / 60 / 60 - 0.5
@@ -73,17 +73,14 @@ export class Queue implements SlashCommand {
 					}
 				)
 				.setColor(colorCheck(interaction.guild!.id,true));
-			if (queue.tracks.size - 16 > 0) {
-				footerText = `${queue.tracks.size - 16} more tracks, ` + footerText;
+			if (queue.tracks.size - listed > 0) {
+				footerText = `${queue.tracks.size - listed} more tracks, ` + footerText;
 			}
 			embed.setFooter({ text: footerText });
 			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return void interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			return void (await respond(interaction, 'Error: contact a developer to investigate'));
 		}
 	}
 	guildRequired?: boolean | undefined = true;
