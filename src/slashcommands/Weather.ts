@@ -1,12 +1,10 @@
-//Call: Slash command weather or w
+//Call: Slash command weather
 //Returns weather from a single specified city
 
 import {
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	CacheType,
 	EmbedBuilder,
-	MessageFlags,
 	ApplicationCommandOptionType,
 	PermissionFlagsBits,
 } from 'discord.js';
@@ -16,6 +14,7 @@ import { find } from 'geo-tz';
 import config from '../resources/config';
 import { Option, Subcommand } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
+import { respond } from '../resources/respond';
 
 type emojiConverter = { [index: string]: string };
 const weatherEmoji = {
@@ -85,14 +84,15 @@ export class Weather implements SlashCommand {
 			//if it encounters an error it will run the code under the catch function
 			let jsonData;
 
-			let query = interaction.options.getString('state') //if we have a state lets add it to the string
-				? `${interaction.options.getString(
-						'city'
-				  )},US-${interaction.options.getString('state')}`
-				: interaction.options.getString('city');
+			//a city with a space or an ampersand in it has to be escaped, or it breaks the query string
+			let city = encodeURIComponent(interaction.options.getString('city')!);
+			let state = interaction.options.getString('state');
+			let query = state //if we have a state lets add it to the string
+				? `${city},US-${encodeURIComponent(state)}`
+				: city;
 			//Pulls data from the API and stores as a JSON object
 			let res = await fetch(
-				`http://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${config.weather_token}`
+				`https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${config.weather_token}`
 			);
 			jsonData = await res.json();
 			if (jsonData.cod == '404') {
@@ -113,29 +113,25 @@ export class Weather implements SlashCommand {
 			let cHigh = Math.round(jsonData.main.temp_max - 273.15);
 			let fHigh = Math.round((cHigh * 9) / 5 + 32);
 
-			//define timezone and sunrise
+			//define timezone, sunrise and sunset. cutting the formatted date to four characters turned
+			//11:05 AM into "11:0" and dropped the AM from every time, so ask for just the clock time
 			let timezone = find(jsonData.coord.lat, jsonData.coord.lon);
-			let sunrise = new Date(jsonData.sys.sunrise * 1000).toLocaleString(
-				'en-US',
-				{ timeZone: timezone[0] }
-			);
-			sunrise = sunrise.split(', ')[1].slice(0, 4);
-
-			//define sunset
-			let sunset = new Date(jsonData.sys.sunset * 1000).toLocaleString(
-				'en-US',
-				{
+			let clock = (seconds: number) =>
+				new Date(seconds * 1000).toLocaleTimeString('en-US', {
 					timeZone: timezone[0],
-				}
-			);
-			sunset = sunset.split(', ')[1].slice(0, 4);
+					hour: 'numeric',
+					minute: '2-digit',
+				});
+			let sunrise = clock(jsonData.sys.sunrise);
+			let sunset = clock(jsonData.sys.sunset);
 
 			//define humidity and wind ## NOTE WIND COMES IN AT M/S
 			let humidity = `${jsonData.main.humidity} %`;
 			let kmhWind = Math.round(jsonData.wind.speed * 3.6);
 			let mphWind = Math.round(kmhWind * 0.621371);
+			//the compass has 16 points, so each one covers 22.5 degrees, not 22.8
 			let windDir =
-				mphWind == 0 ? '' : cardinalDir[Math.round(jsonData.wind.deg / 22.8)]; // if there's no wind, set it to blank
+				mphWind == 0 ? '' : cardinalDir[Math.round(jsonData.wind.deg / 22.5)]; // if there's no wind, set it to blank
 
 			//capitalizes the first letter of each word in the string called
 			let str = '';
@@ -174,12 +170,10 @@ export class Weather implements SlashCommand {
 			//sends embed to the channel
 			interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}
+	guildRequired?: boolean | undefined = true;
 }

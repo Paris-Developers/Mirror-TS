@@ -1,13 +1,7 @@
 import {
-	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
 	CacheType,
-	ChatInputApplicationCommandData,
 	EmbedBuilder,
-	GuildMember,
-	GuildChannel,
-	TextChannel,
-	MessageFlags,
 	ApplicationCommandOptionType,
 	PermissionFlagsBits,
 } from 'discord.js';
@@ -15,6 +9,7 @@ import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { Option } from './Option';
+import { respond } from '../resources/respond';
 
 const choices = [
 	{
@@ -49,19 +44,7 @@ export class Nsfw implements SlashCommand {
 		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			let member = interaction.member as GuildMember;
-			if (!(interaction.channel instanceof TextChannel)) {
-				interaction.reply('Command must be used in a server');
-				return;
-			}
-			if (!member.permissionsIn(interaction.channel!).has(PermissionFlagsBits.Administrator)) {
-				interaction.reply({
-					content:
-						'This command is only for people with Administrator permissions',
-					flags: MessageFlags.Ephemeral,
-				});
-				return;
-			}
+			//who may use this is settled by managerRequired, as it is for every other [MANAGER] command
 			var setting = nsfw.ensure(interaction.guild!.id, 'off');
 			const embed = new EmbedBuilder();
 			if (interaction.options.getString('toggle') == 'on') {
@@ -82,11 +65,8 @@ export class Nsfw implements SlashCommand {
 			interaction.reply({ embeds: [embed] });
 			return;
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}
