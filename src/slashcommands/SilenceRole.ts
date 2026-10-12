@@ -3,6 +3,7 @@ import {
 	CacheType,
 	Role,
 	EmbedBuilder,
+	GuildMember,
 	Interaction,
 	MessageFlags,
 	ApplicationCommandOptionType,
@@ -84,16 +85,25 @@ export class SilenceRole implements SlashCommand {
 	managerRequired?: boolean | undefined = true;
 }
 
-export function silenceCheck(interaction: Interaction): boolean {
-	let member = interaction.guild!.members.cache.get(interaction.user.id);
-	if (member?.permissions.has(PermissionFlagsBits.Administrator)) return false;
-	let silenced = silencedRole.get(interaction.guild!.id);
-	if (member?.roles.cache.has(silenced)) return true;
-	silenced = silencedUsers.get(interaction.guild!.id);
-	if(!silenced) return false;
-	//compare against the person who used the command: their member may not be in the cache
-	for (let user of silenced) {
-		if (user == interaction.user.id) return true;
+//the same question asked two ways: a command has an interaction, while things that run on their own,
+//such as the birthday timer, only ever have a member
+export function silenceCheck(member: GuildMember): boolean;
+export function silenceCheck(interaction: Interaction): boolean;
+export function silenceCheck(target: GuildMember | Interaction): boolean {
+	if (!(target instanceof GuildMember)) {
+		//the person who used the command may not be in the member cache, and the silenced list is kept
+		//by user id, so that half of the rule still applies without one
+		let member = target.guild!.members.cache.get(target.user.id);
+		return member
+			? silenceCheck(member)
+			: silencedMembers(target.guild!.id).includes(target.user.id);
 	}
-	return false;
+	if (target.permissions.has(PermissionFlagsBits.Administrator)) return false;
+	let silenced = silencedRole.get(target.guild.id) as string;
+	if (silenced && target.roles.cache.has(silenced)) return true;
+	return silencedMembers(target.guild.id).includes(target.id);
+}
+
+function silencedMembers(guildId: string): string[] {
+	return (silencedUsers.get(guildId) as string[]) ?? [];
 }
