@@ -28,11 +28,11 @@ export class fuckimissheralready implements MessageCommand {
 		try {
 			await message.delete();
 			if (nsfw.get(message.guild!.id) != 'on') return;
-			let res = await fetch(`https://nekos.best/api/v1/cry`);
+			let res = await fetch(`https://nekos.best/api/v2/cry`);
 			let jsonData = await res.json();
 			let embed = new EmbedBuilder()
 				.setColor('#0071b6')
-				.setImage(jsonData.url)
+				.setImage(jsonData.results[0].url)
 				.setFooter({ text: 'I feel you bro' });
 			if (message.channel.isSendable()) await message.channel.send({ embeds: [embed] });
 		} catch (err) {

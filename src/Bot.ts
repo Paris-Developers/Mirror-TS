@@ -1,8 +1,7 @@
-import { Client, Guild, EmbedBuilder, TextChannel, Events } from 'discord.js';
+import { Client, Events } from 'discord.js';
 import { hostname } from 'os';
 import { CustomLogger } from './CustomLogger';
 import { TLogLevelName } from 'tslog';
-import { permissionsCheck } from './resources/permissionsCheck';
 import { msgPermsCheck } from './resources/msgPermCheck';
 import { SlashCommand } from './slashcommands/SlashCommand';
 import { Keyword } from './keywords/Keyword';
@@ -14,7 +13,6 @@ import {
 	importKeywords,
 } from './resources/dynamicImports';
 import { UserCommand } from './usercommands/UserCommand';
-import Enmap from 'enmap';
 import { registerEvents } from './resources/registerEvents';
 import { CustomPlayer } from './resources/CustomPlayer';
 import { startMetrics } from './resources/metrics';
@@ -26,7 +24,6 @@ export class Bot {
 	public player: CustomPlayer;
 
 	//helper functions
-	public permissionsCheck = permissionsCheck;
 	public msgPermsCheck = msgPermsCheck;
 
 	//data stores
@@ -34,7 +31,6 @@ export class Bot {
 	public userCommands: Array<UserCommand> = [];
 	public messageCommands: Array<MessageCommand> = [];
 	public keywords: Array<Keyword> = [];
-	public songRecs: Enmap = new Enmap({ name: 'songs' });
 
 	constructor(
 		private token: string,

@@ -1,9 +1,6 @@
 //All slash commands derive from this interface
 import { Bot } from '../Bot';
-import {
-	ApplicationCommandDataResolvable,
-	ChatInputCommandInteraction,
-} from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { Option, Subcommand } from './Option';
 
 export interface SlashCommand {

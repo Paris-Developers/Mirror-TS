@@ -1,6 +1,5 @@
 //Checks an array of specified permissions for a slash command's channel
 import { Interaction, PermissionFlagsBits } from 'discord.js';
-import { Bot } from '../Bot';
 
 //the permissions Mirror is missing in the channel a command was used in, as readable names like "Send Messages".
 //Discord sends Mirror's permissions for that channel along with every command, so this asks Discord nothing:
@@ -20,13 +19,4 @@ export function missingPermissions(
 	return interaction.appPermissions
 		.missing(permissionsToCheck)
 		.map((name) => name.replace(/([a-z])([A-Z])/g, '$1 $2'));
-}
-
-//the yes or no version, for anything that doesn't need to say which permissions are missing
-export async function permissionsCheck(
-	bot: Bot,
-	interaction: Interaction,
-	permissionsToCheck: Array<bigint>
-): Promise<boolean> {
-	return missingPermissions(interaction, permissionsToCheck).length == 0;
 }

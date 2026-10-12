@@ -10,8 +10,8 @@ export async function registerEvents(bot: Bot) {
 	let files = await promisedReaddir(`${__dirname}/../events/`);
 	for (let file of files) {
 		if (!file.endsWith('.js')) continue;
-		// if it's the base class or the old class holder file, ignore it
-		if (file == 'EventHandler.js' || file == 'Events.js') continue;
+		// if it's the base class, ignore it
+		if (file == 'EventHandler.js') continue;
 		// get all the exports from the file
 		//import() needs a file:// URL, a bare Windows path like C:\... is read as a URL scheme
 		let module = await import(pathToFileURL(path.join(__dirname, '..', 'events', file)).href);
