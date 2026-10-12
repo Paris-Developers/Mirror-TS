@@ -58,7 +58,9 @@ const spoiler = /\|\|[\s\S]*?\|\|/g;
 //case-sensitive version missed "Https://somewhere.else" next to a fixable link, called the message
 //entirely fixed, and hid the preview the member actually wanted
 const linkPattern = /(<?)(https?:\/\/[^\s<>()[\]"'`|\\]+)/gi;
-//a link at the end of a sentence picks up whatever was after it
+//a link at the end of a sentence picks up whatever was after it. _ and ~ are in here for *bold* and
+//_italic_ markers, but an instagram shortcode is base64 and may genuinely end in _, so this is only
+//ever used as a second attempt -- see linkAsPosted below
 const trailingPunctuation = /[.,!?;:'"*_~]+$/;
 
 //none of these embed, so there is nothing in them to fix, and a link inside one is not a link the
@@ -114,6 +116,20 @@ function fixLink(raw: string): string | undefined {
 	return undefined;
 }
 
+//the fix for a link as the member wrote it, falling back to the link with sentence punctuation taken
+//off the end.
+//the literal url is tried first because stripping is a guess: an instagram shortcode is base64, so
+//.../p/CyK_3aBv_ is an ordinary post id and chopping its underscore off pointed members at a
+//different post, or at nothing. taking the punctuation off only ever has to rescue a link the member
+//ran into their own full stop or wrapped in **bold**, and in those cases the literal url does not
+//match a rule anyway, so the first attempt costs one anchored regex and nothing else
+function linkAsPosted(raw: string): string | undefined {
+	const fixed = fixLink(raw);
+	if (fixed) return fixed;
+	const trimmed = raw.replace(trailingPunctuation, '');
+	return trimmed === raw ? undefined : fixLink(trimmed);
+}
+
 //the pure half of the feature: which links in a message Mirror would answer, and with what. no
 //Discord objects, so it can be checked on its own
 export function fixableLinks(content: string): FixResult {
@@ -128,7 +144,7 @@ export function fixableLinks(content: string): FixResult {
 		//an <url> is Discord's way of saying "no preview", so the member already said what they want
 		if (found[1] === '<' && text[found.index + found[0].length] === '>') continue;
 		embeddable++;
-		const fixed = fixLink(found[2].replace(trailingPunctuation, ''));
+		const fixed = linkAsPosted(found[2]);
 		if (!fixed) continue;
 		//someone already pasted the fix alongside the original, so the message has a working preview
 		//that suppressing would take away
