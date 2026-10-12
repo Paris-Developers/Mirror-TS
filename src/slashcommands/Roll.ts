@@ -1,15 +1,14 @@
 import {
 	ChatInputCommandInteraction,
 	CacheType,
-	RichPresenceAssets,
 	EmbedBuilder,
-	MessageFlags,
 	ApplicationCommandOptionType,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
+import { respond } from '../resources/respond';
 
 export class Roll implements SlashCommand {
 	name: string = 'roll';
@@ -28,7 +27,7 @@ export class Roll implements SlashCommand {
 			const embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id));
 			if (interaction.options.getString('roll')) {
 				if (interaction.options.getString('roll') == '1dbbq') {
-					if (Math.floor(Math.random() * 2 + 0.99) == 1) {
+					if (Math.floor(Math.random() * 2) == 1) {
 						embed
 							.setDescription('Let there be barbeque :smiling_imp:')
 							.setImage(
@@ -48,16 +47,19 @@ export class Roll implements SlashCommand {
 						return void interaction.reply('L');
 					}
 					let dStrings = x.split('d');
+					let dice = parseInt(dStrings[0]);
+					let sides = parseInt(dStrings[1]);
+					//without this, "d6" rolls nothing at all and reports a total of 0
+					if (isNaN(dice) || isNaN(sides) || dice < 1 || sides < 1) {
+						return void interaction.reply({
+							content: 'Invalid syntax, try something like "2d12"',
+						});
+					}
 					let y = 0;
-					while (y < parseInt(dStrings[0])) {
-						let one = Math.floor((Math.random() * 100) / parseInt(dStrings[1]));
-						if (isNaN(one)) {
-							return void interaction.reply({
-								content: 'Invalid syntax, try something like "2d12"',
-							});
-						}
+					while (y < dice) {
+						let one = Math.floor(Math.random() * sides) + 1;
 						rollTotal += one;
-						if (rollString.length > -0) rollString += ' + ';
+						if (rollString.length > 0) rollString += ' + ';
 						rollString += one.toString();
 						y++;
 					}
@@ -69,16 +71,13 @@ export class Roll implements SlashCommand {
 					.setDescription(rollString);
 				return void interaction.reply({ embeds: [embed] });
 			}
-			return void interaction.reply(Math.floor(Math.random() * 6 + 0.99).toString());
+			return void interaction.reply((Math.floor(Math.random() * 6) + 1).toString());
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return void interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			return void (await respond(interaction, 'Error: contact a developer to investigate'));
 		}
 	}
-	guildRequired?: boolean | undefined;
+	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
 	blockSilenced?: boolean | undefined;
 }
