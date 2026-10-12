@@ -35,16 +35,22 @@ Setting `YOUTUBE_DL_SKIP_PYTHON_CHECK` matters on a machine without Python: with
 
 If `npm ci` or build.bat prints an error, fix it and run that step again before `Start-Service MirrorBot`: a failed `npm ci` leaves `node_modules` half installed, and build.bat deletes `built/` before compiling.
 
-The service was created with [NSSM](https://nssm.cc/), which runs an ordinary program as a service. Setting it up once, in an Administrator PowerShell (`(Get-Command node).Source` prints the path to node on your machine, in case it isn't the usual one):
+The service was created with [NSSM](https://nssm.cc/), which runs an ordinary program as a service. This is what the live bot's service is set to, as `nssm dump MirrorBot` reports it (`(Get-Command node).Source` prints the path to node on your machine, in case it isn't the usual one):
 
 - nssm install MirrorBot "C:\Program Files\nodejs\node.exe"
-- nssm set MirrorBot AppParameters .\built\src\index.js
+- nssm set MirrorBot AppParameters built\src\index.js
 - nssm set MirrorBot AppDirectory C:\Mirror-TS
+- nssm set MirrorBot AppEnvironmentExtra :TZ=America/New_York
+- nssm set MirrorBot AppStdout C:\Mirror-TS\logs\service-output.log
+- nssm set MirrorBot AppStderr C:\Mirror-TS\logs\service-output.log
+- nssm set MirrorBot DisplayName "Mirror Discord bot"
+- nssm set MirrorBot ObjectName .\mirrorbot "the account's password"
+- nssm set MirrorBot Start SERVICE_AUTO_START
 - nssm set MirrorBot AppExit 78 Exit
-- nssm set MirrorBot AppStdout C:\Mirror-TS\logs\service.log
-- nssm set MirrorBot AppStderr C:\Mirror-TS\logs\service.log
 
-`AppDirectory` matters: saved data lives in `./data`, so the service has to start in the project folder. `AppExit 78 Exit` is the only one of these that isn't an NSSM default. The service knows nothing about `ecosystem.config.js`, so the `stop_exit_codes` setting in there does nothing here; `AppExit 78 Exit` is what stops Windows restarting a copy that refused to log in. See "One copy per bot token" below.
+`AppDirectory` matters: saved data lives in `./data`, so the service has to start in the project folder. The birthday crons read the machine's clock, so `AppEnvironmentExtra` pins the timezone the live bot has always used, whatever the host is set to. `ObjectName` runs the bot as its own limited account rather than as the system.
+
+`AppExit 78 Exit` is the one line here that NSSM doesn't set by default, and the live service is missing it — worth adding. The service knows nothing about `ecosystem.config.js`, so the `stop_exit_codes` setting in there does nothing; without `AppExit 78 Exit`, a copy that refuses to log in is restarted for ever, writing a new log file each time. See "One copy per bot token" below.
 
 ### Running it with pm2 instead
 
