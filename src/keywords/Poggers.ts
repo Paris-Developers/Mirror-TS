@@ -1,34 +1,8 @@
-import { PermissionFlagsBits, Message } from 'discord.js';
 //Keyword: poggers
-//Reacts to the keyword with JamesChamp
+//Reacts the same way as pog, see PogReaction
 
-import { Bot } from '../Bot';
-import { Keyword } from './Keyword';
+import { PogReaction } from './Pog';
 
-export class Poggers implements Keyword {
+export class Poggers extends PogReaction {
 	name: string = 'poggers';
-	requiredPermissions: bigint[] = [
-		PermissionFlagsBits.AddReactions,
-		PermissionFlagsBits.UseExternalEmojis,
-	];
-	async run(
-		bot: Bot,
-		message: Message<boolean>,
-		args: String[]
-	): Promise<void> {
-		try {
-			const num =(Math.random())
-			if (num > .5) {
-				message.react('<:fordpog:972224310951428176>');
-				return;
-			}
-			message.react(':JamesChamp:956572430778912858');
-		} catch (err) {
-			bot.logger.commandError(message.channel!.id, this.name, err);
-			message.reply({
-				content: 'Error: contact a developer to investigate',
-			});
-			return;
-		}
-	}
 }
