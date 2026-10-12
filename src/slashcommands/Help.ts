@@ -54,7 +54,7 @@ const categories: Category[] = [
 		label: 'Server setup',
 		emoji: '⚙️',
 		blurb: 'Settings for server managers. See everything at once with /config.',
-		commands: ['config', 'birthdayconfig', 'autojoin', 'update', 'managerrole', 'silencemember', 'silencerole', 'nsfw', 'servercolor', 'removeintro'],
+		commands: ['config', 'birthdayconfig', 'autojoin', 'embedfix', 'update', 'managerrole', 'silencemember', 'silencerole', 'nsfw', 'servercolor', 'removeintro'],
 	},
 	{
 		id: 'about',
