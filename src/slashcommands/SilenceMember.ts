@@ -1,10 +1,6 @@
 import {
-	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
 	CacheType,
-	Guild,
-	GuildMember,
-	TextChannel,
 	MessageFlags,
 	ApplicationCommandOptionType,
 	PermissionFlagsBits,
@@ -13,13 +9,14 @@ import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
+import { respond } from '../resources/respond';
 
 export const silencedUsers = new Enmap({ name: 'silencedUsers' });
 
 export class SilenceMember implements SlashCommand {
 	name: string = 'silencemember';
 	description: string =
-		'[ADMIN ONLY] Silence a member from using Intros, Music or Birthday commands.';
+		'[MANAGER] Silence a member from using Intros, Music or Birthday commands.';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'user',
@@ -42,7 +39,8 @@ export class SilenceMember implements SlashCommand {
 			//if the user is already silenced, we want to unsilence them
 			if (userArray.includes(badUser!.id)) {
 				let ptr = userArray.indexOf(badUser!.id);
-				userArray.splice(ptr);
+				//a splice without a count takes everyone after them out of the list as well
+				userArray.splice(ptr, 1);
 				silencedUsers.set(interaction.guild!.id, userArray);
 				return void interaction.reply({
 					content: `Successfully unsilenced ${badUser}`,
@@ -63,7 +61,7 @@ export class SilenceMember implements SlashCommand {
 			if (userArray.length > 100) {
 				return void interaction.reply({
 					content:
-						'Servers are limited to 100 members silenced. Please unsilence somemembers before silencing more.  If this is not possible please contact a developeer for more options',
+						'Servers are limited to 100 members silenced. Please unsilence some members before silencing more.  If this is not possible please contact a developer for more options',
 					flags: MessageFlags.Ephemeral,
 				});
 			}
@@ -74,11 +72,8 @@ export class SilenceMember implements SlashCommand {
 				flags: MessageFlags.Ephemeral,
 			});
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return void interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			return void (await respond(interaction, 'Error: contact a developer to investigate'));
 		}
 	}
 	guildRequired?: boolean | undefined = true;

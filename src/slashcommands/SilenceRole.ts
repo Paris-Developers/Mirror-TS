@@ -1,9 +1,9 @@
 import {
-	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
 	CacheType,
 	Role,
 	EmbedBuilder,
+	GuildMember,
 	Interaction,
 	MessageFlags,
 	ApplicationCommandOptionType,
@@ -16,13 +16,14 @@ import { managerRoles } from './ManagerRole';
 import { silencedUsers } from './SilenceMember';
 import { Option, Subcommand } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
+import { respond } from '../resources/respond';
 
 export const silencedRole = new Enmap({ name: 'SilencedRole' });
 
 export class SilenceRole implements SlashCommand {
 	name: string = 'silencerole';
 	description: string =
-		'[MANAGER] Set a role from using Intro, Music, or Birthday commands';
+		'[MANAGER] Silence a role from using Intro, Music, or Birthday commands';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'role',
@@ -76,27 +77,33 @@ export class SilenceRole implements SlashCommand {
 				);
 			return void interaction.reply({ embeds: [embed] });
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			return void interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			return void (await respond(interaction, 'Error: contact a developer to investigate'));
 		}
 	}
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined = true;
 }
 
-export function silenceCheck(interaction: Interaction): boolean {
-	let member = interaction.guild!.members.cache.get(interaction.user.id);
-	if (member?.permissions.has(PermissionFlagsBits.Administrator)) return false;
-	let silenced = silencedRole.get(interaction.guild!.id);
-	if (member?.roles.cache.has(silenced)) return true;
-	silenced = silencedUsers.get(interaction.guild!.id);
-	if(!silenced) return false;
-	//compare against the person who used the command: their member may not be in the cache
-	for (let user of silenced) {
-		if (user == interaction.user.id) return true;
+//the same question asked two ways: a command has an interaction, while things that run on their own,
+//such as the birthday timer, only ever have a member
+export function silenceCheck(member: GuildMember): boolean;
+export function silenceCheck(interaction: Interaction): boolean;
+export function silenceCheck(target: GuildMember | Interaction): boolean {
+	if (!(target instanceof GuildMember)) {
+		//the person who used the command may not be in the member cache, and the silenced list is kept
+		//by user id, so that half of the rule still applies without one
+		let member = target.guild!.members.cache.get(target.user.id);
+		return member
+			? silenceCheck(member)
+			: silencedMembers(target.guild!.id).includes(target.user.id);
 	}
-	return false;
+	if (target.permissions.has(PermissionFlagsBits.Administrator)) return false;
+	let silenced = silencedRole.get(target.guild.id) as string;
+	if (silenced && target.roles.cache.has(silenced)) return true;
+	return silencedMembers(target.guild.id).includes(target.id);
+}
+
+function silencedMembers(guildId: string): string[] {
+	return (silencedUsers.get(guildId) as string[]) ?? [];
 }

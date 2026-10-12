@@ -5,14 +5,14 @@ import {
 	CacheType,
 	ChatInputCommandInteraction,
 	EmbedBuilder,
-	MessageFlags,
 } from 'discord.js';
 import Enmap from 'enmap';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { daysInMonth, longDate, months, monthNumber } from '../resources/birthdayDates';
+import { respond } from '../resources/respond';
 import { Option } from './Option';
-import { silencedUsers } from './SilenceMember';
+import { silenceCheck } from './SilenceRole';
 import { SlashCommand } from './SlashCommand';
 
 export let bdayDates = new Enmap({ name: 'bdayDates' });
@@ -20,7 +20,7 @@ export let bdayDates = new Enmap({ name: 'bdayDates' });
 export class Birthday implements SlashCommand {
 	name: string = 'birthday';
 	description =
-		'Set your birthday to recieve a special message on your birthday!';
+		'Set your birthday to receive a special message on your birthday!';
 	options = [
 		new Option(
 			'month',
@@ -46,22 +46,19 @@ export class Birthday implements SlashCommand {
 		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
-			if (userArray.includes(interaction.user.id)) {
-				return void interaction.reply({
-					content: 'Silenced users cannot use this command',
-					flags: MessageFlags.Ephemeral,
-				});
+			//the shared check covers the silenced role as well as the silenced member list
+			if (silenceCheck(interaction)) {
+				return void (await respond(
+					interaction,
+					'Silenced users cannot use this command'
+				));
 			}
 
 			const month = monthNumber(interaction.options.getString('month')!);
 			const day = interaction.options.getInteger('day')!;
 			//February keeps its 29th, since people born on it still want it saved
 			if (!month || day < 1 || day > daysInMonth(month)) {
-				return void interaction.reply({
-					content: 'Please enter a valid date',
-					flags: MessageFlags.Ephemeral,
-				});
+				return void (await respond(interaction, 'Please enter a valid date'));
 			}
 
 			//store the date of birth in numerical form  DD-MM
@@ -75,14 +72,11 @@ export class Birthday implements SlashCommand {
 					})}`
 				)
 				.setColor(colorCheck(interaction.guild!.id));
-			interaction.reply({ embeds: [embed] });
+			await respond(interaction, { embeds: [embed] }, false);
 			return;
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}

@@ -10,9 +10,10 @@ import fs from 'fs';
 import path from 'path';
 import { SlashCommand } from './SlashCommand';
 import { Bot } from '../Bot';
-import { silencedUsers } from './SilenceMember';
+import { silenceCheck } from './SilenceRole';
 import { Option, Subcommand } from './Option';
 import { downloadTrack } from '../resources/downloadTrack';
+import { respond } from '../resources/respond';
 import { YoutubeExtractor } from 'discord-player-youtubei';
 
 //how much of the chosen video is kept and played back
@@ -35,12 +36,12 @@ export class Intro implements SlashCommand {
 		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			let userArray = silencedUsers.ensure(interaction.guild!.id, []);
-			if (userArray.includes(interaction.user.id)) {
-				return void interaction.reply({
-					content: 'Silenced users cannot use this command',
-					flags: MessageFlags.Ephemeral,
-				});
+			//the shared check covers the silenced role as well as the silenced member list
+			if (silenceCheck(interaction)) {
+				return void (await respond(
+					interaction,
+					'Silenced users cannot use this command'
+				));
 			}
 			await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 			const url = interaction.options.getString('video')!;
@@ -51,26 +52,23 @@ export class Intro implements SlashCommand {
 				.catch(() => null);
 			const track = search?.tracks[0];
 			if (!track) {
-				interaction.editReply({
-					content: 'Please enter a valid youtube link',
-				});
+				await respond(interaction, 'Please enter a valid youtube link');
 				return;
 			}
 			//Spotify, SoundCloud and Apple Music links find their song on their own site, which
 			//intros can't be recorded from
 			if (track.extractor?.identifier !== YoutubeExtractor.identifier) {
-				interaction.editReply({
-					content: 'Intros have to come from YouTube. Paste a YouTube link, or type the video\'s name to search for it.',
-				});
+				await respond(
+					interaction,
+					'Intros have to come from YouTube. Paste a YouTube link, or type the video\'s name to search for it.'
+				);
 				return;
 			}
 			//only the first few seconds are kept, so length barely matters, and ffmpeg stops on its
 			//own even for a livestream. YouTube sometimes returns a video with no duration at all,
 			//which is not a reason to refuse it, so only a known-long video is turned away
 			if (track.durationMS && track.durationMS > 10 * 60 * 1000) {
-				interaction.editReply({
-					content: 'Please pick a video under 10 minutes',
-				});
+				await respond(interaction, 'Please pick a video under 10 minutes');
 				return;
 			}
 
@@ -82,15 +80,14 @@ export class Intro implements SlashCommand {
 				path.join(folder, `${interaction.user.id}.mp4`),
 				INTRO_SECONDS
 			);
-			interaction.editReply({
-				content: `Sucessfully updated your intro theme! The first ${INTRO_SECONDS} seconds of **${track.title}** will play when you join.`,
-			});
+			await respond(
+				interaction,
+				`Successfully updated your intro theme! The first ${INTRO_SECONDS} seconds of **${track.title}** will play when you join.`
+			);
 			return;
 		} catch (err: any) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.editReply({
-				content: 'Error detected, contact an admin to investigate.',
-			});
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}

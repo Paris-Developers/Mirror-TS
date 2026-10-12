@@ -43,7 +43,7 @@ export async function importMessageCommands(bot: Bot) {
 	let files = await promisedReaddir(`${__dirname}/../messagecommands/`);
 	for (let file of files) {
 		if (!file.endsWith('.js')) continue;
-		if (file == 'MessageCommand.js' || file == 'MessageCommands.js') continue;
+		if (file == 'MessageCommand.js') continue;
 		let module = await import(pathToFileURL(path.join(__dirname, '..', 'messagecommands', file)).href);
 		let command = new module[path.parse(file).name]();
 		let commandName = command.name;
@@ -55,7 +55,7 @@ export async function importKeywords(bot: Bot) {
 	let files = await promisedReaddir(`${__dirname}/../keywords/`);
 	for (let file of files) {
 		if (!file.endsWith('.js')) continue;
-		if (file == 'Keyword.js' || file == 'Keywords.js') continue;
+		if (file == 'Keyword.js') continue;
 		let module = await import(pathToFileURL(path.join(__dirname, '..', 'keywords', file)).href);
 		let keyword = new module[path.parse(file).name]();
 		let keywordName = keyword.name;

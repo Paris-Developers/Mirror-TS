@@ -11,7 +11,7 @@ Mirror is a multi-purpose Discord bot which provides fun, immersive and informat
 
 Mirror is a for-fun personal project for learning programming and computer science concepts through TypeScript, node-js, GitHub, and the Discord API.
 
-Mirror was created by Fordle#0001 and Phantasm#0001, with contributions from friends.
+Mirror was created in 2021 by Ford and Phantasm, with contributions from Zac, Luke, Gavin and Marty.
 
 Interested in adding Mirror to your server? Click [here](https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=139606649936&scope=bot%20applications.commands)
 
@@ -21,7 +21,7 @@ Interested in adding Mirror to your server? Click [here](https://discord.com/api
 
 Set your introtheme with [`/intro`](src/slashcommands/Intro.ts) to play an audio clip every time you join the chat channel!
 
-Find a YouTube video shorter than 10 seconds and paste the link into 'video' field.
+Paste a YouTube link into the 'video' field. The video can be up to 10 minutes long; Mirror keeps its first 5 seconds and plays those.
 
 ### Music Player
 
@@ -39,7 +39,7 @@ The Music functionality includes many commands:
 
  - [`/weather`](src/slashcommands/Weather.ts) Current weather for a provided city.
 
- - [`/stock`](src/slashcommands/Stock.ts) Daily summaries for up to 10 provided tickers.
+ - [`/stock`](src/slashcommands/Stock.ts) Unavailable: the data provider it used shut down in 2024.
 
  - [`/nasa`](src/slashcommands/Nasa.ts) Display the NASA Astronomy Picture of the Day.
 
@@ -53,7 +53,8 @@ For more information on formatting and installing the bot read below:
 
 [Contributing](docs/CONTRIBUTING.md)  
 [Building the bot](docs/BUILDING.md)  
-[APIs we use](docs/APIDOCUMENTATION.md)
+[APIs we use](docs/APIDOCUMENTATION.md)  
+[Monitoring the bot](docs/MONITORING.md)  
 [Development Server](https://discord.gg/BTVseHM)
 
 ## Acknowledgements

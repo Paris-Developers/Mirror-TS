@@ -2,14 +2,13 @@
 //Returns a random anime winking gif
 import {
 	CacheType,
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	EmbedBuilder,
-	MessageFlags,
 	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
+import { respond } from '../resources/respond';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 
@@ -30,14 +29,13 @@ export class Kawaii implements SlashCommand {
 			let res = await fetch(`https://nekos.best/api/v2/wink`);
 			let jsonData = await res.json();
 			let embed = new EmbedBuilder().setColor(colorCheck(interaction.guild!.id)).setImage(jsonData.results[0].url);
-			interaction.reply({ embeds: [embed] });
+			await respond(interaction, { embeds: [embed] }, false);
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}
+	//the embed takes the server's color, so there has to be a server to take it from
+	guildRequired?: boolean | undefined = true;
 }

@@ -2,7 +2,6 @@
 //returns a dank image
 
 import {
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	CacheType,
 	MessageFlags,

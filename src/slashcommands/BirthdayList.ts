@@ -6,11 +6,11 @@ import {
 	ChatInputCommandInteraction,
 	ContainerBuilder,
 	Guild,
-	MessageFlags,
 	StringSelectMenuBuilder,
 	escapeMarkdown,
 } from 'discord.js';
 import { Bot } from '../Bot';
+import { respond } from '../resources/respond';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 import { accentColor, addHeading, cardReply, commandMention, divider, handleControls } from '../resources/cards';
@@ -31,7 +31,9 @@ type Page = { month: number; part: number; parts: number; birthdays: Birthday[] 
 
 export class BirthdayList implements SlashCommand {
 	name: string = 'birthdaylist';
-	description: string = '[MANAGER] See all the birthdays in the current guild';
+	//the card only lists birthdays people set for themselves, so there is nothing here to keep from
+	//the rest of the server. The [MANAGER] label it used to carry was never enforced
+	description: string = 'See all the birthdays in the current guild';
 	options: (Option | Subcommand)[] = [];
 	requiredPermissions: bigint[] = [];
 	async run(bot: Bot, interaction: ChatInputCommandInteraction<CacheType>): Promise<void> {
@@ -71,9 +73,7 @@ export class BirthdayList implements SlashCommand {
 			);
 		} catch (err) {
 			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			const reply = { content: 'Error: contact a developer to investigate', flags: MessageFlags.Ephemeral as const };
-			if (interaction.deferred) interaction.followUp(reply);
-			else interaction.reply(reply);
+			await respond(interaction, 'Error: contact a developer to investigate');
 		}
 	}
 	guildRequired?: boolean | undefined = true;

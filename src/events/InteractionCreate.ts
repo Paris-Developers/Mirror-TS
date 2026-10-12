@@ -67,7 +67,7 @@ export class InteractionCreate implements EventHandler {
 		if (command.managerRequired && !(await managerCheck(interaction))) {
 			return void (await respond(
 				interaction,
-				'This command can only be used by designated managers or admininstrators'
+				'This command can only be used by designated managers or administrators'
 			));
 		}
 		if (command.blockSilenced && interaction.inCachedGuild() && (await silenceCheck(interaction))) {
