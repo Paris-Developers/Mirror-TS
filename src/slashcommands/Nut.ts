@@ -155,7 +155,8 @@ export class Nut implements SlashCommand {
 
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
-	blockSilenced?: boolean | undefined = true;
+	//silencing covers intros, music and birthdays, which the jar is none of
+	blockSilenced?: boolean | undefined;
 }
 var sort = function(arr: any[]){
 	arr.sort(function (a,b){
