@@ -1,13 +1,11 @@
-//Call: Slash command advpoll
+//Call: Slash command poll
 //Returns a custom in depth poll
 import {
 	EmbedBuilder,
-	Message,
 	CacheType,
 	ChatInputCommandInteraction,
 	User,
 	MessageReaction,
-	MessageFlags,
 	ApplicationCommandOptionType,
 	PermissionFlagsBits,
 } from 'discord.js';
@@ -15,6 +13,7 @@ import { Bot } from '../Bot';
 import { colorCheck } from '../resources/embedColorCheck';
 import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
+import { respond } from '../resources/respond';
 
 const progBar = [
 	//remember to index this properly!
@@ -31,18 +30,6 @@ const progBar = [
 	'[■■■■■■■■■■]',
 ];
 type index = { [index: string]: number };
-const emoteIndex: index = {
-	'1️⃣': 0,
-	'2️⃣': 1,
-	'3️⃣': 2,
-	'4️⃣': 3,
-	'5️⃣': 4,
-	'6️⃣': 5,
-	'7️⃣': 7,
-	'8️⃣': 8,
-	'9️⃣': 9,
-	'🔟': 10,
-};
 
 export class Poll implements SlashCommand {
 	name: string = 'poll';
@@ -63,7 +50,7 @@ export class Poll implements SlashCommand {
 		new Option('argument5', 'fifth poll option', 3, false),
 		new Option('argument6', 'sixth poll option', 3, false),
 		new Option('argument7', 'seventh poll option', 3, false),
-		new Option('argument8', 'eigth poll option', 3, false),
+		new Option('argument8', 'eighth poll option', 3, false),
 		new Option('argument9', 'ninth poll option', 3, false),
 		new Option('argument10', 'tenth poll option', 3, false),
 	];
@@ -81,8 +68,12 @@ export class Poll implements SlashCommand {
 			let options = interaction.options.data.slice(2); //Creates a new array of poll options separate from slash options title and time
 			//TODO: error test for empty arguments
 			let time = interaction.options.getInteger('time')!;
-			if(time >= 1500){
-				return void interaction.reply({content: 'Your poll cannot be longer than 24 hours or 1440 minutes', flags: MessageFlags.Ephemeral});
+			//a poll of no minutes leaves a collector running with nothing to stop it
+			if (time < 1 || time > 1440) {
+				return void (await respond(
+					interaction,
+					'Your poll must be open between 1 minute and 24 hours or 1440 minutes'
+				));
 			}
 
 			const embed = new EmbedBuilder()
@@ -108,6 +99,8 @@ export class Poll implements SlashCommand {
 
 			//We want to create an array of keys so that we can reference it more easily when writing the embed
 			const emoteKeys = Object.keys(emoteVal);
+			//only the numbers this poll actually offered are votes; anything else is someone reacting
+			const pollEmotes = emoteKeys.slice(0, options.length);
 
 			//fill and send embed with fields for each poll option selected
 			let ctr = 0;
@@ -127,9 +120,10 @@ export class Poll implements SlashCommand {
 				await message.react(emoteKeys[arg]);
 			}
 
-			//create a filter to not count bot votes to our reactions
+			//a bot's own reactions aren't votes, and neither is a reaction that isn't one of the options:
+			//counting those made the percentages add up to less than the votes cast
 			const filter = (reaction: MessageReaction, user: User) => {
-				return !user.bot;
+				return !user.bot && pollEmotes.includes(reaction.emoji.name!);
 			};
 
 			//creates collector to measure reactions and change the embed as needed
@@ -139,56 +133,49 @@ export class Poll implements SlashCommand {
 				time: time * 60000,
 				dispose: true,
 			});
+			//every bar moves when one vote comes in or goes out, so both handlers redraw all of them
+			const redraw = () => {
+				let field = 0;
+				for (let arg of options) {
+					//the last vote going away leaves nothing to divide by, which read as "undefined NaN%"
+					const share = total > 0 ? emoteVal[emoteKeys[field]] / total : 0;
+					embed.spliceFields(field, 1, {
+						name: `${emoteKeys[field]} ${arg.value}`,
+						value: `${progBar[Math.round(share * 10)]} **${Math.round(
+							share * 100
+						)}%**`,
+						inline: false,
+					});
+					field += 1;
+				}
+				message
+					.edit({ embeds: [embed] })
+					.catch((err) => bot.logger.warn('Could not update a poll:', err));
+			};
 			collector.on('collect', (reaction: MessageReaction, user: User) => {
 				total += 1;
 				emoteVal[reaction.emoji.name!] += 1; //saves number of votes for each emoji
-				ctr = 0;
-				for (let arg of options) {
-					//rewrite the embed and send the edits
-					embed.spliceFields(ctr, 1, {
-						name: `${emoteKeys[ctr]} ${arg.value}`,
-						value: `${
-							progBar[Math.round((emoteVal[emoteKeys[ctr]] / total) * 10)]
-						} **${Math.round((emoteVal[emoteKeys[ctr]] / total) * 100)}%**`,
-						inline: false,
-					});
-					ctr += 1;
-				}
-				message.edit({ embeds: [embed] });
+				redraw();
 			});
 			collector.on('remove', (reaction, user) => {
-				total = total - 1;
+				total -= 1;
 				emoteVal[reaction.emoji.name!] -= 1; //saves number of votes for each emoji
-				ctr = 0;
-				for (let arg of options) {
-					//rewrite the embed and send the edits
-					embed.spliceFields(ctr, 1, {
-						name: `${emoteKeys[ctr]} ${arg.value}`,
-						value: `${
-							progBar[Math.round((emoteVal[emoteKeys[ctr]] / total) * 10)]
-						} ${Math.round((emoteVal[emoteKeys[ctr]] / total) * 100)}%`,
-						inline: false,
-					});
-					ctr += 1;
-				}
-				message.edit({ embeds: [embed] });
+				redraw();
 			});
 			//when the collectors end send a message to the console.
 			collector.on('end', (collected) => {
 				embed.setFooter({
 					text: `Poll created by ${interaction.user.tag}, poll closed.`,
 				});
-				bot.logger.debug(
-					`Ending collection, Collected ${total} items. ${emoteVal}`
-				);
+				//the closed footer only reaches anyone if the poll itself is edited
+				redraw();
+				bot.logger.debug(`Ending collection, Collected ${total} items.`, emoteVal);
 			});
 		} catch (err) {
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}
+	guildRequired?: boolean | undefined = true;
 }
