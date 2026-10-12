@@ -65,8 +65,8 @@ export class Roll implements SlashCommand {
 						y++;
 					}
 				}
-				rollString += ' = ';
-				rollString += rollTotal.toString();
+				//one die has nothing to add up, so "16 = 16" is just noise
+				if (rollString !== rollTotal.toString()) rollString += ` = ${rollTotal}`;
 				embed
 					.setTitle(interaction.options.getString('roll')!)
 					.setDescription(rollString);
