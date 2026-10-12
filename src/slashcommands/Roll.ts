@@ -47,9 +47,10 @@ export class Roll implements SlashCommand {
 						return void interaction.reply('L');
 					}
 					let dStrings = x.split('d');
-					let dice = parseInt(dStrings[0]);
+					//"d20" is one d20: people write it that way, and without this it rolled nothing
+					//at all and reported a total of 0
+					let dice = dStrings[0].trim() === '' ? 1 : parseInt(dStrings[0]);
 					let sides = parseInt(dStrings[1]);
-					//without this, "d6" rolls nothing at all and reports a total of 0
 					if (isNaN(dice) || isNaN(sides) || dice < 1 || sides < 1) {
 						return void interaction.reply({
 							content: 'Invalid syntax, try something like "2d12"',
