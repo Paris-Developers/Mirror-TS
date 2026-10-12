@@ -22,6 +22,10 @@ export async function msgPermsCheck(
 		);
 	}
 	let permissions = message.channel.permissionsFor(guildMember);
+	//a thread reads its permissions off its parent channel, and returns nothing at all when that
+	//parent isn't cached. the types don't admit it, and calling .has on nothing would throw inside
+	//the message handler. unknown is not the same as refused, so the command gets to try
+	if (!permissions) return true;
 	for (let permission of permissionsToCheck) {
 		if (!permissions.has(permission)) return false;
 	}
