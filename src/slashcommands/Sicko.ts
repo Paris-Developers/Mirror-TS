@@ -1,5 +1,5 @@
-//Call: Slash command join
-//Joins the voice channel and plays mirror intro theme?
+//Call: Slash command sicko
+//Joins the voice channel and plays the sicko mode clip
 
 import {
 	ChatInputCommandInteraction,
