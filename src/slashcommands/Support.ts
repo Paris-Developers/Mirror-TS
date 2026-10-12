@@ -1,5 +1,4 @@
 import {
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	CacheType,
 	MessageFlags,

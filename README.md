@@ -39,7 +39,7 @@ The Music functionality includes many commands:
 
  - [`/weather`](src/slashcommands/Weather.ts) Current weather for a provided city.
 
- - [`/stock`](src/slashcommands/Stock.ts) Daily summaries for up to 10 provided tickers.
+ - [`/stock`](src/slashcommands/Stock.ts) Unavailable: the data provider it used shut down in 2024.
 
  - [`/nasa`](src/slashcommands/Nasa.ts) Display the NASA Astronomy Picture of the Day.
 

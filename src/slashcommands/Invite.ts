@@ -1,6 +1,5 @@
 import {
 	CacheType,
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	EmbedBuilder,
 	MessageFlags,
@@ -29,7 +28,8 @@ export class Invite implements SlashCommand {
 				)
 				.setThumbnail('https://imgur.com/nXf9JGG.jpg')
 				.setFooter({
-					text: 'Created in 2021, by Fordle#0001 and Phantasm#0001',
+					//Discord dropped the #0001 style of name in 2023
+					text: 'Created in 2021 by Ford and Phantasm',
 				});
 			interaction.reply({ embeds: [embed] });
 			return;

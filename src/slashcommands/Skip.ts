@@ -1,9 +1,7 @@
 import {
-	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
 	CacheType,
 	EmbedBuilder,
-	GuildMember,
 	MessageFlags,
 	ApplicationCommandOptionType,
 } from 'discord.js';

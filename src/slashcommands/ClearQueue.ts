@@ -1,9 +1,7 @@
 import {
-	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
 	CacheType,
 	EmbedBuilder,
-	GuildMember,
 	MessageFlags,
 } from 'discord.js';
 import { Bot } from '../Bot';

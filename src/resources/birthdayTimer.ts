@@ -1,10 +1,9 @@
 import { bdayDates } from '../slashcommands/Birthday';
 import cron from 'node-cron';
 import { Bot } from '../Bot';
-import { EmbedBuilder, GuildMember, PermissionFlagsBits, TextChannel } from 'discord.js';
+import { EmbedBuilder, TextChannel } from 'discord.js';
 import { bdayChannels, birthdayTime, cronTimezone } from '../slashcommands/BirthdayConfig';
-import { silencedRole } from '../slashcommands/SilenceRole';
-import { silencedUsers } from '../slashcommands/SilenceMember';
+import { silenceCheck } from '../slashcommands/SilenceRole';
 
 //running cron jobs can't be saved to disk, so they live in a plain Map
 export let bdayCrons = new Map<string, ReturnType<typeof cron.schedule>>();
@@ -46,7 +45,7 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<boolean> {
 						}
 
 						//silenced members get no message, by role as well as by name
-						if (silenced(member)) return;
+						if (silenceCheck(member)) return;
 
 						//check if the channel exists
 						let targetChannel = bot.client.channels!.cache.get(
@@ -80,13 +79,6 @@ export async function birthdayTimer(guild: string, bot: Bot): Promise<boolean> {
 	if (previous) previous.stop();
 	bdayCrons.set(guild, task);
 	return true;
-}
-
-//mirrors silenceCheck in SilenceRole, which needs an interaction and so can't be used from a timer
-function silenced(member: GuildMember): boolean {
-	if (member.permissions.has(PermissionFlagsBits.Administrator)) return false;
-	if (member.roles.cache.has(silencedRole.get(member.guild.id))) return true;
-	return (silencedUsers.ensure(member.guild.id, []) as string[]).includes(member.id);
 }
 
 function localDate(timezone: string): { day: number; month: number; year: number } {
