@@ -52,8 +52,12 @@ const fencedCode = /```[\s\S]*?```/g;
 const inlineCode = /``[^`]*``|`[^`\n]*`/g;
 const spoiler = /\|\|[\s\S]*?\|\|/g;
 //) and ] are left out so a markdown [text](url) link's closing bracket isn't swallowed. an optional
-//leading < is captured, to tell an <url> apart from a bare one
-const linkPattern = /(<?)(https?:\/\/[^\s<>()[\]"'`|\\]+)/g;
+//leading < is captured, to tell an <url> apart from a bare one.
+//the i matters for more than tidiness: Discord previews Https:// and HTTP:// the same as https://,
+//and this pattern decides both what gets rewritten and what counts towards allFixed. a
+//case-sensitive version missed "Https://somewhere.else" next to a fixable link, called the message
+//entirely fixed, and hid the preview the member actually wanted
+const linkPattern = /(<?)(https?:\/\/[^\s<>()[\]"'`|\\]+)/gi;
 //a link at the end of a sentence picks up whatever was after it
 const trailingPunctuation = /[.,!?;:'"*_~]+$/;
 
