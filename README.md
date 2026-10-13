@@ -43,6 +43,15 @@ The Music functionality includes many commands:
 
  - [`/nasa`](src/slashcommands/Nasa.ts) Display the NASA Astronomy Picture of the Day.
 
+### Link Fixing
+
+X/Twitter, Instagram and TikTok links arrive in Discord as bare text or an empty card. With [`/embedfix`](src/slashcommands/EmbedFix.ts) on, Mirror replies to one with the same post rewritten so it previews, and hides the empty embed on the original where it has Manage Messages. It is off until a manager turns it on, and it never deletes anyone's message.
+
+Two things worth knowing before turning it on:
+
+ - The rewritten link is **re-posted by Mirror, under Mirror's own name**. A link filter, automod rule or audit habit that watches what people post will not see it, so managers should account for Mirror itself in those lists.
+ - The previews come from **small third-party sites** ([the rules are listed here](src/resources/fixerRules.ts)), not from X, Instagram or TikTok. Mirror only rewrites the text and posts it; Discord's crawler is what fetches the preview.
+
 ## Contributing to Mirror
 
 Mirror is a public project and as such you are welcome to contribute if you desire.
