@@ -60,7 +60,7 @@ export class CustomLogger extends Logger<ILogObj> {
 			} else {
 				embed
 					.setFooter({
-						text: `Channel: ${channelId} (may not have been recieved)`,
+						text: 'Channel unknown (it may not have been received)',
 					})
 					.setDescription(`Error Message: ${message}`);
 			}

@@ -1,10 +1,8 @@
-//Call: Slash command banintro
+//Call: Slash command removeintro
 //Removes a selected users intro
 import {
 	ChatInputCommandInteraction,
 	CacheType,
-	GuildMember,
-	TextChannel,
 	MessageFlags,
 	ApplicationCommandOptionType,
 } from 'discord.js';
@@ -13,6 +11,7 @@ import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
 import { promisify } from 'util';
 import { Option, Subcommand } from './Option';
+import { respond } from '../resources/respond';
 
 export class RemoveIntro implements SlashCommand {
 	public name = 'removeintro';
@@ -51,11 +50,8 @@ export class RemoveIntro implements SlashCommand {
 				});
 				return;
 			} else {
-				bot.logger.commandError(interaction.channel!.id, this.name, err);
-				interaction.reply({
-					content: 'Error detected, contact an admin for further details.',
-					flags: MessageFlags.Ephemeral,
-				});
+				bot.logger.commandError(interaction.channelId, this.name, err);
+				await respond(interaction, 'Error: contact a developer to investigate');
 				return;
 			}
 		}

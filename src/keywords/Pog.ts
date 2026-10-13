@@ -1,24 +1,22 @@
 import { PermissionFlagsBits, Message } from 'discord.js';
 //Keyword: pog
-//Reacts to the keyword with JamesChamp
+//Reacts to the keyword with fordpog or JamesChamp
 
 import { Bot } from '../Bot';
 import { Keyword } from './Keyword';
 
-export class Pog implements Keyword {
-	name: string = 'pog';
+//pog, pogchamp and poggers are the same keyword to anyone typing them, so the three share this
+//reaction and only differ by the word they answer to
+export abstract class PogReaction implements Keyword {
+	abstract name: string;
 	requiredPermissions: bigint[] = [
 		PermissionFlagsBits.AddReactions,
 		PermissionFlagsBits.UseExternalEmojis,
 	];
-	async run(
-		bot: Bot,
-		message: Message<boolean>,
-		args: String[]
-	): Promise<void> {
+	async run(bot: Bot, message: Message<boolean>, args: String[]): Promise<void> {
 		try {
-			const num =(Math.random())
-			if (num > .5) {
+			const num = Math.random();
+			if (num > 0.5) {
 				message.react('<:fordpog:972224310951428176>');
 				return;
 			}
@@ -31,4 +29,8 @@ export class Pog implements Keyword {
 			return;
 		}
 	}
+}
+
+export class Pog extends PogReaction {
+	name: string = 'pog';
 }

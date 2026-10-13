@@ -1,15 +1,7 @@
 import { EventHandler } from './EventHandler';
 import { Bot } from '../Bot';
 import { handledHere } from '../resources/instanceGuard';
-import {
-	Guild,
-	EmbedBuilder,
-	TextChannel,
-	GuildChannel,
-	NonThreadGuildBasedChannel,
-	ChannelType,
-	PermissionFlagsBits,
-} from 'discord.js';
+import { Guild, EmbedBuilder, TextChannel, ChannelType, PermissionFlagsBits } from 'discord.js';
 
 export class GuildCreate implements EventHandler {
 	eventName = 'guildCreate';

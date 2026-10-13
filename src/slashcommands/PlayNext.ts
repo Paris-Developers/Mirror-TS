@@ -15,7 +15,7 @@ import { answeredElsewhere } from '../resources/instanceGuard';
 
 export class PlayNext implements SlashCommand {
 	name: string = 'playnext';
-	description: string = 'Add a song to the begining of the queue';
+	description: string = 'Add a song to the beginning of the queue';
 	options: (Option | Subcommand)[] = [
 		new Option('query', 'The song to play next', 3, true),
 	];

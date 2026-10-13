@@ -2,7 +2,7 @@
 
 A Grafana dashboard showing what the bot is doing and what it costs the PC it runs on. Only the bot and the programs it starts are measured, so anything else on the machine (games, streaming) never shows up in it.
 
-It's built for a Windows host where the bot runs as the `MirrorBot` service under its own account, `mirrorbot`, from `C:\Mirror-TS`.
+It's built for a Windows host where the bot runs as the `MirrorBot` service under its own account, `mirrorbot`, from `C:\Mirror-TS`. [Building the bot](BUILDING.md) covers setting that service up and updating the bot in it.
 
 | Piece | Job | Reachable from |
 |---|---|---|
@@ -23,7 +23,8 @@ Run everything in an **Administrator PowerShell** on the machine running the bot
 cd C:\Mirror-TS
 Stop-Service MirrorBot
 git pull
-npm install
+$env:YOUTUBE_DL_SKIP_PYTHON_CHECK = "1"
+npm ci
 notepad config.json
 ```
 

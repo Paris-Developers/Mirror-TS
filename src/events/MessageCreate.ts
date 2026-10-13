@@ -35,7 +35,7 @@ export class MessageCreate implements EventHandler {
 		//if the command/keyword doesn't exist, just exit
 		if (!command) return;
 
-		if (!(await bot.msgPermsCheck(bot, message, command.requiredPermissions))) {
+		if (!(await bot.msgPermsCheck(message, command.requiredPermissions))) {
 			// We don't have all the permissions we need. Log and return.
 			bot.logger.warn(
 				`Missing permissions to use ${command.name} in channel: ${message.channel.name}, in ${message.guild.name}`

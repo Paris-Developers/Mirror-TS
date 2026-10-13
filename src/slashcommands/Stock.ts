@@ -1,24 +1,32 @@
-//Call: Slash command stock or s
-//Returns 1-10 specified stocks in embed form
+//Call: Slash command stock
+//Shows a summary for each ticker: price, change, the day's range and the 52 week range
 
 import {
-	ChatInputApplicationCommandData,
 	ChatInputCommandInteraction,
 	CacheType,
 	EmbedBuilder,
-	MessageFlags,
 	ApplicationCommandOptionType,
 	PermissionFlagsBits,
 } from 'discord.js';
 import { Bot } from '../Bot';
 import { SlashCommand } from './SlashCommand';
-import config from '../resources/config';
 import { Option, Subcommand } from './Option';
 import { colorCheck } from '../resources/embedColorCheck';
+import { respond } from '../resources/respond';
+import { configText } from '../resources/config';
+
+//the data comes from Finnhub, which replaced IEX Cloud after it shut down in 2024. the free plan
+//allows 60 calls a minute and each ticker costs three, so the old limit of ten tickers would be
+//halfway through that in one command
+const maxTickers = 5;
+
+type Quote = { c: number; d: number | null; h: number; l: number; pc: number; t: number };
+type Profile = { name?: string; currency?: string; exchange?: string };
+type Metrics = { metric?: Record<string, number | null> };
 
 export class Stock implements SlashCommand {
 	name: string = 'stock';
-	description: string = 'Stock ticker data';
+	description: string = 'Daily summaries for up to 5 provided tickers';
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'tickers',
@@ -31,118 +39,117 @@ export class Stock implements SlashCommand {
 		PermissionFlagsBits.SendMessages,
 		PermissionFlagsBits.EmbedLinks,
 	];
+	//the embed takes its colour from the server's setting
+	guildRequired?: boolean | undefined = true;
 	async run(
 		bot: Bot,
 		interaction: ChatInputCommandInteraction<CacheType>
 	): Promise<void> {
 		try {
-			//tests to see if the command was passed in with arguements
-			if (!interaction.options.getString('tickers')) {
-				const embed = new EmbedBuilder()
-					.setColor(colorCheck(interaction.guild!.id))
-					.setDescription('Please provide a valid ticker(s)');
-				interaction.reply({ embeds: [embed] });
-				return;
+			const key = configText('stock_token');
+			if (!key) {
+				return void (await respond(
+					interaction,
+					'Stock lookups need an API key. A developer has to put a Finnhub key in the bot config as stock_token.'
+				));
 			}
-			//splits the entry text into separate arguements
-			let args = interaction.options.getString('tickers')!.split(' ');
-			if (args.length > 10) {
-				const embed = new EmbedBuilder()
-					.setColor(colorCheck(interaction.guild!.id))
-					.setDescription('Please provide 10 or fewer stocks to call');
-				interaction.reply({ embeds: [embed] });
-				return;
+
+			const tickers = [
+				...new Set(
+					interaction.options
+						.getString('tickers')!
+						.split(/[\s,]+/)
+						.filter(Boolean)
+						.map((ticker) => ticker.toUpperCase())
+				),
+			];
+			if (!tickers.length) return void (await respond(interaction, 'Please provide a ticker.'));
+			if (tickers.length > maxTickers) {
+				return void (await respond(
+					interaction,
+					`Please ask for ${maxTickers} tickers or fewer at a time.`
+				));
 			}
-			//trys the code as normal but if it encounters an error it will run the code under the catch function
-			const embedList = [];
-			let ctr = 0;
-			for (let ticker of args) {
-				//Pulls ticker data from the API and stores it as a JSON object
-				let res = await fetch(
-					`https://cloud.iexapis.com/stable/stock/${ticker}/quote?token=${config.stock_token}`
+
+			//three requests per ticker takes longer than the three seconds Discord waits for a reply
+			await interaction.deferReply();
+
+			const embeds = [];
+			for (const ticker of tickers) {
+				const quote = await ask<Quote>(key, 'quote', ticker);
+				//Finnhub answers for a ticker it doesn't know with zeroes and no timestamp
+				if (!quote || !quote.t) {
+					return void (await respond(interaction, `No stock found for ${ticker}.`));
+				}
+				const profile = (await ask<Profile>(key, 'stock/profile2', ticker)) ?? {};
+				const metrics = (await ask<Metrics>(key, 'stock/metric', ticker, '&metric=all'))?.metric;
+
+				const change = quote.d ?? 0;
+				//down, level, up: the arrow and the sign in front of the change
+				const [arrow, sign] =
+					change > 0
+						? [':arrow_up_small:', '+']
+						: change < 0
+							? [':arrow_down_small:', '']
+							: [':left_right_arrow:', ''];
+				const high52 = metrics?.['52WeekHigh'];
+				const low52 = metrics?.['52WeekLow'];
+
+				embeds.push(
+					new EmbedBuilder()
+						.setColor(colorCheck(interaction.guild!.id))
+						.setTitle(`__Summary for ${profile.name ?? ticker}:__`)
+						.addFields(
+							{
+								name: ticker,
+								value: `${arrow} ${money(quote.c)}(${sign}${change.toFixed(2)})\n**Previous Close:** ${money(quote.pc)}`,
+							},
+							{
+								name: ':bar_chart: Daily Range:',
+								value: `:chart_with_upwards_trend: ${money(quote.h)}\n:chart_with_downwards_trend: ${money(quote.l)}`,
+								inline: true,
+							},
+							{
+								name: ':bar_chart: 52 Week Range:',
+								value: `:chart_with_upwards_trend: ${money(high52)}\n:chart_with_downwards_trend: ${money(low52)}`,
+								inline: true,
+							},
+							{
+								name: ':notepad_spiral: Info:',
+								value: `Currency: ${profile.currency ?? 'unknown'}\nExchange: ${profile.exchange ?? 'unknown'}`,
+								inline: true,
+							}
+						)
+						.setTimestamp(quote.t * 1000)
 				);
-				let jsonData = await res.json();
-
-				//define company name and ticker symbol
-				ticker = ticker.toUpperCase();
-				let company = jsonData.companyName;
-
-				//defines latest price, change, and sets the sign to the matching emoji.
-				let curPrice = jsonData.latestPrice;
-				let change = jsonData.change;
-				let changePercent = jsonData.changePercent;
-				let sign = [':arrow_down_small:', ''];
-				if (change > 0) {
-					sign = [':arrow_up_small:', '+'];
-				} else if (change == 0) {
-					sign = [':left_right_arrow:', ''];
-				}
-
-				//defines previous day close
-				let yesterday = jsonData.previousClose;
-
-				//defines daily high and low prices
-				let high24 = `$${jsonData.high}`;
-				let low24 = `$${jsonData.low}`;
-				if (high24 == `$${null}`) {
-					//sets values to 'N/A' in the case of the API not updating for the day
-					high24 = 'N/A';
-					low24 = 'N/A';
-				}
-
-				//defines 52 week high and low trading prices
-				let high52 = jsonData.week52High;
-				let low52 = jsonData.week52Low;
-
-				//creates discord message embed and edits the modifiers with the attained variables above
-				embedList[ctr] = new EmbedBuilder()
-					.setColor(colorCheck(interaction.guild!.id))
-					.setTitle(`__Summary for ${company}:__`)
-					.setDescription(' ')
-					.addFields(
-						{
-							name: ticker,
-							value: `${sign[0]} $${curPrice}(${sign[1]}${change})\n**Previous Close:** $${yesterday}`,
-						},
-						{
-							name: `:bar_chart: Daily Range:    `,
-							value: `:chart_with_upwards_trend: ${high24}\n:chart_with_downwards_trend: ${low24}`,
-							inline: true,
-						},
-						{
-							name: `:bar_chart: 52 Week Range:    `,
-							value: `:chart_with_upwards_trend: $${high52}\n:chart_with_downwards_trend: $${low52}`,
-							inline: true,
-						},
-						{
-							name: `:notepad_spiral: Info:`,
-							value: `Currency: ${jsonData.currency}\nPrimary Exchange: ${jsonData.primaryExchange}`,
-							inline: true,
-						}
-					)
-					.setTimestamp();
-				ctr += 1;
 			}
-			//sends embed array to the channel
-			interaction.reply({ embeds: embedList });
+			await interaction.editReply({ embeds });
 			return;
 		} catch (err) {
-			if (err instanceof Object) {
-				const test = Object.getOwnPropertyDescriptor(err, 'type');
-				if (test?.value == 'invalid-json') {
-					interaction.reply({
-						content: 'Invalid ticker symbol.',
-						flags: MessageFlags.Ephemeral,
-					});
-					return;
-				}
-			}
-			bot.logger.commandError(interaction.channel!.id, this.name, err);
-			interaction.reply({
-				content: 'Error: contact a developer to investigate',
-				flags: MessageFlags.Ephemeral,
-			});
+			bot.logger.commandError(interaction.channelId, this.name, err);
+			await respond(interaction, 'Error: contact a developer to investigate');
 			return;
 		}
 	}
+}
+
+//one call to Finnhub. a ticker nobody has heard of still answers 200, so only real trouble
+//(a rejected key, the free plan's limit) ends up as nothing
+async function ask<T>(key: string, path: string, ticker: string, extra = ''): Promise<T | undefined> {
+	const response = await fetch(
+		`https://finnhub.io/api/v1/${path}?symbol=${encodeURIComponent(ticker)}${extra}&token=${key}`
+	);
+	if (!response.ok) {
+		throw new Error(
+			response.status === 429
+				? 'Finnhub is rate limiting Mirror (60 calls a minute on the free plan)'
+				: `Finnhub answered ${response.status} for ${path}`
+		);
+	}
+	return (await response.json()) as T;
+}
+
+//prices come back as plain numbers, and a missing one shouldn't read as "$undefined"
+function money(value: number | null | undefined): string {
+	return typeof value === 'number' && value ? `$${value.toFixed(2)}` : 'N/A';
 }

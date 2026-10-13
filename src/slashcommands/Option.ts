@@ -46,7 +46,9 @@ export class Option {
 		this._placeholder = placeholder;
 	}
 
-	//limits a channel option's picker to these kinds of channel, so a wrong one can't be chosen
+	//limits a channel option's picker to these kinds of channel, so a wrong one can't be chosen.
+	//nothing calls this since /defaultvc went away, but /birthdayconfig and /update both take a
+	//channel people are meant to pick a text channel for, so it is kept for them
 	onlyChannels(...types: Array<ChannelType>): this {
 		this._channelTypes = types;
 		return this;

@@ -67,5 +67,7 @@ export class Munch implements SlashCommand {
 		}
 	}
 	guildRequired?: boolean = true;
+	//this talks over the voice channel, which is the music silencing is meant to cover
+	blockSilenced?: boolean = true;
 	musicCommand?: boolean = true;
 }

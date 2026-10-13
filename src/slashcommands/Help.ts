@@ -103,7 +103,7 @@ function helpCard(bot: Bot, guildId: string | undefined, current: string, contro
 	const card = new ContainerBuilder().setAccentColor(accentColor(guildId));
 	addHeading(
 		card,
-		'## 🪞 Mirror\nInformational and fun Discord bot created by Ford, Zac and Marty.',
+		'## 🪞 Mirror\nInformational and fun Discord bot, created in 2021 by Ford and Phantasm.',
 		bot.client.user?.displayAvatarURL()
 	);
 	card.addSeparatorComponents(divider);

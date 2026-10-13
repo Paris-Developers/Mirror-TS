@@ -90,7 +90,7 @@ export class SendUpdate implements MessageCommand {
 				)
 				.setDescription(content)
 				.setFooter({
-					text: 'Ford, Fordle#0001',
+					text: 'Ford',
 					iconURL: 'https://imgur.com/pxkMn14.jpg',
 				});
 

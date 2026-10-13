@@ -1,4 +1,4 @@
-import { Guild, User, Interaction, PermissionFlagsBits } from 'discord.js';
+import { Interaction, PermissionFlagsBits } from 'discord.js';
 import { managerRoles } from '../slashcommands/ManagerRole';
 
 export async function managerCheck(interaction: Interaction): Promise<boolean> {

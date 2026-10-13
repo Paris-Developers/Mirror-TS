@@ -1,9 +1,6 @@
 import {
-	ApplicationCommandDataResolvable,
 	ChatInputCommandInteraction,
 	CacheType,
-	TextChannel,
-	GuildMember,
 	Role,
 	MessageFlags,
 	ApplicationCommandOptionType,
@@ -42,7 +39,8 @@ export class ManagerRole implements SlashCommand {
 		let roleArray = managerRoles.ensure(interaction.guild!.id, []);
 		if (roleArray.includes(role.id)) {
 			let ptr = roleArray.indexOf(role.id);
-			roleArray.splice(ptr);
+			//only the one role goes: splice without a count takes every manager after it too
+			roleArray.splice(ptr, 1);
 			managerRoles.set(interaction.guild!.id, roleArray);
 			return void interaction.reply({
 				content: `Successfully removed ${role} as a Mirror Manager`,
