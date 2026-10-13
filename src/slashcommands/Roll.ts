@@ -16,7 +16,7 @@ export class Roll implements SlashCommand {
 	options: (Option | Subcommand)[] = [
 		new Option(
 			'roll',
-			'the dice you want to roll',
+			'the dice you want to roll, or "stats" for a set of ability scores',
 			ApplicationCommandOptionType.String,
 			false
 		),
@@ -36,6 +36,10 @@ export class Roll implements SlashCommand {
 					} else {
 						embed.setDescription('No barbeque :sob:');
 					}
+					return void interaction.reply({ embeds: [embed] });
+				}
+				if (interaction.options.getString('roll')!.trim().toLowerCase() == 'stats') {
+					embed.setTitle('Stats (4d6, drop the lowest)').setDescription(rollStats());
 					return void interaction.reply({ embeds: [embed] });
 				}
 				const rolled = rollDice(interaction.options.getString('roll')!);
@@ -59,6 +63,20 @@ export class Roll implements SlashCommand {
 	guildRequired?: boolean | undefined = true;
 	managerRequired?: boolean | undefined;
 	blockSilenced?: boolean | undefined;
+}
+
+//six ability scores, each 4d6 with the lowest die dropped. the dropped die is struck through
+//so people can see it was rolled fairly
+function rollStats(): string {
+	const lines: string[] = [];
+	for (let stat = 0; stat < 6; stat++) {
+		const dice = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1);
+		const lowest = dice.indexOf(Math.min(...dice));
+		const shown = dice.map((value, i) => (i === lowest ? `~~${value}~~` : value.toString()));
+		const score = dice.reduce((sum, value) => sum + value, 0) - dice[lowest];
+		lines.push(`**${score}** (${shown.join(', ')})`);
+	}
+	return lines.join('\n');
 }
 
 //the most dice one command may roll. 4096 characters is all an embed's description holds, and
