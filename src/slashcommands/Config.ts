@@ -11,6 +11,7 @@ import { respond } from '../resources/respond';
 import { SlashCommand } from './SlashCommand';
 import { bdayChannels, birthdayTime } from './BirthdayConfig';
 import { autoJoinOn } from '../resources/autoJoin';
+import { embedFixOn } from '../resources/embedFix';
 import { updateChannels } from './Update';
 import { nsfw } from './Nsfw';
 import { managerRoles } from './ManagerRole';
@@ -61,6 +62,7 @@ export class Config implements SlashCommand {
 				`${autoJoinOn(guild.id) ? '✅' : '❌'} **Auto-join voice** · ${autoJoinOn(guild.id) ? 'on' : 'off'} · ${commandMention(bot, 'autojoin')}`,
 				setting('Mirror development updates', updateChannels.get(guild.id) && channelName(updateChannels.get(guild.id)), 'update'),
 				`${nsfwOn ? '✅' : '❌'} **NSFW commands** · ${nsfwOn ? 'on' : 'off'} · ${commandMention(bot, 'nsfw')}`,
+				`${embedFixOn(guild.id) ? '✅' : '❌'} **Link fixing** · ${embedFixOn(guild.id) ? 'on' : 'off'} · ${commandMention(bot, 'embedfix')}`,
 				`🎨 **Color** · ${color ? `\`${color}\`` : 'default'} · ${commandMention(bot, 'servercolor')}`,
 			];
 

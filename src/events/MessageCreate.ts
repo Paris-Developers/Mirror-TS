@@ -4,6 +4,7 @@ import { Keyword } from '../keywords/Keyword';
 import { MessageCommand } from '../messagecommands/MessageCommand';
 import { EventHandler } from './EventHandler';
 import { handledHere } from '../resources/instanceGuard';
+import { fixEmbeds } from '../resources/embedFix';
 
 export class MessageCreate implements EventHandler {
 	eventName = 'messageCreate';
@@ -14,6 +15,11 @@ export class MessageCreate implements EventHandler {
 		//$ commands and keywords are for servers. A direct message used to crash the permission check,
 		//which looks the bot up in the server, so none of them ever ran there anyway
 		if (!message.inGuild()) return;
+
+		//links that don't preview are answered here, before the command lookup below gives up on a
+		//message that isn't one. not awaited: a keyword in the same message shouldn't wait on a reply
+		//to a link, and fixEmbeds catches everything itself
+		void fixEmbeds(bot, message);
 
 		var prefix = bot.prefix;
 
