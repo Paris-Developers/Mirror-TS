@@ -4,7 +4,7 @@ _Last updated: October 13, 2026_
 
 Mirror is a free, open source Discord bot run by its developers as a hobby project. This policy explains what information Mirror reads, what it keeps, and how you can have it removed. Mirror's code is public on [GitHub](https://github.com/Paris-Developers/Mirror-TS), so you can check anything described here.
 
-By adding Mirror to a server or using its commands, you agree to this policy.
+By adding Mirror to a server or using its commands, you agree to this policy and to our [Terms of Service](TERMS.md).
 
 ## What Mirror reads but does not keep
 

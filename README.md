@@ -15,7 +15,7 @@ Mirror was created in 2021 by Ford and Phantasm, with contributions from Zac, Lu
 
 Interested in adding Mirror to your server? Click [here](https://discord.com/api/oauth2/authorize?client_id=887766414923022377&permissions=139606649936&scope=bot%20applications.commands)
 
-By adding or using Mirror you agree to our [Privacy Policy](PRIVACY.md).
+By adding or using Mirror you agree to our [Terms of Service](TERMS.md) and [Privacy Policy](PRIVACY.md).
 
 ## Essential Commands
 
@@ -77,7 +77,9 @@ Commands marked `[MANAGER]` can only be used by server administrators and roles 
 
 Use [`/config`](src/slashcommands/Config.ts) to see your server's current settings.
 
-## Privacy
+## Terms and Privacy
+
+Using Mirror means following our [Terms of Service](TERMS.md), which also cover what server managers are responsible for.
 
 Mirror reads messages so it can respond to commands, keywords and links, but it does not store them. It stores only what you give it, such as your birthday and intro theme, plus server settings. Read the full [Privacy Policy](PRIVACY.md) for details, including how to have your data removed.
 
