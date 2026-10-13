@@ -8,7 +8,7 @@ By adding Mirror to a server or using its commands, you agree to this policy.
 
 ## What Mirror reads but does not keep
 
-**Messages.** Mirror reads messages in the channels it can see. This lets it respond to `$` commands and keywords, and (in servers that turn on `/embedfix`) repost Twitter/X and TikTok links in a form that previews properly in Discord. Mirror does not store message contents. To stop Mirror from reading messages, remove its permission to view a channel, or reinvite it without the "Read Messages" permission.
+**Messages.** Mirror reads messages in the channels it can see. This lets it respond to `$` commands and keywords, and (in servers that turn on `/embedfix`) repost X/Twitter, Instagram and TikTok links in a form that previews properly in Discord. Mirror does not store message contents. To stop Mirror from reading messages, remove its permission to view a channel, or reinvite it without the "Read Messages" permission.
 
 **Voice channels.** Mirror only listens for when people join and leave voice channels, so it can play intro themes and join on its own when a server turns on `/autojoin`. Mirror does not record or listen to anyone's voice.
 
@@ -42,7 +42,7 @@ Some commands need information from other services. When you use them, Mirror se
 - **OpenWeatherMap**: the city you search for, when you use `/weather`.
 - **Finnhub**: the stock tickers you enter, when you use `/stock`.
 - **NASA, kanye.rest and nekos.best**: requests for pictures and quotes. No information about you is sent.
-- **FxTwitter and tnktok**: when embed fix reposts a link, Discord loads its preview from these sites. Mirror doesn't contact them itself.
+- **FxTwitter, 67instagram and tnktok**: when embed fix reposts a link, Discord loads its preview from these sites. Mirror doesn't contact them itself.
 
 Each service has its own privacy policy.
 
