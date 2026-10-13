@@ -44,9 +44,23 @@ The developers may stop anyone from using Mirror, or remove Mirror from any serv
 
 Mirror is provided "as is", without any warranty of any kind. To the fullest extent the law allows, Mirror's developers are not responsible for any loss or harm that comes from using Mirror, or from not being able to use it.
 
+## Your responsibility
+
+You are responsible for how you use Mirror. If you use it in a way these terms don't allow — outside its limits, against Discord's rules, or against the law — that is on you, not on Mirror's developers.
+
+That covers what follows from it: content you play or post through Mirror, trouble it causes you with Discord, and any claim, complaint or cost someone brings because of what you did with Mirror. If such a claim is brought against the developers over your use of Mirror, you agree to cover it.
+
+The developers do not monitor what servers do with Mirror and are not responsible for how any server is run, moderated or configured.
+
 ## Mirror's code
 
 Mirror's source code is available on [GitHub](https://github.com/Paris-Developers/Mirror-TS) under the [MIT License](LICENSE). That license covers the code. These terms cover using the Mirror bot that the developers run.
+
+## Running your own copy
+
+Mirror's code is open source and anyone may run their own copy. These terms and the Privacy Policy cover only the Mirror the developers run — the bot invited from the link in the README.
+
+If you run your own copy you are its operator: you hold its data, you answer for how it behaves, and you need your own terms and privacy policy. Mirror's developers are not responsible for it. Don't present your copy as the official Mirror.
 
 ## Changes to these terms
 
