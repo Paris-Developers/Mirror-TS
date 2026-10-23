@@ -60,8 +60,12 @@ const spoiler = /\|\|[\s\S]*?\|\|/g;
 const linkPattern = /(<?)(https?:\/\/[^\s<>()[\]"'`|\\]+)/gi;
 //a link at the end of a sentence picks up whatever was after it. _ and ~ are in here for *bold* and
 //_italic_ markers, but an instagram shortcode is base64 and may genuinely end in _, so this is only
-//ever used as a second attempt -- see linkAsPosted below
-const trailingPunctuation = /[.,!?;:'"*_~]+$/;
+//ever used as a second attempt -- see linkAsPosted below.
+//the (?<!...) in front only lets a match start where a run of these begins. without it, a link
+//with thousands of dots in the middle was re-checked from every one of them, so the time grew
+//with the square of the link: about 10ms of the whole bot doing nothing else for one long message,
+//in a check that runs on every message
+const trailingPunctuation = /(?<![.,!?;:'"*_~])[.,!?;:'"*_~]+$/;
 
 //none of these embed, so there is nothing in them to fix, and a link inside one is not a link the
 //member wanted previewed. order matters: a fence can contain backticks and bars

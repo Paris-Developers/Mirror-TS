@@ -22,9 +22,13 @@ import { fileSearchOptions, registerExtractors, userSearchOptions } from './extr
 import { playerErrors, tracksStarted } from './metrics';
 import { endCard, registerNowPlaying } from './nowPlaying';
 import { autoJoinOn, leftOnPurpose, rejoinPeople, stayedIn } from './autoJoin';
+import { queryProblem } from './queryGuard';
 
 //a join that failed for a reason worth telling the person who asked. the message is written for them
 export class VoiceJoinError extends Error {}
+
+//a search Mirror won't run, and why (queryGuard.ts). the message is written for the person who typed it
+export class SearchRefusedError extends Error {}
 
 //a queue is busy while music is playing, loaded, or still being fetched. sound effects and intros
 //wait for it, and nothing moves Mirror away from it
@@ -73,6 +77,9 @@ export class CustomPlayer extends Player {
 		disableFallbackStream: true,
 		//someone dropping out for a moment (a phone reconnecting) shouldn't count as everyone leaving
 		leaveOnEmptyCooldown: 30 * 1000,
+		//the most songs waiting in a queue. without a limit one server could pile up playlist after
+		//playlist until Mirror ran short of memory. /play and /playnext add what fits and say so
+		maxSize: 500,
 	};
 
 	//the join each server is working through. joins in one server wait their turn: two at once
@@ -355,6 +362,9 @@ export class CustomPlayer extends Player {
 
 	//looks up a song name or link typed by a user (/play, /playnext, /intro)
 	async searchFromUser(query: string, requestedBy: User) {
+		//some text never reaches the library at all; queryGuard.ts says what and why
+		const problem = queryProblem(query);
+		if (problem) throw new SearchRefusedError(problem);
 		//right after startup YouTube may still be connecting, and searching it then fails with a
 		//confusing error. /play says to try again in a moment instead
 		const youtube = this.extractors.get(YoutubeExtractor.identifier) as YoutubeExtractor | undefined;

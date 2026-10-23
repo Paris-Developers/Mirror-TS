@@ -40,7 +40,7 @@ process.on('unhandledRejection', (error) => {
 
 // an error nothing caught, such as one thrown while a sound is being sent, can leave the bot stuck
 // (the voice libraries stop sending sound to every server), so it is logged in the bot's own log
-// and the bot exits for pm2 to restart it. the pause lets the log line reach the file first
+// and the bot exits for the service (or pm2) to restart it. the pause lets the log line reach the file first
 process.on('uncaughtException', (error) => {
 	bot.logger.fatal('Uncaught exception, exiting:', error);
 	process.exitCode = 1;

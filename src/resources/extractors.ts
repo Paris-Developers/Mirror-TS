@@ -9,6 +9,7 @@ import {
 	SearchQueryType,
 } from 'discord-player';
 import { User } from 'discord.js';
+import { createRequire } from 'module';
 import { AttachmentExtractor, DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeExtractor, YoutubeOptions } from 'discord-player-youtubei';
 import { configText } from './config';
@@ -96,11 +97,34 @@ class MirrorYoutubeExtractor extends YoutubeExtractor {
 	}
 }
 
+//the youtube extractor and simple-ytdl-core (which it uses) each give youtubei.js a way to run code
+//from YouTube's player with new Function as they load, for unscrambling download links. that would
+//run YouTube's JavaScript inside Mirror itself, with everything Mirror can do. Mirror never needs it:
+//searches and song lookups only read YouTube's answers, yt-dlp runs that code in a program of its
+//own, and youtubeStream's fallback only takes links that need no unscrambling. so once both have
+//loaded, it's swapped for one that refuses, in case something ever reaches it anyway. each of them
+//is asked for its own youtubei.js, in case npm ever gives them separate copies
+function refuseYoutubeCode() {
+	const refuse = () => {
+		throw new Error(`Mirror doesn't run code from YouTube's player, so this link can't be unscrambled`);
+	};
+	const extractor = require.resolve('discord-player-youtubei');
+	const users = [
+		extractor,
+		createRequire(extractor).resolve('simple-ytdl-core'),
+		require.resolve('simple-ytdl-core'),
+	];
+	for (const user of users) createRequire(user)('youtubei.js').Platform.shim.eval = refuse;
+}
+
 //discord-player 7 ships without YouTube support, so the youtubei extractor provides it.
-//audio comes from youtubeStream: yt-dlp first, since YouTube serves it most reliably, then the
-//extractor's other methods, falling back only when one really fails. the optional cookies in
+//audio comes from youtubeStream: yt-dlp first, since YouTube serves it most reliably, then one of the
+//extractor's own methods, falling back only when yt-dlp really fails. the optional cookies in
 //config.json help when YouTube asks for a sign in
 export async function registerExtractors(player: Player, bot: Bot): Promise<void> {
+	//the imports above have loaded the extractor and simple-ytdl-core by now
+	refuseYoutubeCode();
+
 	//an extractor that fails to start is dropped from the player, and the only word of it is this
 	//event, which the player's own error listener never hears
 	player.extractors.on('error', (_context, extractor, error) =>

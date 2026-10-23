@@ -9,7 +9,8 @@ import { Option, Subcommand } from './Option';
 import { SlashCommand } from './SlashCommand';
 import { colorCheck } from '../resources/embedColorCheck';
 import { MusicMetadata } from '../resources/nowPlaying';
-import { VoiceJoinError, stageNotice } from '../resources/CustomPlayer';
+import { SearchRefusedError, VoiceJoinError, stageNotice } from '../resources/CustomPlayer';
+import { MAX_QUERY_LENGTH } from '../resources/queryGuard';
 import { respond } from '../resources/respond';
 import { answeredElsewhere } from '../resources/instanceGuard';
 
@@ -17,7 +18,7 @@ export class PlayNext implements SlashCommand {
 	name: string = 'playnext';
 	description: string = 'Add a song to the beginning of the queue';
 	options: (Option | Subcommand)[] = [
-		new Option('query', 'The song to play next', 3, true),
+		new Option('query', 'The song to play next', 3, true).maxLength(MAX_QUERY_LENGTH),
 	];
 	requiredPermissions: bigint[] = [];
 	async run(
@@ -33,9 +34,15 @@ export class PlayNext implements SlashCommand {
 			const guild = interaction.guild!;
 			const query = interaction.options.getString('query')!;
 			let searchFailed = false;
+			let refused: string | undefined;
 			const searchResult = await bot.player
 				.searchFromUser(query, interaction.user)
 				.catch((error) => {
+					//text Mirror won't search for comes with its own explanation
+					if (error instanceof SearchRefusedError) {
+						refused = error.message;
+						return null;
+					}
 					bot.logger.warn(`[${guild.name}] Search for "${query}" failed:`, error);
 					searchFailed = true;
 					return null;
@@ -43,7 +50,8 @@ export class PlayNext implements SlashCommand {
 			if (!searchResult || !searchResult.tracks.length)
 				return void (await respond(
 					interaction,
-					searchFailed ? "Couldn't search for that right now, try again in a moment" : 'no results were found'
+					refused ??
+						(searchFailed ? "Couldn't search for that right now, try again in a moment" : 'no results were found')
 				));
 
 			let queue = bot.player.nodes.create(guild, bot.player.playOptions);
@@ -92,6 +100,7 @@ export class PlayNext implements SlashCommand {
 				));
 			}
 			let starting = false;
+			let added = toInsert;
 			try {
 				//someone may have taken Mirror to another channel while this command waited its turn
 				if (queue.channel && queue.channel.id !== member.voice.channelId)
@@ -99,7 +108,16 @@ export class PlayNext implements SlashCommand {
 						interaction,
 						`Mirror was just taken to <#${queue.channel.id}>. Join it there to add songs.`
 					));
-				toInsert.forEach((song, index) => queue.insertTrack(song, index));
+				//a queue holds playOptions.maxSize songs at most, and the player throws on the first song
+				//that doesn't fit, after putting in the ones before it, so only what fits is put in
+				const room = queue.getCapacity();
+				if (room < 1)
+					return void (await respond(interaction, {
+						content: `The queue is full: it holds ${queue.maxSize} songs. Skip some or let them play, then try again.`,
+						embeds: [],
+					}));
+				added = toInsert.slice(0, room);
+				added.forEach((song, index) => queue.insertTrack(song, index));
 				//between two songs nothing is playing, but the next one is already on its way, and a
 				//song that failed to load hands over to the next in the background
 				starting = !queue.isPlaying() && !queue.currentTrack && !bot.player.isStarting(queue);
@@ -107,13 +125,17 @@ export class PlayNext implements SlashCommand {
 			} finally {
 				queue.tasksQueue.release();
 			}
+			const cutShort =
+				added.length < toInsert.length
+					? `\nAdded ${added.length} of the playlist's ${toInsert.length} songs: the queue holds ${queue.maxSize} at most.`
+					: '';
 			if (starting) {
 				embed.setDescription(
-					`Playing next: **${track.title}**, by *${track.author}* (${track.duration})`
+					`Playing next: **${track.title}**, by *${track.author}* (${track.duration})${cutShort}`
 				);
 			} else {
 				searchResult.playlist
-					? embed.setDescription('Playlist added to the **front** of the queue!')
+					? embed.setDescription(`Playlist added to the **front** of the queue!${cutShort}`)
 					: embed.setDescription(
 							`**${track.title}**, by *${track.author}* (${track.duration}) added to the **front** of the queue!`
 					  );

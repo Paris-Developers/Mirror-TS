@@ -12,6 +12,9 @@ type JsonOption = {
 	required: boolean;
 	choices: Array<Choices> | undefined;
 	channel_types?: Array<ChannelType>;
+	max_length?: number;
+	min_value?: number;
+	max_value?: number;
 };
 
 export class Option {
@@ -29,6 +32,11 @@ export class Option {
 	public _placeholder: string | boolean | number | undefined;
 	//for a channel option, the kinds of channel Discord offers in its picker. all of them when unset
 	_channelTypes: Array<ChannelType> | undefined;
+	//for a text option, the most characters Discord lets anyone type. no limit when unset
+	_maxLength: number | undefined;
+	//for a number option, the smallest and largest numbers Discord accepts. no limit when unset
+	_minValue: number | undefined;
+	_maxValue: number | undefined;
 
 	constructor(
 		name: string,
@@ -54,6 +62,21 @@ export class Option {
 		return this;
 	}
 
+	//caps how much can be typed into a text option. Discord turns longer text away itself, before
+	//Mirror ever sees it
+	maxLength(length: number): this {
+		this._maxLength = length;
+		return this;
+	}
+
+	//keeps a number option between these two numbers; leave either out for no limit on that side.
+	//nothing calls this yet, it's here so a number option can be limited the same way as text
+	between(min?: number, max?: number): this {
+		this._minValue = min;
+		this._maxValue = max;
+		return this;
+	}
+
 	toJson(): JsonOption {
 		return {
 			name: this._name,
@@ -62,6 +85,10 @@ export class Option {
 			required: this._required,
 			choices: this._choices,
 			...(this._channelTypes ? { channel_types: this._channelTypes } : {}),
+			//each limit is only sent when it's set, like the channel kinds above
+			...(this._maxLength !== undefined ? { max_length: this._maxLength } : {}),
+			...(this._minValue !== undefined ? { min_value: this._minValue } : {}),
+			...(this._maxValue !== undefined ? { max_value: this._maxValue } : {}),
 		};
 	}
 }

@@ -16,6 +16,7 @@ import { GuildQueue, QueueRepeatMode, Track } from 'discord-player';
 import { Bot } from '../Bot';
 import { silenceCheck } from '../slashcommands/SilenceRole';
 import { accentColor, addHeading, cardReply, commandMention, divider } from './cards';
+import { whyUnavailable } from './youtubeStream';
 
 //what /play and /playnext store on a server's queue
 export type MusicMetadata = { channel?: SendableChannels };
@@ -29,7 +30,8 @@ const cards = new Map<string, Message>(); //server id -> its card
 const lastPlayed = new Map<string, Played>(); //server id -> the song the card last showed
 const lastAction = new Map<string, { text: string; at: number }>(); //server id -> "Skipped by @someone"
 const pending = new Map<string, NodeJS.Timeout>(); //server id -> a card update waiting to go out
-const failures = new Map<string, { title: string; at: number }>(); //server id -> a song YouTube just wouldn't send
+//server id -> a song YouTube just wouldn't send, and why when YouTube won't play it at all
+const failures = new Map<string, { title: string; why?: string; at: number }>();
 
 const isSoundFile = (track: Track) => (track.raw as { isFile?: boolean } | undefined)?.isFile === true;
 
@@ -44,9 +46,15 @@ export function registerNowPlaying(bot: Bot) {
 	//the player skips a song it couldn't get audio for; the card says so, on the next song or as the queue ends
 	events.on('playerSkip', (queue, track, reason) => {
 		if (reason !== 'ERR_NO_STREAM' || isSoundFile(track)) return;
-		failures.set(queue.guild.id, { title: track.title, at: Date.now() });
+		//a song YouTube won't play at all (age-restricted, private, taken down) says why, since trying
+		//again won't help. anything else is usually YouTube briefly refusing
+		const why = whyUnavailable(track);
+		failures.set(queue.guild.id, { title: track.title, why, at: Date.now() });
+		const title = escapeMarkdown(shorten(track.title));
 		lastAction.set(queue.guild.id, {
-			text: `⚠️ Couldn't play ${escapeMarkdown(shorten(track.title))}: YouTube didn't send any audio, so it was skipped`,
+			text: why
+				? `⚠️ Couldn't play ${title}, so it was skipped. ${why}.`
+				: `⚠️ Couldn't play ${title}: YouTube didn't send any audio, so it was skipped`,
 			at: Date.now(),
 		});
 	});
@@ -106,9 +114,10 @@ async function finish(bot: Bot, guildId: string, note: string, channel?: Sendabl
 	cards.delete(guildId);
 	const failure = failures.get(guildId);
 	failures.delete(guildId);
-	const failedTitle = failure && Date.now() - failure.at < 30 * 1000 ? failure.title : undefined;
+	const recent = failure && Date.now() - failure.at < 30 * 1000 ? failure : undefined;
+	const failedTitle = recent?.title;
 
-	const ended = endedCard(bot, guildId, note, failedTitle);
+	const ended = endedCard(bot, guildId, note, failedTitle, recent?.why);
 	if (card) {
 		await card.edit({ components: [ended], ...noPings }).catch(() => {});
 	} else if (failedTitle && channel) {
@@ -179,12 +188,14 @@ function playingCard(bot: Bot, queue: GuildQueue): ContainerBuilder {
 	return card;
 }
 
-function endedCard(bot: Bot, guildId: string, note: string, failedTitle?: string): ContainerBuilder {
+function endedCard(bot: Bot, guildId: string, note: string, failedTitle?: string, why?: string): ContainerBuilder {
 	const played = lastPlayed.get(guildId);
 	const lines = failedTitle
 		? [
 				`## ⚠️ Couldn't play ${escapeMarkdown(shorten(failedTitle))}`,
-				`YouTube didn't send any audio for it. Try ${commandMention(bot, 'play')} again in a minute.`,
+				why
+					? `${why}, so it can't be played.`
+					: `YouTube didn't send any audio for it. Try ${commandMention(bot, 'play')} again in a minute.`,
 		  ]
 		: [`## ⏹️ ${note}`];
 	if (played && played.title !== failedTitle) {
