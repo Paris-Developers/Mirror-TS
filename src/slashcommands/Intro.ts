@@ -16,6 +16,7 @@ import { downloadTrack } from '../resources/downloadTrack';
 import { respond } from '../resources/respond';
 import { SearchRefusedError } from '../resources/CustomPlayer';
 import { MAX_QUERY_LENGTH } from '../resources/queryGuard';
+import { whyUnavailable } from '../resources/youtubeStream';
 import { YoutubeExtractor } from 'discord-player-youtubei';
 
 //how much of the chosen video is kept and played back
@@ -101,12 +102,21 @@ export class Intro implements SlashCommand {
 
 			const folder = path.resolve(`data/intros/${interaction.guild!.id}`);
 			await fs.promises.mkdir(folder, { recursive: true });
-			await downloadTrack(
-				bot.player,
-				track,
-				path.join(folder, `${interaction.user.id}.mp4`),
-				INTRO_SECONDS
-			);
+			try {
+				await downloadTrack(
+					bot.player,
+					track,
+					path.join(folder, `${interaction.user.id}.mp4`),
+					INTRO_SECONDS
+				);
+			} catch (error) {
+				//a video YouTube won't play at all (age-restricted, private, taken down) is for the person to
+				//swap, not a fault to report to the error channel
+				const why = whyUnavailable(track);
+				if (!why) throw error;
+				await respond(interaction, `${why}, so it can't be used as an intro. Pick another video.`);
+				return;
+			}
 			await respond(
 				interaction,
 				`Successfully updated your intro theme! The first ${INTRO_SECONDS} seconds of **${track.title}** will play when you join.`

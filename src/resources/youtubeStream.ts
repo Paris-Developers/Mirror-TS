@@ -19,9 +19,25 @@ const fallbackTimeout = 20 * 1000;
 //fails right there: a second try or the fallback would only add a wait. it also means nobody can
 //push a song into the fallback on purpose by picking one YouTube won't play.
 //"Video unavailable", "not a bot" and "Requested format is not available" are left out on purpose:
-//YouTube also says those while it's briefly refusing, which is what the second try is for
-const permanentError =
-	/private video|members-only|removed by the uploader|copyright|confirm your age|has been terminated/i;
+//YouTube also says those while it's briefly refusing, which is what the second try is for.
+//each comes with the reason the "couldn't play" card and /intro give people, instead of telling
+//them to try again
+const permanentErrors: [RegExp, string][] = [
+	[/confirm your age/i, "It's age-restricted on YouTube"],
+	[/members-only/i, "It's only for the channel's members"],
+	[/private video/i, "It's a private video"],
+	[/removed by the uploader/i, 'Its uploader removed it'],
+	[/copyright/i, 'YouTube took it down over a copyright claim'],
+	[/has been terminated/i, 'Its YouTube channel has been closed'],
+];
+
+//songs YouTube turned down for good, with the reason from the list above
+const unavailable = new WeakMap<Track, string>();
+
+//why YouTube won't play this song at all, when that's what stopped it
+export function whyUnavailable(track: Track): string | undefined {
+	return unavailable.get(track);
+}
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const describe = (error: unknown) => (error instanceof Error ? error.message : String(error));
@@ -66,7 +82,9 @@ export function youtubeStream(bot: Bot, cookiePath?: string) {
 					return closeWhenDropped(await startYtdlp(ytdlp, args, brokeOff('yt-dlp')));
 				} catch (error) {
 					failed(`yt-dlp (attempt ${attempt})`, error);
-					if (permanentError.test(describe(error))) {
+					const permanent = permanentErrors.find(([pattern]) => pattern.test(describe(error)));
+					if (permanent) {
+						unavailable.set(track, permanent[1]);
 						throw new Error(`"${track.title}" is not available on YouTube: ${describe(error)}`);
 					}
 					if (attempt === 1) await wait(2000);
