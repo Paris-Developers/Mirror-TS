@@ -79,7 +79,11 @@ export class Stock implements SlashCommand {
 				const quote = await ask<Quote>(key, 'quote', ticker);
 				//Finnhub answers for a ticker it doesn't know with zeroes and no timestamp
 				if (!quote || !quote.t) {
-					return void (await respond(interaction, `No stock found for ${ticker}.`));
+					//the ticker is whatever was typed, so a <@id> in it must not ping anyone
+					return void (await respond(interaction, {
+						content: `No stock found for ${ticker}.`,
+						allowedMentions: { parse: [] },
+					}));
 				}
 				const profile = (await ask<Profile>(key, 'stock/profile2', ticker)) ?? {};
 				const metrics = (await ask<Metrics>(key, 'stock/metric', ticker, '&metric=all'))?.metric;

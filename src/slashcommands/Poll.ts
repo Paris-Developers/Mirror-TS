@@ -133,8 +133,19 @@ export class Poll implements SlashCommand {
 				time: time * 60000,
 				dispose: true,
 			});
-			//every bar moves when one vote comes in or goes out, so both handlers redraw all of them
+			//every bar moves when one vote comes in or goes out, so both handlers redraw all of them.
+			//only one edit is out at a time. Discord limits how often a bot may edit in a channel, and every
+			//vote used to send its own edit, so a busy poll (or one person flicking a reaction on and off)
+			//queued edits in memory faster than they could go out, and held up Mirror's other edits there.
+			//a vote that comes in while an edit is out just asks for one more redraw once it's done
+			let editing = false;
+			let redrawAgain = false;
 			const redraw = () => {
+				if (editing) {
+					redrawAgain = true;
+					return;
+				}
+				editing = true;
 				let field = 0;
 				for (let arg of options) {
 					//the last vote going away leaves nothing to divide by, which read as "undefined NaN%"
@@ -150,7 +161,14 @@ export class Poll implements SlashCommand {
 				}
 				message
 					.edit({ embeds: [embed] })
-					.catch((err) => bot.logger.warn('Could not update a poll:', err));
+					.catch((err) => bot.logger.warn('Could not update a poll:', err))
+					.finally(() => {
+						editing = false;
+						if (redrawAgain) {
+							redrawAgain = false;
+							redraw();
+						}
+					});
 			};
 			collector.on('collect', (reaction: MessageReaction, user: User) => {
 				total += 1;
