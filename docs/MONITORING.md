@@ -28,6 +28,8 @@ npm ci
 notepad config.json
 ```
 
+If you've locked down the project folder ("Keeping the PC safe" in [Building the bot](BUILDING.md)), also run its youtube-dl-exec `icacls` line after `npm ci`, or yt-dlp can no longer update itself.
+
 In `config.json`, add `"metrics_port": 9464,` inside the braces, then save the file and continue:
 
 ```powershell
@@ -125,11 +127,21 @@ Get-NetFirewallRule | Where-Object DisplayName -match 'grafana' | Format-Table D
 New-NetFirewallRule -DisplayName "Grafana - viewing PC only" -Direction Inbound -Protocol TCP -LocalPort 3000 -RemoteAddress <viewing-pc-ip> -Action Allow -Profile Private
 ```
 
+Grafana still listens on every network adapter of the bot PC, and the firewall rule is what keeps others out. To have it listen only on the bot PC's address on your home network, set `http_addr` in `custom.ini` to `<bot-pc-ip>` (the line is there, commented out), copy the file again and `Restart-Service Grafana`.
+
 Then, on the viewing PC:
 1. Open `http://<bot-pc-ip>:3000`.
 2. Sign in as `admin` / `admin`.
-3. Set a strong new password when prompted.
+3. Change the password when prompted. This step must not be skipped: until it's done, anyone who can reach port 3000 can sign in with `admin` / `admin`. `custom.ini` turns on Grafana's password policy, so there's no Skip button, and the new password needs at least 12 characters with an uppercase and a lowercase letter, a digit and a symbol.
 4. Open **Dashboards → Mirror → Mirror bot**.
+
+Check that `admin` / `admin` is refused now. In PowerShell on the viewing PC, this should print `admin/admin is refused`:
+
+```powershell
+try { Invoke-RestMethod http://<bot-pc-ip>:3000/api/user -Headers @{ Authorization = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes('admin:admin')) } | Out-Null; 'admin/admin STILL WORKS: change the password now' } catch { if ($_.Exception.Response.StatusCode -eq 401) { 'admin/admin is refused' } else { "Could not check: $($_.Exception.Message)" } }
+```
+
+If Grafana was set up before the password policy was added to `custom.ini`, copy the file again (the `Copy-Item` line above), `Restart-Service Grafana`, and run the check.
 
 ## Internet data used by the bot
 
@@ -142,4 +154,4 @@ To see the bot's share of your household's data, type the monthly total from you
 
 ## Updating the dashboard
 
-The dashboard and data source are loaded from `monitoring/grafana`, so a `git pull` updates them. Grafana picks up changes within a minute. Changes to `monitoring/prometheus.yml` need `Restart-Service Prometheus`.
+The dashboard and data source are loaded from `monitoring/grafana`, so a `git pull` updates them. Grafana picks up changes within a minute. Changes to `monitoring/prometheus.yml` need `Restart-Service Prometheus`. Changes to `monitoring/grafana/custom.ini` only reach Grafana once the file is copied again (step 4) and Grafana restarted with `Restart-Service Grafana`.
