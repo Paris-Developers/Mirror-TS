@@ -12,6 +12,9 @@ export interface Config {
 	production_host?: string;
 	youtube_cookie?: string;
 	youtube_cookie_file?: string;
+	//the full path to deno.exe (2.3.0 or newer), for yt-dlp to run YouTube's challenge code in Deno's
+	//sandbox instead of Node. see jsRuntimeArgs in ytdlp.ts
+	deno_path?: string;
 	metrics_port?: string | number;
 	nasa_token?: string;
 	stock_token?: string;

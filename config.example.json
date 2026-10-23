@@ -8,6 +8,7 @@
 	"owner": "YOUR_DISCORD_USER_ID",
 	"youtube_cookie": "",
 	"youtube_cookie_file": "",
+	"deno_path": "",
 	"metrics_port": "",
 	"nasa_token": "",
 	"stock_token": "",
