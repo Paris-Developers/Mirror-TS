@@ -112,14 +112,22 @@ export class Nut implements SlashCommand {
 					.setImage('https://c.tenor.com/injWPZSrCK0AAAAC/bear.gif');
 				return void interaction.reply({ embeds: [embed] });
 			}
-			if(interaction.options.getSubcommand() == 'leaderboard'){				let guild = interaction.guild!;
+			if(interaction.options.getSubcommand() == 'leaderboard'){
+				//finding out who is in the server can take longer than Discord waits for an answer
+				await interaction.deferReply();
+				let guild = interaction.guild!;
+				//jars aren't kept per server, so only this server's members are ranked. they come in one
+				//request for the whole server, or straight from memory once Mirror knows everyone, rather
+				//than one request for every jar anyone anywhere has. if Discord turns the request down
+				//(it limits how often it's asked), the members Mirror already knows are ranked
+				const members =
+					guild.members.cache.size >= guild.memberCount
+						? guild.members.cache
+						: await guild.members.fetch({ time: 15 * 1000 }).catch(() => guild.members.cache);
 				let leaderboard: any[][] = [];
 				for(const item of nuts.entries()){
-					try{
-						let member = await guild.members.fetch(item[0].toString());
-						leaderboard.push([member.user.username, item[1]]);
-					} catch(err) {
-					}
+					const member = members.get(item[0].toString());
+					if (member) leaderboard.push([member.user.username, item[1]]);
 				}
 				leaderboard = sort(leaderboard);
 				var userString = '';
@@ -144,7 +152,7 @@ export class Nut implements SlashCommand {
 					inline: true,
 				});
 				embed.setTitle(`Nut leaderboard for ${interaction.guild!.name}`);
-				interaction.reply({embeds:[embed]});
+				await interaction.editReply({embeds:[embed]});
 				return;
 			};
 		} catch (err) {
