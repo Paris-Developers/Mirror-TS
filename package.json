@@ -4,12 +4,12 @@
 	"description": "Mirror `Discord` Bot TypeScript edition",
 	"main": "built/src/index.js",
 	"engines": {
-		"node": ">=22.12.0"
+		"node": ">=22.14.0"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsc",
-		"start": "node ./built/src/index.js"
+		"start": "node --disable-sigusr1 ./built/src/index.js"
 	},
 	"author": "Ford Friedel",
 	"license": "MIT",

@@ -32,8 +32,13 @@ export class Bot {
 	public messageCommands: Array<MessageCommand> = [];
 	public keywords: Array<Keyword> = [];
 
+	//a # field is invisible to JSON.stringify, util.inspect and the logger, unlike a "private" one
+	//(that is only a TypeScript check). the logger and the player both hold the bot, so logging
+	//either of them would otherwise print the token
+	#token: string;
+
 	constructor(
-		private token: string,
+		token: string,
 		public client: Client,
 		public prefix: string,
 		public mode: string,
@@ -41,6 +46,7 @@ export class Bot {
 		//the machine the live bot runs on, from config.json. optional, see startupCheck
 		public production_host?: string
 	) {
+		this.#token = token;
 		//class fields initialize before constructor parameters are assigned, so the player
 		//(which reads this.client) has to be created here rather than as a field
 		this.player = new CustomPlayer(this);
@@ -79,7 +85,7 @@ export class Bot {
 				`Logged in as ${client.user.tag} (${client.user.id}) on ${hostname()} in ${this.mode} mode`
 			)
 		);
-		this.client.login(this.token);
+		this.client.login(this.#token);
 		this.player.registerPlayerEvents();
 	}
 }
